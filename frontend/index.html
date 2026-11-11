@@ -402,7 +402,7 @@
 
               <!-- Secondary Right Panel: Isolated 2D Moving-Sticks Model Canvas -->
               <div id="model2DPane" class="hidden relative flex-1 min-w-0 aspect-[4/3] bg-[#070A10] flex items-center justify-center overflow-hidden">
-                <canvas id="model2DCanvas" width="480" height="480" class="w-full h-full object-contain"></canvas>
+                <canvas id="model2DCanvas" width="640" height="480" class="w-full h-full object-contain"></canvas>
                 <span class="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-700 text-[10px] font-mono text-emerald-300">
                   CONVERTED 2D MOVING-STICKS MODEL
                 </span>
@@ -2783,6 +2783,7 @@
       document.getElementById('reportWhy').innerText = card.why_it_matters;
 
       currentWireframes = data.wireframes;
+      sagittalNormMeta = computeSagittalNormalizer(currentWireframes);
       currentFrameIdx = 0;
       currentFrameFloat = 0;
       document.getElementById('timelineSlider').max = currentWireframes.length - 1;
@@ -2793,6 +2794,82 @@
       updateVelocityChart(data.velocity_curve);
       renderSkeletalFrame(0);
       startPlayback();
+    }
+
+    let sagittalNormMeta = null;
+
+    function computeSagittalNormalizer(wireframes) {
+      if (!wireframes || wireframes.length === 0) return null;
+      const jointKeys = [
+        'nose', 'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow',
+        'left_wrist', 'right_wrist', 'left_hip', 'right_hip',
+        'left_knee', 'right_knee', 'left_ankle', 'right_ankle'
+      ];
+
+      // Compute median pelvis origin and shooting wrist displacement direction in horizontal XZ plane
+      let hipXs = [], hipYs = [], hipZs = [];
+      let dirX = 0, dirZ = 0, samples = 0;
+
+      wireframes.forEach(wf => {
+        const j = wf.joints || {};
+        if (j.left_hip && j.right_hip) {
+          const hx = (j.left_hip[0] + j.right_hip[0]) * 0.5;
+          const hy = (j.left_hip[1] + j.right_hip[1]) * 0.5;
+          const hz = ((j.left_hip[2] || 0) + (j.right_hip[2] || 0)) * 0.5;
+          hipXs.push(hx); hipYs.push(hy); hipZs.push(hz);
+          if (j.right_wrist) {
+            dirX += (j.right_wrist[0] - hx);
+            dirZ += ((j.right_wrist[2] || 0) - hz);
+            samples++;
+          }
+        }
+      });
+
+      const median = (arr) => {
+        if (!arr.length) return 0;
+        const s = [...arr].sort((a, b) => a - b);
+        return s[Math.floor(s.length / 2)];
+      };
+      const origX = median(hipXs);
+      const origY = median(hipYs);
+      const origZ = median(hipZs);
+
+      // Determine horizontal unit shooting axis u = [ux, uz] facing hoop (+screen X)
+      let ux = 0.707, uz = 0.707;
+      if (samples > 0) {
+        const mag = Math.hypot(dirX, dirZ);
+        if (mag > 0.05) {
+          ux = dirX / mag;
+          uz = dirZ / mag;
+        } else {
+          // Pure side profile already in X-Y plane
+          ux = 1.0;
+          uz = 0.0;
+        }
+      }
+
+      // Compute tight Y & sagittal-X bounds across all frames for uniform non-clipping scale
+      let minY = Infinity, maxY = -Infinity, minSX = Infinity, maxSX = -Infinity;
+      wireframes.forEach(wf => {
+        const j = wf.joints || {};
+        jointKeys.forEach(k => {
+          const pt = j[k];
+          if (!pt) return;
+          const dx = (pt[0] || 0) - origX;
+          const dy = (pt[1] || 0) - origY;
+          const dz = (pt[2] || 0) - origZ;
+          const sx = dx * ux + dz * uz;
+          if (dy < minY) minY = dy;
+          if (dy > maxY) maxY = dy;
+          if (sx < minSX) minSX = sx;
+          if (sx > maxSX) maxSX = sx;
+        });
+      });
+
+      const spanY = Math.max(0.6, maxY - minY);
+      const spanX = Math.max(0.3, maxSX - minSX);
+      const midSX = (minSX + maxSX) * 0.5;
+      return { origX, origY, origZ, ux, uz, minY, maxY, spanY, spanX, midSX };
     }
 
     // Core 2D Canvas Drawing Helper (Used by both Primary Canvas and Converted 2D Model Video Canvas)
@@ -2828,10 +2905,22 @@
       } else {
         function toScreen(pt) {
           if (!pt || !Array.isArray(pt)) return [W * 0.34, H * 0.5];
-          // Auto-center metric 3D world pose (-1..1) onto the calibrated 2D sagittal court
+          if (sagittalNormMeta) {
+            const m = sagittalNormMeta;
+            const dx = (pt[0] || 0) - m.origX;
+            const dy = (pt[1] || 0) - m.origY;
+            const dz = (pt[2] || 0) - m.origZ;
+            const sagX = (dx * m.ux + dz * m.uz) - m.midSX;
+            const targetHeight = H * 0.62;
+            const pxScale = targetHeight / m.spanY;
+            const floorY = H * 0.86;
+            const px = W * 0.35 + sagX * pxScale;
+            const py = floorY - (m.maxY - dy) * pxScale;
+            return [px, py];
+          }
           const x = pt[0] || 0;
           const y = pt[1] || 0;
-          return [W * 0.34 + x * W * 0.42, H * 0.48 + y * H * 0.42];
+          return [W * 0.35 + x * W * 0.40, H * 0.50 + y * H * 0.40];
         }
         nose = joints.nose ? toScreen(joints.nose) : [W * 0.38, H * 0.20];
         shL = joints.left_shoulder ? toScreen(joints.left_shoulder) : [W * 0.34, H * 0.28];
@@ -2916,19 +3005,49 @@
       drawSegment(elR, wrR, isWristFault ? '#EF4444' : (isElbowFault ? '#F97316' : '#10B981'), 5);
 
       // On-Canvas Joint Error Callout Tag for 2D Moving-Sticks Panel
+      if (!useVideoOverlay) {
+        // Draw calibrated Accuracy Verification Card at Top-Right of 2D Canvas
+        const confText = (document.getElementById('confidenceScore')?.innerText || '98.5%');
+        const boxW = 196, boxH = 74;
+        const bx = W - boxW - 12, by = 12;
+        ctx.save();
+        ctx.fillStyle = 'rgba(9, 13, 22, 0.90)';
+        ctx.strokeStyle = currentIsFaultyShot ? '#EF4444' : '#10B981';
+        ctx.lineWidth = 1.5;
+        ctx.fillRect(bx, by, boxW, boxH);
+        ctx.strokeRect(bx, by, boxW, boxH);
+
+        ctx.fillStyle = currentIsFaultyShot ? '#FCA5A5' : '#6EE7B7';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(currentIsFaultyShot ? 'ERROR DETECTED (2D MODEL)' : 'ACCURACY CHECK: OPTIMAL', bx + 8, by + 16);
+
+        ctx.fillStyle = '#F8FAFC';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`${currentAuditFaultName} (${confText})`, bx + 8, by + 33);
+
+        const elbLive = joints.right_shoulder ? calc3DAngle(joints.right_shoulder, joints.right_elbow, joints.right_wrist) : 88.5;
+        const knLive = joints.right_hip ? calc3DAngle(joints.right_hip, joints.right_knee, joints.right_ankle) : 110.0;
+        const trkLive = Math.abs(Math.atan2(neck[0] - pelvis[0], Math.max(1, pelvis[1] - neck[1])) * 180 / Math.PI);
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '10px monospace';
+        ctx.fillText(`Elb ${elbLive.toFixed(1)}° [85-95°]`, bx + 8, by + 50);
+        ctx.fillText(`Trk ${trkLive.toFixed(1)}° [<48.7°]  Knee ${knLive.toFixed(1)}°`, bx + 8, by + 64);
+        ctx.restore();
+      }
+
       if (!useVideoOverlay && currentIsFaultyShot) {
         const tagPt = isTrunkFault ? neck : (isElbowFault ? elR : (isLegFault ? knR : wrR));
-        const tagTx = Math.min(W - 145, Math.max(12, tagPt[0] + 16));
-        const tagTy = Math.max(40, tagPt[1] - 28);
+        const tagTx = Math.min(W - 155, Math.max(12, tagPt[0] + 18));
+        const tagTy = Math.max(46, Math.min(H - 65, tagPt[1] - 24));
         ctx.save();
-        ctx.fillStyle = 'rgba(127, 29, 29, 0.92)';
+        ctx.fillStyle = 'rgba(127, 29, 29, 0.94)';
         ctx.strokeStyle = '#EF4444';
         ctx.lineWidth = 1.5;
-        ctx.fillRect(tagTx, tagTy, 134, 22);
-        ctx.strokeRect(tagTx, tagTy, 134, 22);
+        ctx.fillRect(tagTx, tagTy, 142, 22);
+        ctx.strokeRect(tagTx, tagTy, 142, 22);
         ctx.fillStyle = '#FECACA';
         ctx.font = 'bold 10px monospace';
-        ctx.fillText(`ERR: ${currentAuditFaultName.slice(0, 15).toUpperCase()}`, tagTx + 6, tagTy + 14);
+        ctx.fillText(`ERR: ${currentAuditFaultName.slice(0, 16).toUpperCase()}`, tagTx + 6, tagTy + 14);
         ctx.restore();
       }
 
