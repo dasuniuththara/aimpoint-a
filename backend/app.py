@@ -340,7 +340,14 @@ if os.path.exists(samples_dir):
 def serve_index():
     index_file = os.path.join(frontend_dir, "index.html")
     if os.path.exists(index_file):
-        return FileResponse(index_file)
+        return FileResponse(
+            index_file,
+            headers={
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
     return {"message": "AimPointAI API Running. Access /docs for swagger docs."}
 
 if __name__ == "__main__":

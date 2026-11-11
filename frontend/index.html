@@ -365,14 +365,17 @@
                 class="absolute inset-0 z-40 bg-[#0F1216]/92 flex flex-col items-center justify-center p-6 hidden">
                 <div class="w-full max-w-md bg-[#161B22] border border-[#2A313C] rounded-xl p-5 space-y-3">
                   <div class="flex items-center justify-between text-xs">
-                    <span class="font-semibold text-white" id="extractionStatusTitle">Image Processing &amp; 3D-to-2D Model Pipeline</span>
-                    <span class="font-mono text-sky-400" id="extractionProgressPct">0%</span>
+                    <span class="font-semibold text-white" id="extractionStatusTitle">Image Processing &amp; 3D-to-2D Pipeline</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-mono text-sky-400" id="extractionProgressPct">0%</span>
+                      <button onclick="cancelVideoExtraction()" class="px-2 py-0.5 rounded bg-[#212832] hover:bg-red-600/30 text-slate-300 hover:text-red-300 border border-[#303845] text-[10px] font-mono">Cancel</button>
+                    </div>
                   </div>
                   <div class="w-full h-2 bg-[#0F1216] rounded-full overflow-hidden border border-[#2A313C]">
                     <div id="extractionProgressBar" class="h-full bg-blue-600 transition-all duration-150" style="width: 0%"></div>
                   </div>
                   <p class="text-[11px] text-slate-400 font-mono" id="extractionDetailText">
-                    Initializing frame image processor &amp; MediaPipe 3D pose model...
+                    Decoding video frames...
                   </p>
                 </div>
               </div>
@@ -1958,7 +1961,16 @@
     let currentAuditFaultName = 'Ideal Form';
     let currentIsFaultyShot = false;
     let isExtractingVideo = false;
+    let activeExtractionId = 0;
+    let currentVideoObjectUrl = null;
     let mediaPipeReadyPromise = null;
+
+    function cancelVideoExtraction() {
+      activeExtractionId++;
+      isExtractingVideo = false;
+      const overlay = document.getElementById('videoExtractionOverlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
 
     function updateViewportLayout() {
       const primaryPane = document.getElementById('primaryVideoPane');
@@ -2178,12 +2190,19 @@
     }
 
     async function handleFileUpload(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file || isExtractingVideo) return;
+      const inputEl = event && event.target;
+      const file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      if (inputEl && 'value' in inputEl) {
+        try { inputEl.value = ''; } catch (e) {}
+      }
+
+      // Supersede any in-flight video scan immediately (no freeze on rapid clicks!)
+      const myJobId = ++activeExtractionId;
+      isExtractingVideo = true;
 
       if (isCameraOn) stopCamera();
       pausePlayback();
-      isExtractingVideo = true;
 
       const vid = document.getElementById('uploadedVideo');
       const overlay = document.getElementById('videoExtractionOverlay');
@@ -2192,196 +2211,207 @@
       const detailTxt = document.getElementById('extractionDetailText');
       const badge = document.getElementById('uploadedFileBadge');
 
+      if (progBar) progBar.style.width = '2%';
+      if (progPct) progPct.innerText = '2%';
+      if (detailTxt) detailTxt.innerText = `Step 1/3: Decoding "${file.name}"...`;
       if (overlay) overlay.classList.remove('hidden');
       if (badge) {
         badge.innerText = file.name;
         badge.classList.remove('hidden');
       }
 
-      const objectUrl = URL.createObjectURL(file);
-      vid.src = objectUrl;
-      vid.load();
-      isUploadedVideoMode = true;
-      videoDisplayMode = 'side-by-side';
-      updateViewportLayout();
-
-      // Wait until frame pixels are decoded (loadeddata, with safety fallback)
-      await new Promise((resolve) => {
-        if (vid.readyState >= 2) return resolve();
-        const done = () => {
-          vid.removeEventListener('loadeddata', done);
-          resolve();
-        };
-        vid.addEventListener('loadeddata', done);
-        setTimeout(done, 4000);
-      });
-
-      // Resolve Chrome MediaRecorder WebM Infinity duration reliably
-      if (!isFinite(vid.duration) || vid.duration <= 0) {
-        await new Promise((resolve) => {
-          const onTimeUpdate = () => {
-            if (isFinite(vid.duration) && vid.duration > 0) {
-              vid.removeEventListener('timeupdate', onTimeUpdate);
-              vid.currentTime = 0;
-              resolve();
-            }
-          };
-          vid.addEventListener('timeupdate', onTimeUpdate);
-          setTimeout(() => {
-            vid.removeEventListener('timeupdate', onTimeUpdate);
-            try { vid.currentTime = 0; } catch (e) {}
-            resolve();
-          }, 450);
-          try { vid.currentTime = 1e6; } catch (e) { resolve(); }
-        });
-      }
-
-      uploadedVideoDuration = vid.duration && isFinite(vid.duration) ? vid.duration : 2.0;
-      const vidW = vid.videoWidth || 640;
-      const vidH = vid.videoHeight || 480;
-
-      const procCanvas = document.createElement('canvas');
-      procCanvas.width = 640;
-      procCanvas.height = 480;
-      const procCtx = procCanvas.getContext('2d', { willReadFrequently: true });
-
-      if (detailTxt) detailTxt.innerText = 'Preparing Image Processor & Pose Detector...';
-      await ensureMediaPipeReady();
-
-      const sampleCount = 30;
-      const extractedWorld3D = [];
-      const extractedOverlay2D = [];
-      const motionCurve = [];
-      let prevGray = null;
-      let validCount = 0;
-      let contrastEnhancedCount = 0;
-      let consecutiveTimeouts = 0;
-      let skipMediaPipe = !mediaPipePose;
-
-      const vRatio = vidW / vidH;
-      const cRatio = 640 / 480;
-      let drawX = 0, drawY = 0, drawW = 640, drawH = 480;
-      if (vRatio > cRatio) {
-        drawH = 640 / vRatio;
-        drawY = (480 - drawH) / 2;
-      } else {
-        drawW = 480 * vRatio;
-        drawX = (640 - drawW) / 2;
-      }
-
-      for (let i = 0; i < sampleCount; i++) {
-        const tSec = (i / (sampleCount - 1)) * Math.max(0.05, uploadedVideoDuration - 0.04);
-        await seekVideoElement(vid, tSec, uploadedVideoDuration);
-
-        // Stage 1: Image Processing Pass on Offscreen Canvas
-        procCtx.fillStyle = '#000000';
-        procCtx.fillRect(0, 0, 640, 480);
-        procCtx.filter = 'none';
-        procCtx.drawImage(vid, drawX, drawY, drawW, drawH);
-
-        const pixStats = processFramePixels(procCtx, 640, 480, prevGray);
-        prevGray = pixStats.currGray;
-        motionCurve.push(pixStats);
-
-        if (pixStats.avgLuma < 85) {
-          contrastEnhancedCount++;
-          procCtx.filter = 'brightness(1.22) contrast(1.18)';
-          procCtx.drawImage(vid, drawX, drawY, drawW, drawH);
-          procCtx.filter = 'none';
-        }
-
-        const pct = Math.round(((i + 1) / sampleCount) * 100);
-        if (progBar) progBar.style.width = `${pct}%`;
-        if (progPct) progPct.innerText = `${pct}%`;
-        if (detailTxt) {
-          detailTxt.innerText = skipMediaPipe
-            ? `Image Processing Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Motion ROI & 3D→2D Projection...`
-            : `Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Extracting Pose & 2D Model...`;
-        }
-
-        // Yield once so progress bar paints smoothly at every frame
-        await new Promise(r => setTimeout(r, 8));
-
-        let mpRes = null;
-        if (!skipMediaPipe) {
-          const out = await extractPoseForCanvas(procCanvas, i === 0 ? 4500 : 1200);
-          if (out.status === 'timeout' || out.status === 'error' || out.status === 'unavailable') {
-            consecutiveTimeouts++;
-            if (consecutiveTimeouts >= 2) {
-              console.warn('MediaPipe unresponsive; switching to fast Image-Processing Optical Motion ROI mode.');
-              skipMediaPipe = true;
-            }
-          } else {
-            consecutiveTimeouts = 0;
-            mpRes = out.results;
-          }
-        }
-
-        if (mpRes && mpRes.poseLandmarks && mpRes.poseLandmarks.length === 33) {
-          validCount++;
-          extractedOverlay2D.push(mpRes.poseLandmarks.map(p => [
-            Math.max(0, Math.min(1, (p.x * 640 - drawX) / drawW)),
-            Math.max(0, Math.min(1, (p.y * 480 - drawY) / drawH)),
-            p.z || 0
-          ]));
-
-          if (mpRes.poseWorldLandmarks && mpRes.poseWorldLandmarks.length === 33) {
-            extractedWorld3D.push(mpRes.poseWorldLandmarks.map(p => [p.x, p.y, p.z]));
-          } else {
-            extractedWorld3D.push(mpRes.poseLandmarks.map(p => [(p.x - 0.5) * 2, (p.y - 0.5) * 2, p.z || 0]));
-          }
-        } else {
-          extractedOverlay2D.push(null);
-          extractedWorld3D.push(null);
-        }
-      }
-
-      if (mediaPipePose) {
-        mediaPipePose.onResults(onMediaPipeResults);
-      }
-
-      // Update Image Processing Summary Banner
-      const resEl = document.getElementById('imgProcRes');
-      const filterEl = document.getElementById('imgProcFilter');
-      const trackEl = document.getElementById('imgProcTrackCount');
-      if (resEl) resEl.innerText = `${vidW}x${vidH} → 640x480 Normalized`;
-      if (filterEl) filterEl.innerText = contrastEnhancedCount > 0 ? `Auto-Luminance (${contrastEnhancedCount}F) + SG Filter` : 'Contrast Normalized + SG Filter';
-
-      let finalWorld3D = [];
-      let lastValid2D = extractedOverlay2D.find(f => f !== null);
-      let lastValid3D = extractedWorld3D.find(f => f !== null);
-
-      if (validCount >= 3 && lastValid2D && lastValid3D) {
-        for (let i = 0; i < sampleCount; i++) {
-          if (extractedOverlay2D[i] === null) extractedOverlay2D[i] = lastValid2D;
-          else lastValid2D = extractedOverlay2D[i];
-          if (extractedWorld3D[i] === null) extractedWorld3D[i] = lastValid3D;
-          else lastValid3D = extractedWorld3D[i];
-        }
-        uploadedOverlayFrames = extractedOverlay2D;
-        finalWorld3D = extractedWorld3D;
-        if (trackEl) trackEl.innerText = `3D→2D Pose Tracked: ${validCount}/${sampleCount} frames`;
-      } else {
-        // Motion-ROI Image Processing Fallback when no human silhouette / offline WASM
-        uploadedOverlayFrames = [];
-        finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
-        if (trackEl) trackEl.innerText = `Optical Motion ROI: ${sampleCount}/${sampleCount} frames`;
-      }
-
-      const athleteSel = document.getElementById('athleteSelect');
-      const athleteId = athleteSel ? athleteSel.value : 'ATH-001';
-      const formData = new FormData();
-      formData.append('video', file);
-      formData.append('athlete_id', athleteId);
-      formData.append('landmarks_json', JSON.stringify(finalWorld3D));
-
-      if (detailTxt) detailTxt.innerText = 'Detecting shot errors & building 2D biomechanical coaching advice...';
-
       try {
+        if (currentVideoObjectUrl) {
+          try { URL.revokeObjectURL(currentVideoObjectUrl); } catch (e) {}
+        }
+        currentVideoObjectUrl = URL.createObjectURL(file);
+        vid.src = currentVideoObjectUrl;
+        vid.load();
+        isUploadedVideoMode = true;
+        videoDisplayMode = 'side-by-side';
+        updateViewportLayout();
+
+        // Wait until first frame is ready (1500ms cap)
+        await new Promise((resolve) => {
+          if (vid.readyState >= 2) return resolve();
+          const done = () => {
+            vid.removeEventListener('loadeddata', done);
+            resolve();
+          };
+          vid.addEventListener('loadeddata', done);
+          setTimeout(done, 1500);
+        });
+        if (myJobId !== activeExtractionId) return;
+
+        // Resolve WebM Infinity duration smoothly
+        if (!isFinite(vid.duration) || vid.duration <= 0) {
+          await new Promise((resolve) => {
+            const onTimeUpdate = () => {
+              if (isFinite(vid.duration) && vid.duration > 0) {
+                vid.removeEventListener('timeupdate', onTimeUpdate);
+                try { vid.currentTime = 0; } catch (e) {}
+                resolve();
+              }
+            };
+            vid.addEventListener('timeupdate', onTimeUpdate);
+            setTimeout(() => {
+              vid.removeEventListener('timeupdate', onTimeUpdate);
+              try { vid.currentTime = 0; } catch (e) {}
+              resolve();
+            }, 350);
+            try { vid.currentTime = 1e6; } catch (e) { resolve(); }
+          });
+        }
+        if (myJobId !== activeExtractionId) return;
+
+        uploadedVideoDuration = vid.duration && isFinite(vid.duration) ? vid.duration : 2.0;
+        const vidW = vid.videoWidth || 640;
+        const vidH = vid.videoHeight || 480;
+
+        const procCanvas = document.createElement('canvas');
+        procCanvas.width = 640;
+        procCanvas.height = 480;
+        const procCtx = procCanvas.getContext('2d', { willReadFrequently: true });
+
+        if (detailTxt) detailTxt.innerText = 'Step 2/3: Preparing MediaPipe 3D Pose Model & Image Processor...';
+        await ensureMediaPipeReady();
+        if (myJobId !== activeExtractionId) return;
+
+        const sampleCount = 30;
+        const extractedWorld3D = [];
+        const extractedOverlay2D = [];
+        const motionCurve = [];
+        let prevGray = null;
+        let validCount = 0;
+        let contrastEnhancedCount = 0;
+        let consecutiveTimeouts = 0;
+        let skipMediaPipe = !mediaPipePose;
+
+        const vRatio = vidW / vidH;
+        const cRatio = 640 / 480;
+        let drawX = 0, drawY = 0, drawW = 640, drawH = 480;
+        if (vRatio > cRatio) {
+          drawH = 640 / vRatio;
+          drawY = (480 - drawH) / 2;
+        } else {
+          drawW = 480 * vRatio;
+          drawX = (640 - drawW) / 2;
+        }
+
+        for (let i = 0; i < sampleCount; i++) {
+          if (myJobId !== activeExtractionId) return;
+          const tSec = (i / (sampleCount - 1)) * Math.max(0.05, uploadedVideoDuration - 0.04);
+          await seekVideoElement(vid, tSec, uploadedVideoDuration);
+          if (myJobId !== activeExtractionId) return;
+
+          procCtx.fillStyle = '#000000';
+          procCtx.fillRect(0, 0, 640, 480);
+          procCtx.filter = 'none';
+          procCtx.drawImage(vid, drawX, drawY, drawW, drawH);
+
+          const pixStats = processFramePixels(procCtx, 640, 480, prevGray);
+          prevGray = pixStats.currGray;
+          motionCurve.push(pixStats);
+
+          if (pixStats.avgLuma < 85) {
+            contrastEnhancedCount++;
+            procCtx.filter = 'brightness(1.22) contrast(1.18)';
+            procCtx.drawImage(vid, drawX, drawY, drawW, drawH);
+            procCtx.filter = 'none';
+          }
+
+          const pct = Math.round(((i + 1) / sampleCount) * 100);
+          if (progBar) progBar.style.width = `${pct}%`;
+          if (progPct) progPct.innerText = `${pct}%`;
+          if (detailTxt) {
+            detailTxt.innerText = skipMediaPipe
+              ? `Image Processing Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Motion ROI 3D→2D...`
+              : `Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Extracting 3D Pose & 2D Model...`;
+          }
+
+          await new Promise(r => setTimeout(r, 8));
+          if (myJobId !== activeExtractionId) return;
+
+          let mpRes = null;
+          if (!skipMediaPipe) {
+            const out = await extractPoseForCanvas(procCanvas, i === 0 ? 4500 : 1200);
+            if (myJobId !== activeExtractionId) return;
+            if (out.status === 'timeout' || out.status === 'error' || out.status === 'unavailable') {
+              consecutiveTimeouts++;
+              if (consecutiveTimeouts >= 2) {
+                console.warn('MediaPipe unresponsive; using Image-Processing Optical Motion ROI.');
+                skipMediaPipe = true;
+              }
+            } else {
+              consecutiveTimeouts = 0;
+              mpRes = out.results;
+            }
+          }
+
+          if (mpRes && mpRes.poseLandmarks && mpRes.poseLandmarks.length === 33) {
+            validCount++;
+            extractedOverlay2D.push(mpRes.poseLandmarks.map(p => [
+              Math.max(0, Math.min(1, (p.x * 640 - drawX) / drawW)),
+              Math.max(0, Math.min(1, (p.y * 480 - drawY) / drawH)),
+              p.z || 0
+            ]));
+
+            if (mpRes.poseWorldLandmarks && mpRes.poseWorldLandmarks.length === 33) {
+              extractedWorld3D.push(mpRes.poseWorldLandmarks.map(p => [p.x, p.y, p.z]));
+            } else {
+              extractedWorld3D.push(mpRes.poseLandmarks.map(p => [(p.x - 0.5) * 2, (p.y - 0.5) * 2, p.z || 0]));
+            }
+          } else {
+            extractedOverlay2D.push(null);
+            extractedWorld3D.push(null);
+          }
+        }
+
+        if (myJobId !== activeExtractionId) return;
+        if (mediaPipePose) {
+          mediaPipePose.onResults(onMediaPipeResults);
+        }
+
+        const resEl = document.getElementById('imgProcRes');
+        const filterEl = document.getElementById('imgProcFilter');
+        const trackEl = document.getElementById('imgProcTrackCount');
+        if (resEl) resEl.innerText = `${vidW}x${vidH} → 640x480 Normalized`;
+        if (filterEl) filterEl.innerText = contrastEnhancedCount > 0 ? `Auto-Luminance (${contrastEnhancedCount}F) + SG Filter` : 'Contrast Normalized + SG Filter';
+
+        let finalWorld3D = [];
+        let lastValid2D = extractedOverlay2D.find(f => f !== null);
+        let lastValid3D = extractedWorld3D.find(f => f !== null);
+
+        if (validCount >= 3 && lastValid2D && lastValid3D) {
+          for (let i = 0; i < sampleCount; i++) {
+            if (extractedOverlay2D[i] === null) extractedOverlay2D[i] = lastValid2D;
+            else lastValid2D = extractedOverlay2D[i];
+            if (extractedWorld3D[i] === null) extractedWorld3D[i] = lastValid3D;
+            else lastValid3D = extractedWorld3D[i];
+          }
+          uploadedOverlayFrames = extractedOverlay2D;
+          finalWorld3D = extractedWorld3D;
+          if (trackEl) trackEl.innerText = `3D→2D Pose Tracked: ${validCount}/${sampleCount} frames`;
+        } else {
+          uploadedOverlayFrames = [];
+          finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
+          if (trackEl) trackEl.innerText = `Optical Motion ROI: ${sampleCount}/${sampleCount} frames`;
+        }
+
+        const athleteSel = document.getElementById('athleteSelect');
+        const athleteId = athleteSel ? athleteSel.value : 'ATH-001';
+        const formData = new FormData();
+        formData.append('video', file);
+        formData.append('athlete_id', athleteId);
+        formData.append('landmarks_json', JSON.stringify(finalWorld3D));
+
+        if (detailTxt) detailTxt.innerText = 'Step 3/3: Detecting shot errors & generating coaching advice...';
+
         const res = await fetch('/api/analyze-shot', {
           method: 'POST',
           body: formData
         });
+        if (myJobId !== activeExtractionId) return;
         const data = await res.json();
         if (data.status === 'success') {
           updateUIWithResults(data);
@@ -2390,9 +2420,11 @@
       } catch (err) {
         console.error('File upload analysis error:', err);
       } finally {
-        if (overlay) overlay.classList.add('hidden');
-        if (progBar) progBar.style.width = '0%';
-        isExtractingVideo = false;
+        if (myJobId === activeExtractionId) {
+          if (overlay) overlay.classList.add('hidden');
+          if (progBar) progBar.style.width = '0%';
+          isExtractingVideo = false;
+        }
       }
     }
 
