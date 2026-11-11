@@ -126,9 +126,9 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
   return (
     <View style={styles.container}>
       <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x="0" y="0" width={W} height={H} fill="#070A10" rx="12" />
+        <Rect x="0" y="0" width={W} height={H} fill="#0C0A09" rx="12" />
         {/* Floor line & vertical plumb guide */}
-        <Line x1="0" y1={H * 0.87} x2={W} y2={H * 0.87} stroke="#3B82F6" strokeWidth="1.5" />
+        <Line x1="0" y1={H * 0.87} x2={W} y2={H * 0.87} stroke="#D97706" strokeWidth="1.5" />
         <Line x1={pelvis[0]} y1="24" x2={pelvis[0]} y2={H * 0.87} stroke="rgba(148,163,184,0.3)" strokeDasharray="4 4" strokeWidth="1.2" />
 
         {/* Hoop Schematic */}
@@ -136,7 +136,7 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
         <Ellipse cx="284" cy="80" rx="16" ry="3.5" fill="none" stroke="#F97316" strokeWidth="3" />
 
         {/* Guide Arm & Far Leg (Moving Sticks) */}
-        <Line x1={shL[0]} y1={shL[1]} x2={elL[0]} y2={elL[1]} stroke="#38BDF8" strokeWidth="3.5" strokeLinecap="round" />
+        <Line x1={shL[0]} y1={shL[1]} x2={elL[0]} y2={elL[1]} stroke="#FB923C" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={elL[0]} y1={elL[1]} x2={wrL[0]} y2={wrL[1]} stroke="#0EA5E9" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={hipL[0]} y1={hipL[1]} x2={knL[0]} y2={knL[1]} stroke="#A78BFA" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={knL[0]} y1={knL[1]} x2={akL[0]} y2={akL[1]} stroke="#8B5CF6" strokeWidth="3.5" strokeLinecap="round" />
@@ -157,7 +157,7 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
 
         {/* Key Joint Pins */}
         <Circle cx={shR[0]} cy={shR[1]} r="4" fill={trunkFault ? '#EF4444' : '#FFFFFF'} />
-        <Circle cx={elR[0]} cy={elR[1]} r="5.5" fill={elbowFault ? '#EF4444' : '#10B981'} stroke="#070A10" strokeWidth="1.5" />
+        <Circle cx={elR[0]} cy={elR[1]} r="5.5" fill={elbowFault ? '#EF4444' : '#10B981'} stroke="#0C0A09" strokeWidth="1.5" />
         <Circle cx={wrR[0]} cy={wrR[1]} r="4.5" fill={wristFault ? '#EF4444' : '#FFFFFF'} />
         <Circle cx={knR[0]} cy={knR[1]} r="4.5" fill={legFault ? '#EF4444' : '#FFFFFF'} />
 

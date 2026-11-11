@@ -64,15 +64,15 @@ export default function HistoryScreen({ onSelectSession }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F4F6F9' },
-  header: { padding: 14, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  screen: { flex: 1, backgroundColor: '#F7F4EF' },
+  header: { padding: 14, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E7E2D8' },
   title: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
   sub: { fontSize: 12, color: '#64748B', marginTop: 2 },
   errCard: { margin: 14, padding: 12, backgroundColor: '#FEF2F2', borderColor: '#FECACA', borderWidth: 1, borderRadius: 10 },
   errText: { color: '#B91C1C', fontSize: 12, fontWeight: '600' },
   list: { padding: 14, gap: 10 },
   empty: { textAlign: 'center', color: '#64748B', marginTop: 32, fontSize: 13 },
-  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 13, borderWidth: 1, borderColor: '#E2E8F0', gap: 5 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 13, borderWidth: 1, borderColor: '#E7E2D8', gap: 5 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   athlete: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1 },

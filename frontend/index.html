@@ -59,28 +59,28 @@
 
   <style>
     body {
-      background-color: #F4F6F9;
+      background-color: #F7F4EF;
       color: #0F172A;
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
     .glass-panel {
       background: #FFFFFF;
-      border: 1px solid #E2E8F0;
+      border: 1px solid #E7E2D8;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
     }
 
     .glass-card {
       background: #F8FAFC;
-      border: 1px solid #E2E8F0;
+      border: 1px solid #E7E2D8;
     }
 
     .court-grid {
-      background-color: #070A10;
+      background-color: #0C0A09;
       background-size: 28px 28px;
       background-image:
-        linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+        linear-gradient(to right, rgba(234, 88, 12, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(234, 88, 12, 0.08) 1px, transparent 1px);
     }
 
     /* Clean Light Studio Overrides for Secondary Views & Legacy Panels */
@@ -115,14 +115,14 @@
     #view-drills .bg-navy-950\/80,
     #cameraHelpModal .bg-navy-900\/90 {
       background-color: #F8FAFC !important;
-      border-color: #E2E8F0 !important;
+      border-color: #E7E2D8 !important;
     }
     #view-dashboard .border-white\/10,
     #view-drills .border-white\/10,
     #view-report .border-white\/10,
     #view-report .border-white\/5,
     #view-dashboard .border-white\/5 {
-      border-color: #E2E8F0 !important;
+      border-color: #E7E2D8 !important;
     }
     #view-report select,
     #view-dashboard table {
@@ -154,17 +154,17 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white bg-[#F4F6F9] text-slate-900">
+<body class="min-h-screen flex flex-col antialiased selection:bg-orange-600 selection:text-white bg-[#F7F4EF] text-slate-900">
 
   <!-- Moving-Sticks Sports Analytics Studio Header -->
   <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 px-5 py-3 flex items-center justify-between shadow-sm">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-sm">
-        <i data-lucide="activity" class="w-5 h-5 text-emerald-400"></i>
+      <div class="w-9 h-9 rounded-lg bg-orange-600 text-white flex items-center justify-center shadow-sm">
+        <i data-lucide="dribbble" class="w-5 h-5 text-white"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="font-bold text-lg tracking-tight text-slate-900">AimPoint <span class="text-blue-600">Motion</span></span>
+          <span class="font-bold text-lg tracking-tight text-slate-900">AimPoint <span class="text-orange-600">Motion</span></span>
           <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 uppercase">Moving Sticks Studio</span>
         </div>
         <p class="text-[11px] text-slate-500">Pose-to-2D Stick Conversion &amp; Automated Throwing Fault Detection</p>
@@ -175,7 +175,7 @@
     <nav class="hidden md:flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
       <button onclick="switchTab('analyzer')" id="tab-analyzer"
         class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-white text-slate-900 shadow-sm border border-slate-200 flex items-center space-x-1.5">
-        <i data-lucide="video" class="w-3.5 h-3.5 text-blue-600"></i>
+        <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i>
         <span>Pose &amp; Error Studio</span>
       </button>
       <button onclick="switchTab('dashboard')" id="tab-dashboard"
@@ -218,7 +218,7 @@
       <!-- Friendly Thesis 3-Step Workflow Guide -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
         <div class="bg-white border border-slate-200 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
-          <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+          <span class="w-6 h-6 rounded-full bg-orange-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-slate-900">Upload or Frame Shot (2.5–3.0m)</div>
             <div class="text-[11px] text-slate-500 truncate">Side-view phone clip or sample clip</div>
@@ -257,7 +257,7 @@
 
           <!-- Primary Video Upload -->
           <label for="videoUploadInputHero"
-            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer flex items-center space-x-2 shadow-sm transition-colors">
+            class="px-4 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold cursor-pointer flex items-center space-x-2 shadow-sm transition-colors">
             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
             <span>Upload Throwing / Shooting Video</span>
           </label>
@@ -267,7 +267,7 @@
           <div class="flex items-center">
             <button onclick="toggleCamera()" id="btn-camera"
               class="px-3 py-1.5 rounded-l-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition-colors">
-              <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-blue-600"></i>
+              <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-orange-600"></i>
               <span id="text-camera">Live Camera</span>
             </button>
             <div class="relative inline-block">
@@ -278,7 +278,7 @@
               <div id="camOptionsMenu" class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-white border border-slate-200 shadow-xl z-50 p-3 space-y-2.5">
                 <div class="border-b border-slate-200 pb-2 flex items-center justify-between">
                   <span class="text-xs font-semibold text-slate-900">Camera Source</span>
-                  <button onclick="openCameraHelpModal()" class="text-[11px] text-blue-600 hover:underline font-mono">Help</button>
+                  <button onclick="openCameraHelpModal()" class="text-[11px] text-orange-600 hover:underline font-mono">Help</button>
                 </div>
                 <div class="space-y-1">
                   <label class="text-[10px] font-mono text-slate-500 uppercase">Input Device</label>
@@ -288,11 +288,11 @@
                 </div>
                 <div class="flex items-center justify-between pt-1">
                   <span class="text-xs text-slate-700">Mirror Video</span>
-                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-mono text-blue-600 border border-slate-200">ON</button>
+                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-mono text-orange-600 border border-slate-200">ON</button>
                 </div>
                 <div class="pt-2 border-t border-slate-200">
                   <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-medium rounded bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center justify-center space-x-1.5">
-                    <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-orange-600"></i>
                     <span>Test Virtual Camera</span>
                   </button>
                 </div>
@@ -306,7 +306,7 @@
         <div class="flex flex-wrap items-center gap-1.5">
           <span class="text-[10px] font-mono font-semibold text-slate-500 uppercase mr-1">Fault Samples:</span>
           <button onclick="loadSampleVideo(0)" id="btn-bm-0"
-            class="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-blue-600 text-white border border-blue-600 transition-colors">
+            class="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-orange-600 text-white border border-orange-600 transition-colors">
             Ideal
           </button>
           <button onclick="loadSampleVideo(1)" id="btn-bm-1"
@@ -326,7 +326,7 @@
             Early Release
           </button>
           <select id="sampleLibrarySelect" onchange="loadNamedSampleVideo(this.value)"
-            class="bg-slate-50 text-[11px] font-mono text-slate-800 border border-slate-300 rounded-md px-2.5 py-1 ml-1 focus:outline-none focus:border-blue-500 max-w-[260px]">
+            class="bg-slate-50 text-[11px] font-mono text-slate-800 border border-slate-300 rounded-md px-2.5 py-1 ml-1 focus:outline-none focus:border-orange-500 max-w-[260px]">
             <option value="">Clip Library (Loading...)</option>
           </select>
         </div>
@@ -342,14 +342,14 @@
             <!-- Stage Header -->
             <div class="px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-slate-50">
               <div class="flex items-center space-x-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-600" id="hud-pulse-dot"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-600" id="hud-pulse-dot"></span>
                 <span class="text-xs font-bold text-slate-900" id="viewportModeLabel">Moving Sticks Pose Conversion (Source Video → 2D Skeleton)</span>
-                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 truncate max-w-[170px]"></span>
+                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 truncate max-w-[170px]"></span>
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="cycleVideoDisplayMode()" id="btn-video-overlay-toggle"
-                  class="hidden px-2.5 py-1 rounded-md bg-white text-blue-700 border border-blue-200 text-[11px] font-semibold hover:bg-blue-50 transition-colors">
+                  class="hidden px-2.5 py-1 rounded-md bg-white text-orange-700 border border-orange-200 text-[11px] font-semibold hover:bg-orange-50 transition-colors">
                   View: Side-by-Side (Video | 2D Sticks)
                 </button>
                 <button onclick="export2DModelVideo()" id="btn-export-2d"
@@ -426,7 +426,7 @@
               </div>
 
               <!-- Secondary Right Panel: Isolated 2D Moving-Sticks Model Canvas -->
-              <div id="model2DPane" class="hidden relative flex-1 min-w-0 aspect-[4/3] bg-[#070A10] flex items-center justify-center overflow-hidden">
+              <div id="model2DPane" class="hidden relative flex-1 min-w-0 aspect-[4/3] bg-[#0C0A09] flex items-center justify-center overflow-hidden">
                 <canvas id="model2DCanvas" width="640" height="480" class="w-full h-full object-contain"></canvas>
                 <span class="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-700 text-[10px] font-mono text-emerald-300">
                   CONVERTED 2D MOVING-STICKS MODEL
@@ -443,12 +443,12 @@
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-slate-900" id="extractionStatusTitle">Moving-Sticks Pose Extraction Pipeline</span>
                     <div class="flex items-center space-x-2">
-                      <span class="font-mono font-bold text-blue-600" id="extractionProgressPct">0%</span>
+                      <span class="font-mono font-bold text-orange-600" id="extractionProgressPct">0%</span>
                       <button onclick="cancelVideoExtraction()" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 text-[10px] font-mono">Cancel</button>
                     </div>
                   </div>
                   <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                    <div id="extractionProgressBar" class="h-full bg-blue-600 transition-all duration-150" style="width: 0%"></div>
+                    <div id="extractionProgressBar" class="h-full bg-orange-600 transition-all duration-150" style="width: 0%"></div>
                   </div>
                   <p class="text-[11px] text-slate-600 font-mono" id="extractionDetailText">
                     Decoding video frames...
@@ -475,7 +475,7 @@
             <!-- Pipeline Telemetry Summary Strip -->
             <div id="imageProcSummary" class="px-4 py-2 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-600">
               <div class="flex items-center space-x-2">
-                <span class="text-blue-600 font-bold">PIPELINE:</span>
+                <span class="text-orange-600 font-bold">PIPELINE:</span>
                 <span id="imgProcRes">Ready for Real / 3D Video Upload</span>
               </div>
               <div class="flex items-center space-x-3">
@@ -489,7 +489,7 @@
             <div class="p-3 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="togglePlayback()" id="btn-play" title="Play / Pause"
-                  class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors shadow-sm">
+                  class="w-9 h-9 rounded-lg bg-orange-600 hover:bg-orange-700 text-white flex items-center justify-center transition-colors shadow-sm">
                   <i data-lucide="pause" class="w-4 h-4" id="icon-play"></i>
                 </button>
                 <button onclick="resetPlayback()" title="Reset to Frame 0"
@@ -513,7 +513,7 @@
                 <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
                   <button onclick="setSpeed(0.25)" id="btn-spd-025" class="px-2 py-1 rounded bg-white text-slate-700 hover:text-slate-900 font-mono text-[11px]">0.25x</button>
                   <button onclick="setSpeed(0.5)" id="btn-spd-05" class="px-2 py-1 rounded bg-white text-slate-700 hover:text-slate-900 font-mono text-[11px]">0.5x</button>
-                  <button onclick="setSpeed(1.0)" id="btn-spd-10" class="px-2 py-1 rounded bg-blue-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
+                  <button onclick="setSpeed(1.0)" id="btn-spd-10" class="px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
                   <button onclick="setSpeed(1.5)" id="btn-spd-15" class="px-2 py-1 rounded bg-white text-slate-700 hover:text-slate-900 font-mono text-[11px]">1.5x</button>
                 </div>
 
@@ -526,14 +526,14 @@
 
               <div class="flex-1 min-w-[140px] flex items-center">
                 <input type="range" id="timelineSlider" min="0" max="29" value="0"
-                  class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
                   oninput="seekFrame(this.value)">
               </div>
 
               <div>
                 <label for="videoUploadInput"
                   class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 cursor-pointer flex items-center space-x-1.5">
-                  <i data-lucide="folder-open" class="w-3.5 h-3.5 text-blue-600"></i>
+                  <i data-lucide="folder-open" class="w-3.5 h-3.5 text-orange-600"></i>
                   <span>Open Video</span>
                 </label>
                 <input type="file" id="videoUploadInput" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
@@ -545,7 +545,7 @@
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
               <div class="flex items-center space-x-2">
-                <i data-lucide="film" class="w-4 h-4 text-blue-600"></i>
+                <i data-lucide="film" class="w-4 h-4 text-orange-600"></i>
                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">Identified Biomechanical Key Frames</h3>
               </div>
               <span class="text-[11px] font-mono text-slate-500">Click any phase to inspect joint sticks</span>
@@ -576,7 +576,7 @@
                 <div class="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
                   <div class="px-2.5 py-1 rounded bg-slate-50 border border-slate-200">
                     <span class="text-slate-500">Confidence:</span>
-                    <span id="confidenceScore" class="font-bold text-blue-600 ml-1">98.5%</span>
+                    <span id="confidenceScore" class="font-bold text-orange-600 ml-1">98.5%</span>
                   </div>
                   <div class="px-2.5 py-1 rounded bg-slate-50 border border-slate-200">
                     <span class="text-slate-500">Angle Delta:</span>
@@ -624,7 +624,7 @@
               <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                 <span class="text-[10px] font-mono uppercase text-slate-500 block">Processing Time</span>
                 <div class="flex items-baseline space-x-1.5 mt-0.5">
-                  <span id="metricLatency" class="text-lg font-bold font-mono text-blue-600">14 ms</span>
+                  <span id="metricLatency" class="text-lg font-bold font-mono text-orange-600">14 ms</span>
                   <span class="text-[10px] font-mono text-slate-400">30 FPS</span>
                 </div>
               </div>
@@ -642,23 +642,23 @@
             </div>
 
             <!-- Targeted Drill Prescription (Thesis Section 4.6.6) -->
-            <div class="rounded-lg p-3.5 bg-blue-50/60 border border-blue-200 space-y-2">
+            <div class="rounded-lg p-3.5 bg-orange-50/70 border border-orange-200 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-mono font-bold text-blue-700 uppercase flex items-center space-x-1.5">
+                <span class="text-[11px] font-mono font-bold text-orange-700 uppercase flex items-center space-x-1.5">
                   <i data-lucide="target" class="w-3.5 h-3.5"></i>
                   <span>Targeted Drill Prescription</span>
                 </span>
-                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-slate-700 border border-blue-200">
+                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-slate-700 border border-orange-200">
                   3 sets of 15 makes
                 </span>
               </div>
               <h4 id="drillTitle" class="text-base font-bold text-slate-900">Form Shooting Progression</h4>
-              <div class="bg-white rounded p-2.5 border border-blue-100 text-xs text-slate-700 italic" id="actionCue">
+              <div class="bg-white rounded p-2.5 border border-orange-100 text-xs text-slate-700 italic" id="actionCue">
                 "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
               </div>
               <div class="flex items-center justify-between gap-2 pt-1">
                 <button onclick="speakCoachingCue()" type="button"
-                  class="flex-1 px-3 py-1.5 rounded-lg bg-white hover:bg-blue-100/70 text-blue-700 border border-blue-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
+                  class="flex-1 px-3 py-1.5 rounded-lg bg-white hover:bg-orange-100/70 text-orange-700 border border-orange-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
                   <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
                   <span>Read Advice Aloud</span>
                 </button>
@@ -1031,10 +1031,10 @@
         <div id="llmDatasetCard" class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono font-bold text-slate-800 uppercase flex items-center space-x-1.5">
-              <i data-lucide="database" class="w-4 h-4 text-blue-600"></i>
+              <i data-lucide="database" class="w-4 h-4 text-orange-600"></i>
               <span>AimPoint Full LLM &amp; RAG Coaching Dataset</span>
             </span>
-            <span id="llmDatasetTotalBadge" class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200">Loading...</span>
+            <span id="llmDatasetTotalBadge" class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-orange-100 text-orange-700 border border-orange-200">Loading...</span>
           </div>
           <p class="text-xs text-slate-600" id="llmDatasetDesc">
             Multi-turn ChatML (JSONL), Alpaca tuning export, 15-column kinematic telemetry CSV, and RAG clinical threshold rules.
@@ -1102,7 +1102,7 @@
         const btn = document.getElementById(`btn-bm-${i}`);
         if (btn) {
           btn.className = i === activeIdx
-            ? "px-2.5 py-1 text-[11px] font-semibold rounded-md bg-blue-600 text-white border border-blue-600 transition-colors"
+            ? "px-2.5 py-1 text-[11px] font-semibold rounded-md bg-orange-600 text-white border border-orange-600 transition-colors"
             : "px-2.5 py-1 text-[11px] font-medium rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors";
         }
       }
@@ -2689,7 +2689,7 @@
               <span class="text-xs font-bold text-slate-900">${item.checkpoint}</span>
             </div>
             <div class="text-[11px] font-mono">
-              <strong class="${isFault ? 'text-red-700' : 'text-blue-700'}">${item.measured}</strong>
+              <strong class="${isFault ? 'text-red-700' : 'text-orange-700'}">${item.measured}</strong>
               <span class="text-slate-500 ml-1">(${item.target})</span>
             </div>
           </div>
@@ -2714,7 +2714,7 @@
         const card = document.createElement('button');
         card.id = `bio-frame-card-${f.id}`;
         card.onclick = () => jumpToBiomechanicalFrame(f);
-        card.className = "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 transition-colors space-y-1";
+        card.className = "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-slate-200 hover:border-orange-300 transition-colors space-y-1";
 
         let primaryMetric = `Elbow: ${f.elbow_deg}°`;
         if (f.id === 'dip') primaryMetric = `Knee: ${f.knee_deg}°`;
@@ -2723,7 +2723,7 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono font-bold text-blue-600">${f.phase}</span>
+            <span class="text-[10px] font-mono font-bold text-orange-600">${f.phase}</span>
             <span class="text-[10px] font-mono text-slate-500">F${f.frame_idx + 1} (${f.time_sec}s)</span>
           </div>
           <div class="text-xs font-bold text-slate-900 truncate">${f.title}</div>
@@ -2739,8 +2739,8 @@
         const el = document.getElementById(`bio-frame-card-${f.id}`);
         if (el) {
           el.className = f.id === frameObj.id
-            ? "text-left p-2.5 rounded-lg bg-blue-50 border-2 border-blue-500 transition-colors space-y-1"
-            : "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 transition-colors space-y-1";
+            ? "text-left p-2.5 rounded-lg bg-orange-50 border-2 border-orange-500 transition-colors space-y-1"
+            : "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-slate-200 hover:border-orange-300 transition-colors space-y-1";
         }
       });
 
@@ -2792,10 +2792,10 @@
         1: { score: 64, label: "LOW ELBOW", color: "text-red-600" },
         2: { score: 72, label: "SHORT SNAP", color: "text-amber-600" },
         3: { score: 58, label: "OFF BALANCE", color: "text-amber-600" },
-        4: { score: 69, label: "EARLY RELEASE", color: "text-blue-600" }
+        4: { score: 69, label: "EARLY RELEASE", color: "text-orange-600" }
       };
       const fId = card.fault_id !== undefined ? card.fault_id : 0;
-      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-blue-600" };
+      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-orange-600" };
       const scoreNumEl = document.getElementById('formScoreNum');
       const scoreLabelEl = document.getElementById('formScoreLabel');
       if (scoreNumEl) {
@@ -3037,8 +3037,8 @@
       drawSegment(knR, akR, isLegFault ? '#EF4444' : '#14B8A6', 4.5);
       drawSegment(neck, nose, '#FACC15', 3);     // Neck Stick (Gold)
       drawSegment(neck, pelvis, isTrunkFault ? '#EF4444' : '#F8FAFC', 4.5); // Torso Spine Axis
-      drawSegment(shL, shR, '#E2E8F0', 3.5);
-      drawSegment(hipL, hipR, '#E2E8F0', 3.5);
+      drawSegment(shL, shR, '#E7E2D8', 3.5);
+      drawSegment(hipL, hipR, '#E7E2D8', 3.5);
 
       // Head node
       ctx.save();
@@ -3453,7 +3453,7 @@
         if (btn) {
           const match = (s === '025' && speedVal === 0.25) || (s === '05' && speedVal === 0.5) || (s === '10' && speedVal === 1.0) || (s === '15' && speedVal === 1.5);
           if (match) {
-            btn.className = "px-2 py-1 rounded bg-blue-600 text-white font-mono font-semibold text-[11px]";
+            btn.className = "px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]";
           } else {
             btn.className = "px-2 py-1 rounded bg-white text-slate-700 hover:text-slate-900 font-mono text-[11px]";
           }
@@ -3490,8 +3490,8 @@
           datasets: [
             {
               label: 'Elbow Extension Velocity (deg/s)',
-              borderColor: '#00F5D4',
-              backgroundColor: 'rgba(0, 245, 212, 0.08)',
+              borderColor: '#EA580C',
+              backgroundColor: 'rgba(234, 88, 12, 0.10)',
               borderWidth: 2.5,
               tension: 0.35,
               fill: true,
@@ -3499,7 +3499,7 @@
             },
             {
               label: 'Knee Triple-Drive Velocity (deg/s)',
-              borderColor: '#00BBF9',
+              borderColor: '#1E293B',
               backgroundColor: 'transparent',
               borderWidth: 2,
               borderDash: [5, 5],
@@ -3508,7 +3508,7 @@
             },
             {
               label: 'Wrist Release Terminal Snap (scaled)',
-              borderColor: '#F72585',
+              borderColor: '#16A34A',
               backgroundColor: 'transparent',
               borderWidth: 2,
               tension: 0.35,

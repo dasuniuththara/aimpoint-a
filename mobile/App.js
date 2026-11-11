@@ -45,9 +45,9 @@ export default function App() {
         screenOptions={({ route }) => ({
           headerStyle: { backgroundColor: '#FFFFFF' },
           headerTitleStyle: { fontWeight: '700', color: '#0F172A', fontSize: 16 },
-          tabBarActiveTintColor: '#2563EB',
+          tabBarActiveTintColor: '#EA580C',
           tabBarInactiveTintColor: '#64748B',
-          tabBarStyle: { backgroundColor: '#FFFFFF', borderTopColor: '#E2E8F0', height: 60, paddingBottom: 6 },
+          tabBarStyle: { backgroundColor: '#FFFFFF', borderTopColor: '#E7E2D8', height: 60, paddingBottom: 6 },
           tabBarIcon: ({ color, size }) => {
             let icon = 'videocam-outline';
             if (route.name === 'CoachingCard') icon = 'analytics-outline';
