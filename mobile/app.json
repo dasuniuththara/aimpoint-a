@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "AimPoint Motion",
+    "slug": "aimpoint-motion",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kdu.aimpointai",
+      "infoPlist": {
+        "NSCameraUsageDescription": "AimPoint Motion needs camera access to record sagittal basketball shooting videos for 2D pose & form analysis.",
+        "NSMicrophoneUsageDescription": "Microphone access is used during camera video recording.",
+        "NSPhotoLibraryUsageDescription": "Access your photo library to analyze saved basketball shooting videos."
+      }
+    },
+    "android": {
+      "package": "com.kdu.aimpointai",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow AimPoint Motion to record your shooting form in 2.5m-3.0m sagittal view."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow AimPoint Motion to pick basketball shooting videos for biomechanical analysis."
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ]
+  }
+}

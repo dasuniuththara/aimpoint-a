@@ -215,6 +215,31 @@
     <!-- ============================================================== -->
     <div id="view-analyzer" class="space-y-4">
 
+      <!-- Friendly Thesis 3-Step Workflow Guide -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+        <div class="bg-white border border-slate-200 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-slate-900">Upload or Frame Shot (2.5–3.0m)</div>
+            <div class="text-[11px] text-slate-500 truncate">Side-view phone clip or sample clip</div>
+          </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-slate-900">3D→2D Pose Extraction</div>
+            <div class="text-[11px] text-slate-500 truncate">Red joints = fault • Green joints = optimal</div>
+          </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span class="w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-slate-900">Actionable Coaching Card</div>
+            <div class="text-[11px] text-slate-500 truncate">1 primary fault + why it matters + 1 drill</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Clean Pipeline Action Bar + Categorized Clip Library -->
       <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2.5">
@@ -535,7 +560,7 @@
 
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-              <span class="text-xs font-mono font-bold tracking-wider text-slate-500 uppercase">Throwing Error Diagnosis</span>
+              <span class="text-xs font-mono font-bold tracking-wider text-slate-500 uppercase">The Coaching Card (Actionable Minimalism)</span>
               <span id="severityBadge"
                 class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Optimal Execution
@@ -605,23 +630,23 @@
               </div>
             </div>
 
-            <!-- Biomechanical Finding -->
+            <!-- Why It Matters (Thesis Section 4.6.6) -->
             <div class="bg-amber-50/70 rounded-lg p-3.5 border border-amber-200 space-y-1">
               <div class="flex items-center space-x-1.5 text-amber-800 font-bold text-[11px] uppercase font-mono">
                 <i data-lucide="info" class="w-3.5 h-3.5"></i>
-                <span>Biomechanical Finding</span>
+                <span>Why It Matters</span>
               </div>
               <p id="whyItMatters" class="text-xs leading-relaxed text-slate-700">
                 Your kinetic chain demonstrates sequential power transfer and balanced release trajectory.
               </p>
             </div>
 
-            <!-- Corrective Drill Prescription -->
+            <!-- Targeted Drill Prescription (Thesis Section 4.6.6) -->
             <div class="rounded-lg p-3.5 bg-blue-50/60 border border-blue-200 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-mono font-bold text-blue-700 uppercase flex items-center space-x-1.5">
                   <i data-lucide="target" class="w-3.5 h-3.5"></i>
-                  <span>Recommended Corrective Drill</span>
+                  <span>Targeted Drill Prescription</span>
                 </span>
                 <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-slate-700 border border-blue-200">
                   3 sets of 15 makes
@@ -630,6 +655,18 @@
               <h4 id="drillTitle" class="text-base font-bold text-slate-900">Form Shooting Progression</h4>
               <div class="bg-white rounded p-2.5 border border-blue-100 text-xs text-slate-700 italic" id="actionCue">
                 "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
+              </div>
+              <div class="flex items-center justify-between gap-2 pt-1">
+                <button onclick="speakCoachingCue()" type="button"
+                  class="flex-1 px-3 py-1.5 rounded-lg bg-white hover:bg-blue-100/70 text-blue-700 border border-blue-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
+                  <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                  <span>Read Advice Aloud</span>
+                </button>
+                <button onclick="switchTab('report')" type="button"
+                  class="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
+                  <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                  <span>View Progress History</span>
+                </button>
               </div>
             </div>
           </div>
@@ -2095,6 +2132,20 @@
     let activeExtractionId = 0;
     let currentVideoObjectUrl = null;
     let mediaPipeReadyPromise = null;
+
+    function speakCoachingCue() {
+      try {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const fault = document.getElementById('faultTitle')?.innerText || '';
+        const why = document.getElementById('whyItMatters')?.innerText || '';
+        const drill = document.getElementById('drillTitle')?.innerText || '';
+        const cue = document.getElementById('actionCue')?.innerText || '';
+        const utter = new SpeechSynthesisUtterance(`${fault}. ${why}. Drill: ${drill}. ${cue}`);
+        utter.rate = 0.98;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
 
     function cancelVideoExtraction() {
       activeExtractionId++;
