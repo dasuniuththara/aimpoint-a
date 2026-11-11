@@ -1,13 +1,16 @@
 {
+  "python.defaultInterpreterPath": "C:\\Python314\\python.exe",
   "python.analysis.extraPaths": [
+    ".",
     "./backend"
   ],
   "python.autoComplete.extraPaths": [
+    ".",
     "./backend"
   ],
   "python.analysis.typeCheckingMode": "off",
   "python.analysis.diagnosticSeverityOverrides": {
-    "reportMissingImports": "none"
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none"
   }
 }
-

@@ -10,18 +10,21 @@ import time
 import json
 import logging
 import numpy as np
-from typing import Dict, Any, List, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 logger = logging.getLogger("AimPointAI")
 
-# Ensure backend root on sys.path
+# Ensure both project root and backend root are on sys.path
 backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(backend_dir)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
@@ -115,20 +118,22 @@ def analyze_shot(
     # Sanitize input types (handles direct function invocation in tests as well as FastAPI forms)
     if not isinstance(athlete_id, str):
         athlete_id = "ATH-001"
-    if not isinstance(benchmark_fault, int):
+    if isinstance(benchmark_fault, bool) or not isinstance(benchmark_fault, int):
         benchmark_fault = None
 
     # 1. Keypoint Acquisition (Tier 1 & Tier 2)
     if isinstance(landmarks_json, str) and landmarks_json.strip():
         try:
             parsed = json.loads(landmarks_json)
-            arr = np.array(parsed, dtype=np.float32)
-            if arr.ndim == 3 and arr.shape[1] == 33:
+            arr = np.nan_to_num(np.array(parsed, dtype=np.float32), nan=0.0, posinf=0.0, neginf=0.0)
+            if arr.ndim == 3 and arr.shape[1] == 33 and arr.shape[0] >= 1:
                 if arr.shape[2] == 2:
                     z = np.zeros((arr.shape[0], 33, 1), dtype=np.float32)
                     arr = np.concatenate([arr, z], axis=2)
                 T_in = arr.shape[0]
-                if T_in != 60 and T_in > 1:
+                if T_in == 1:
+                    raw_landmarks = np.repeat(arr, 60, axis=0)
+                elif T_in != 60:
                     orig_t = np.linspace(0, 1, T_in)
                     target_t = np.linspace(0, 1, 60)
                     resampled = np.zeros((60, 33, 3), dtype=np.float32)
@@ -183,10 +188,9 @@ def analyze_shot(
     )
 
     # 6. Generate 2D Skeletal Wireframe with Joint Highlights for Visual Overlay (Tier 5)
-    # Returns normalized (x, y) joint coordinates per frame with color cues:
-    # green = optimal execution, red = faulty joint (e.g. elbow for low elbow, trunk for imbalanced base)
+    # Returns normalized (x, y, z) joint coordinates per frame with color cues:
+    # cyan = optimal execution, crimson = faulty joint
     wireframes = []
-    T = raw_landmarks.shape[0]
     
     for t in range(0, T, 2): # Subsample 30 frames for lightweight mobile/web playback
         frame_lms = raw_landmarks[t]
