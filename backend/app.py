@@ -338,32 +338,90 @@ if os.path.exists(samples_dir):
 
 @app.get("/api/samples")
 def list_sample_videos():
-    """Lists all available pre-rendered basketball sample videos in sample_videos/."""
+    """Lists all available basketball sample videos grouped across real_5, 3d_10, and 2d_100."""
     if not os.path.exists(samples_dir):
-        return {"total": 0, "samples": []}
-    files = sorted(
-        f for f in os.listdir(samples_dir)
-        if f.lower().endswith((".webm", ".mp4", ".mov"))
-    )
+        return {"total": 0, "counts": {}, "samples": []}
+
+    categories = [
+        ("real_5", "Real Court Videos (5)"),
+        ("3d_10", "3D Camera Videos (10)"),
+        ("2d_100", "2D Moving-Sticks Models (100)"),
+    ]
     items = []
-    for fname in files:
-        lower = fname.lower()
-        if "low_elbow" in lower:
-            fault_class = "Low Elbow Set Point"
-        elif "short_follow" in lower:
-            fault_class = "Short Follow-Through"
-        elif "imbalanced" in lower:
-            fault_class = "Imbalanced Base"
-        elif "early_release" in lower:
-            fault_class = "Early Release"
-        else:
-            fault_class = "Ideal Form"
-        items.append({
-            "filename": fname,
-            "fault_class": fault_class,
-            "url": f"/samples/{fname}",
-        })
-    return {"total": len(items), "samples": items}
+    counts = {}
+
+    for cat_dir, cat_label in categories:
+        sub_path = os.path.join(samples_dir, cat_dir)
+        if not os.path.exists(sub_path):
+            counts[cat_dir] = 0
+            continue
+        files = sorted(
+            f for f in os.listdir(sub_path)
+            if f.lower().endswith((".webm", ".mp4", ".mov")) and os.path.getsize(os.path.join(sub_path, f)) > 0
+        )
+        counts[cat_dir] = len(files)
+        for fname in files:
+            lower = fname.lower()
+            if "low_elbow" in lower:
+                fault_class = "Low Elbow Set Point"
+            elif "short_follow" in lower:
+                fault_class = "Short Follow-Through"
+            elif "imbalanced" in lower:
+                fault_class = "Imbalanced Base"
+            elif "early_release" in lower:
+                fault_class = "Early Release"
+            elif cat_dir == "real_5":
+                fault_class = "Real Human Footage"
+            else:
+                fault_class = "Ideal Form"
+            items.append({
+                "category": cat_dir,
+                "category_label": cat_label,
+                "filename": fname,
+                "fault_class": fault_class,
+                "url": f"/samples/{cat_dir}/{fname}",
+            })
+    return {"total": len(items), "counts": counts, "samples": items}
+
+
+@app.get("/api/dataset/stats")
+def get_llm_dataset_stats():
+    """Returns summary metadata and sample records from the full LLM & RAG coaching dataset."""
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ds_dir = os.path.join(root_dir, "dataset")
+    jsonl_path = os.path.join(ds_dir, "aimpoint_llm_instruct.jsonl")
+    csv_path = os.path.join(ds_dir, "aimpoint_telemetry_features.csv")
+    rag_path = os.path.join(ds_dir, "aimpoint_rag_knowledge_base.json")
+
+    total_records = 0
+    class_dist: dict = {}
+    previews = []
+    if os.path.exists(jsonl_path):
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                total_records += 1
+                obj = json.loads(line)
+                lbl = obj.get("fault_label", "Unknown")
+                class_dist[lbl] = class_dist.get(lbl, 0) + 1
+                if len(previews) < 5 and len(class_dist.get(lbl, 0) if False else previews) < 5:
+                    pass
+                if total_records in (1, 251, 501, 751, 1001):
+                    previews.append(obj)
+
+    return {
+        "status": "ready" if total_records > 0 else "missing",
+        "total_records": total_records,
+        "class_distribution": class_dist,
+        "files": {
+            "instruct_jsonl": os.path.exists(jsonl_path),
+            "telemetry_csv": os.path.exists(csv_path),
+            "rag_kb_json": os.path.exists(rag_path),
+        },
+        "previews": previews,
+    }
 
 @app.get("/")
 def serve_index():

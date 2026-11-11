@@ -1,0 +1,58 @@
+{
+  "ontology_version": "AimPointAI-v2.1-Thesis",
+  "fault_taxonomy": {
+    "0": "Ideal Form",
+    "1": "Low Elbow Set Point",
+    "2": "Short Follow-Through",
+    "3": "Imbalanced Base",
+    "4": "Early Release"
+  },
+  "clinical_thresholds": {
+    "ideal_elbow_flexion": 88.51,
+    "ideal_trunk_tilt": 25.55,
+    "ideal_follow_through": 24.71,
+    "ideal_release_angle": 52.0,
+    "low_elbow_threshold": 43.34,
+    "imbalanced_base_threshold": 48.66,
+    "short_follow_through_threshold": 11.73
+  },
+  "coaching_prescriptions": {
+    "0": {
+      "title": "Form Shooting Progression",
+      "sets_reps": "3 sets of 15 makes",
+      "cue": "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch.",
+      "description": "Step 5 feet from the rim. Focus on fluid kinetic transfer from ankles to fingertips."
+    },
+    "1": {
+      "title": "One-Handed Wall Touches",
+      "sets_reps": "4 sets of 15 repetitions",
+      "cue": "Keep your shooting elbow tucked above eyebrow level before initiating upward thrust.",
+      "description": "Stand 6 inches from a gym wall. Elevate your shooting arm so the ball brushes the wall without your elbow flaring outward or dropping."
+    },
+    "2": {
+      "title": "Gooey Wrist-Snap Holds",
+      "sets_reps": "3 sets of 20 repetitions",
+      "cue": "Hold your 'goose neck' follow-through until the basketball touches the hardwood.",
+      "description": "Shoot stationary form shots into the air or basket. Keep the shooting wrist fully flexed downward with fingers pointed towards the floor for 2 full seconds."
+    },
+    "3": {
+      "title": "Line Jump Shooting",
+      "sets_reps": "4 sets of 12 repetitions",
+      "cue": "Land with balanced shoulder-width feet exactly on the painted sideline without swaying.",
+      "description": "Align your shooting foot along the sideline. Jump vertically, release, and land smoothly in the identical footprint with zero lateral lean."
+    },
+    "4": {
+      "title": "Chair Dip Rhythm Shooting",
+      "sets_reps": "3 sets of 15 repetitions",
+      "cue": "Allow your legs to reach 90% full extension before unlocking your elbow and wrist.",
+      "description": "Begin with hips loaded over a chair. Rise upward into full triple extension before initiating the arm lift, coordinating momentum transfer."
+    }
+  },
+  "consequence_explanations": {
+    "0": "Your kinetic chain demonstrates optimal sequential power transfer and release trajectory. Maintain this muscle memory.",
+    "1": "Pushing the ball outward rather than elevating upward flattens your launch angle, increasing sensitivity to release velocity errors and causing front-rim misses.",
+    "2": "Truncating wrist extension immediately after release eliminates aerodynamic backspin, producing inconsistent ball flight and unpredictable bounces off the rim.",
+    "3": "Excessive trunk tilt and lateral sway disrupt the vertical kinetic chain, leaking momentum and introducing rotational torque that pushes shots left or right.",
+    "4": "Releasing the ball before lower-body leg drive peaks forces the shoulder and arm muscles to overcompensate, degrading touch and shooting distance consistency."
+  }
+}
