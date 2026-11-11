@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AimPointAI - Launching</title>
+  <title>AimPoint Biomechanics — Launching</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #070A12;
-      color: #F8FAFC;
+      background: #161B22;
+      color: #E6EDF3;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100vh;
       display: flex;
@@ -16,41 +16,35 @@
       justify-content: center;
       user-select: none;
       overflow: hidden;
-      border: 1px solid rgba(0, 245, 212, 0.3);
-      border-radius: 16px;
-    }
-    .logo-container {
-      position: relative;
-      margin-bottom: 24px;
+      border: 1px solid #2A313C;
+      border-radius: 12px;
     }
     .logo-ring {
-      width: 80px;
-      height: 80px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      border: 3px solid transparent;
-      border-top-color: #00F5D4;
-      border-right-color: #00BBF9;
-      animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+      border: 3px solid #2A313C;
+      border-top-color: #2563EB;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     .title {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
       margin-bottom: 6px;
-      background: linear-gradient(135deg, #00F5D4, #00BBF9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #FFFFFF;
     }
     .subtitle {
       font-size: 11px;
       color: #94A3B8;
       font-family: monospace;
-      letter-spacing: 1.5px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .status {
       font-size: 12px;
@@ -64,25 +58,17 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #00F5D4;
-      animation: pulse 1s infinite alternate;
-    }
-    @keyframes pulse {
-      from { opacity: 0.4; }
-      to { opacity: 1; }
+      background: #10B981;
     }
   </style>
 </head>
 <body>
-  <div class="logo-container">
-    <div class="logo-ring"></div>
-  </div>
-  <h1 class="title">AimPointAI Desktop</h1>
-  <p class="subtitle">Real-Time Basketball Kinematics & Mistake Remediation</p>
+  <div class="logo-ring"></div>
+  <h1 class="title">AimPoint Biomechanics</h1>
+  <p class="subtitle">Sagittal Angle &amp; Motion Analysis Workstation</p>
   <div class="status">
     <div class="status-dot"></div>
-    <span id="statusText">Initializing AI & Kinematics Engine...</span>
+    <span id="statusText">Starting Biomechanical Analysis Engine...</span>
   </div>
 </body>
 </html>
-

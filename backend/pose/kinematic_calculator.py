@@ -148,17 +148,18 @@ class KinematicFeatureExtractor:
             # Wrist vertical position (higher elevation = lower Y in screen coordinates, or normalized)
             wrist_y_positions[t] = -wr[1]  # Inverted so upward elevation is positive
             
-            # Forearm release angle relative to horizontal ground plane
+            # True 3D forearm elevation angle relative to horizontal ground plane (XZ plane)
             forearm_vec = wr - el
-            horiz_vec = np.array([1.0, 0.0, 0.0])
-            release_angles[t] = calculate_angle_3d(wr, el, el + horiz_vec)
+            horiz_dist = math.hypot(float(forearm_vec[0]), float(forearm_vec[2]))
+            elev_deg = math.degrees(math.atan2(-float(forearm_vec[1]), max(1e-6, horiz_dist)))
+            release_angles[t] = max(0.0, min(90.0, elev_deg))
 
         # Apply Savitzky-Golay temporal smoothing (Thesis Section 3.3.3)
         elbow_angles = savitzky_golay_filter(elbow_angles)
         knee_angles = savitzky_golay_filter(knee_angles)
         trunk_tilt = savitzky_golay_filter(trunk_tilt)
         wrist_y_positions = savitzky_golay_filter(wrist_y_positions)
-        release_angles = savitzky_golay_filter(release_angles)
+        release_angles = np.clip(savitzky_golay_filter(release_angles), 0.0, 90.0)
 
         # Calculate first-order temporal derivatives: Angular velocities (Thesis Section 3.3.4)
         dt = 1.0 / 30.0  # 30 fps
@@ -287,8 +288,8 @@ class KinematicFeatureExtractor:
             L1 = 0.30
             L2 = 0.28
             
-            # Shoulder elevation angle (raising upper arm upward toward target)
-            shoulder_elev_deg = 20.0 + 100.0 * lift_factor # from 20° to 120°
+            # Shoulder elevation angle (raising upper arm upward toward 52° optimal launch elevation)
+            shoulder_elev_deg = 20.0 + 124.0 * lift_factor # from 20° to 144°
             sh_elev_rad = np.radians(shoulder_elev_deg)
             
             # Elbow flexion angle theta
@@ -327,3 +328,76 @@ class KinematicFeatureExtractor:
             landmarks[i, LANDMARK_LEFT_WRIST] = [-0.14, hip_y - 0.45, 0.30]
             
         return landmarks
+
+
+def identify_biomechanical_frames(kinematics: Dict[str, np.ndarray], T: int = 60) -> List[Dict[str, Any]]:
+    """
+    Identifies the 4 clinically significant biomechanical keyframes from a shooting sequence:
+    1. Dip / Shot Pocket (Peak knee crouch loading)
+    2. Elbow Set-Point (Primary elbow flexion loading angle)
+    3. Ball Release Apex (Peak upward wrist velocity / propulsion transition)
+    4. Follow-Through Hold (Peak elbow extension hold)
+    """
+    elbow = np.array(kinematics["elbow_angles"], dtype=float)
+    knee = np.array(kinematics["knee_angles"], dtype=float)
+    trunk = np.array(kinematics["trunk_tilt"], dtype=float)
+    release = np.array(kinematics["release_angles"], dtype=float)
+    wrist_vel = np.array(kinematics["wrist_y_vel"], dtype=float)
+
+    n = min(T, len(elbow), len(knee), len(trunk), len(release), len(wrist_vel))
+    if n < 4:
+        return []
+
+    # 1. Dip / Shot Pocket: minimum knee flexion angle in first 45% of shot
+    dip_end = max(2, int(n * 0.45))
+    dip_idx = int(np.argmin(knee[:dip_end]))
+
+    # 2. Set Point: minimum elbow flexion angle after dip initiation prior to propulsion
+    set_start = min(n - 3, dip_idx + 2)
+    set_end = max(set_start + 2, int(n * 0.72))
+    set_idx = set_start + int(np.argmin(elbow[set_start:set_end]))
+
+    # 3. Release Apex: peak upward wrist velocity during propulsion/release
+    rel_start = max(set_idx + 1, int(n * 0.40))
+    rel_end = max(rel_start + 2, int(n * 0.85))
+    rel_idx = rel_start + int(np.argmax(wrist_vel[rel_start:rel_end]))
+
+    # 4. Follow-Through Hold: maximum elbow extension from release onward
+    ft_start = min(n - 1, rel_idx + 1)
+    ft_idx = ft_start + int(np.argmax(elbow[ft_start:]))
+
+    def build_frame_entry(frame_id: str, phase: str, title: str, desc: str, idx: int) -> Dict[str, Any]:
+        wf_idx = min(29, max(0, idx // 2))
+        return {
+            "id": frame_id,
+            "phase": phase,
+            "title": title,
+            "description": desc,
+            "raw_frame": int(idx),
+            "frame_idx": int(wf_idx),
+            "time_sec": round(idx / 30.0, 2),
+            "progress_ratio": round(idx / max(1, n - 1), 4),
+            "elbow_deg": round(float(elbow[idx]), 1),
+            "knee_deg": round(float(knee[idx]), 1),
+            "trunk_deg": round(float(trunk[idx]), 1),
+            "release_deg": round(float(release[idx]), 1),
+        }
+
+    return [
+        build_frame_entry(
+            "dip", "PHASE 1", "Shot Pocket / Dip",
+            "Max knee crouch loading prior to vertical leg drive.", dip_idx
+        ),
+        build_frame_entry(
+            "set_point", "PHASE 2", "Elbow Set-Point",
+            "Elbow flexion loading check (Optimal: 85°–95°).", set_idx
+        ),
+        build_frame_entry(
+            "release", "PHASE 3", "Ball Release Apex",
+            "Peak wrist upward velocity & launch trajectory angle.", rel_idx
+        ),
+        build_frame_entry(
+            "follow_through", "PHASE 4", "Follow-Through Hold",
+            "Full arm extension & wrist snap hold (Target >= 155°).", ft_idx
+        ),
+    ]

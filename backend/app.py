@@ -26,12 +26,20 @@ if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
 try:
-    from backend.pose.kinematic_calculator import KinematicFeatureExtractor, FAULT_CLASSES
+    from backend.pose.kinematic_calculator import (
+        KinematicFeatureExtractor,
+        FAULT_CLASSES,
+        identify_biomechanical_frames,
+    )
     from backend.model.architecture import classifier_engine
     from backend.ontology.pedagogical_engine import pedagogical_engine
     from backend.database.database_service import db_service
 except ImportError:
-    from pose.kinematic_calculator import KinematicFeatureExtractor, FAULT_CLASSES  # type: ignore
+    from pose.kinematic_calculator import (  # type: ignore
+        KinematicFeatureExtractor,
+        FAULT_CLASSES,
+        identify_biomechanical_frames,
+    )
     from model.architecture import classifier_engine  # type: ignore
     from ontology.pedagogical_engine import pedagogical_engine  # type: ignore
     from database.database_service import db_service  # type: ignore
@@ -158,8 +166,13 @@ def analyze_shot(
 
     inference_latency_ms = int((time.perf_counter() - start_time) * 1000)
 
+    T = raw_landmarks.shape[0]
+    biomechanical_frames = identify_biomechanical_frames(kinematics, T=T)
+    release_frame = next((f for f in biomechanical_frames if f["id"] == "release"), None)
+    rel_raw = int(release_frame["raw_frame"]) if release_frame else int(T * 0.5)
+    release_angle = float(np.max(kinematics["release_angles"][rel_raw:])) if rel_raw < T else float(kinematics["release_angles"][-1])
+
     # 5. Commit to Local SQLite Persistence Layer (Tier 5)
-    release_angle = float(kinematics["release_angles"][-1])
     session_id, card_id = db_service.insert_session(
         athlete_id=athlete_id,
         duration_ms=2000,
@@ -244,8 +257,10 @@ def analyze_shot(
             "min_elbow_angle": round(float(np.min(kinematics["elbow_angles"])), 1),
             "ideal_elbow_angle": 88.5,
             "max_trunk_tilt": round(float(np.max(kinematics["trunk_tilt"])), 1),
-            "ideal_trunk_tilt": 25.5
+            "ideal_trunk_tilt": 25.5,
+            "min_knee_angle": round(float(np.min(kinematics["knee_angles"])), 1)
         },
+        "biomechanical_frames": biomechanical_frames,
         "probabilities": {FAULT_CLASSES[i]: round(float(probabilities[i]) * 100, 1) for i in range(5)},
         "wireframes": wireframes,
         "velocity_curve": velocity_curve,

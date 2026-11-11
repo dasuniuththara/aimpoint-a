@@ -4,22 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AimPointAI — Elite Basketball Biomechanical Intelligence & Prescriptive Coaching</title>
+  <title>AimPoint Biomechanics — Shot Angle &amp; Motion Analysis Workstation</title>
 
-  <!-- Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cabinet+Grotesk:wght@700;800;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for Telemetry & Dynamics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google MediaPipe Pose for Real-Time On-Device Landmark Extraction -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 
@@ -29,34 +24,33 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            display: ['"Cabinet Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            display: ['"Inter"', 'system-ui', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
             navy: {
-              950: '#070A12',
-              900: '#0B1120',
-            850: '#0F172A',
-              800: '#1E293B',
-              700: '#334155'
+              950: '#0F1216',
+              900: '#161B22',
+              850: '#1B212A',
+              800: '#212832',
+              700: '#303845'
             },
             kinetic: {
-              teal: '#00F5D4',
-              cyan: '#00BBF9',
-              gold: '#FEE440',
-              amber: '#FF9E00',
-              crimson: '#F72585',
-              coral: '#FF4D6D',
-              emerald: '#10B981'
+              teal: '#38BDF8',     // Clean instrument cyan-blue
+              cyan: '#3B82F6',     // Primary cobalt accent
+              gold: '#FBBF24',     // Reference threshold
+              amber: '#F59E0B',    // Moderate deviation
+              crimson: '#EF4444',  // Biomechanical fault
+              coral: '#F87171',
+              emerald: '#10B981'   // Optimal range pass
             }
           },
           boxShadow: {
-            'glow-teal': '0 0 35px -5px rgba(0, 245, 212, 0.35)',
-            'glow-cyan': '0 0 35px -5px rgba(0, 187, 249, 0.35)',
-            'glow-crimson': '0 0 35px -5px rgba(247, 37, 133, 0.4)',
-            'glow-amber': '0px rgba(255, 158, 0, 0.35)',
-            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+            'glow-teal': '0 1px 3px rgba(0, 0, 0, 0.35)',
+            'glow-cyan': '0 1px 3px rgba(0, 0, 0, 0.35)',
+            'glow-crimson': '0 1px 3px rgba(0, 0, 0, 0.35)',
+            'glass': '0 4px 16px rgba(0, 0, 0, 0.35)'
           }
         }
       }
@@ -65,705 +59,517 @@
 
   <style>
     body {
-      background-color: #070A12;
-      color: #F8FAFC;
-      background-image:
-        radial-gradient(at 0% 0%, rgba(0, 187, 249, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(247, 37, 133, 0.06) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.4) 0px, transparent 100%);
-      background-attachment: fixed;
+      background-color: #0F1216;
+      color: #E6EDF3;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
     .glass-panel {
-      background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #161B22;
+      border: 1px solid #2A313C;
     }
 
     .glass-card {
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-    }
-
-    .glass-highlight {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+      background: #1B212A;
+      border: 1px solid #2A313C;
     }
 
     .court-grid {
-      background-size: 30px 30px;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      background-color: #0B0E12;
+      background-size: 32px 32px;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     }
 
-    /* Pulse animation */
-    @keyframes subtle-pulse {
-
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-
-      50% {
-        transform: scale(1.03);
-        opacity: 0.85;
-      }
-    }
-
-    .pulse-attention {
-      animation: subtle-pulse 3s infinite ease-in-out;
-    }
-
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
     }
-
     ::-webkit-scrollbar-track {
-      background: #0B1120;
+      background: #0F1216;
     }
-
     ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
+      background: #303845;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4B5563;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: #00F5D4;
-    }
-  
-    /* Ultra-Smooth View & Element Transitions */
     .tab-view-fade {
-      animation: smoothFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: smoothFadeIn 0.2s ease-out forwards;
     }
     @keyframes smoothFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    /* Smooth Scrubber Track */
-    #timelineSlider::-webkit-slider-thumb {
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    #timelineSlider::-webkit-slider-thumb:hover {
-      transform: scale(1.3);
-      box-shadow: 0 0 12px #00F5D4;
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased selection:bg-kinetic-teal selection:text-black">
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- Elite Commercial Navigation Header -->
-  <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-6 py-3.5 flex items-center justify-between">
-    <!-- Brand identity -->
-    <div class="flex items-center space-x-4">
-      <div class="relative group cursor-pointer">
-        <div
-          class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-kinetic-cyan via-kinetic-teal to-kinetic-gold flex items-center justify-center p-0.5 shadow-glow-teal transition-transform group-hover:scale-105">
-          <div class="w-full h-full bg-navy-950 rounded-[14px] flex items-center justify-center">
-            <i data-lucide="crosshair" class="w-5 h-5 text-kinetic-teal"></i>
-          </div>
-        </div>
-        <div class="absolute -top-1 -right-1 w-3 h-3 bg-kinetic-teal rounded-full animate-ping opacity-75"></div>
+  <!-- Clinical Biomechanics Workstation Header -->
+  <header class="sticky top-0 z-50 bg-[#161B22] border-b border-[#2A313C] px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-lg bg-[#212832] border border-[#303845] flex items-center justify-center">
+        <i data-lucide="compass" class="w-5 h-5 text-sky-400"></i>
       </div>
-
       <div>
-        <div class="flex items-center space-x-2.5">
-          <span class="font-display font-extrabold text-2xl tracking-tight text-white">AimPoint<span
-              class="text-transparent bg-clip-text bg-gradient-to-r from-kinetic-teal to-kinetic-cyan">AI</span></span>
-          <span
-            class="text-[10px] font-bold font-mono tracking-widest px-2.5 py-0.5 rounded-full bg-kinetic-cyan/15 text-kinetic-cyan border border-kinetic-cyan/30 uppercase">Enterprise
-            Pro</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-lg tracking-tight text-white">AimPoint <span class="text-slate-400 font-medium">Biomechanics</span></span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#212832] text-slate-300 border border-[#303845] uppercase">v2.1 Lab</span>
         </div>
-        <p class="text-[11px] text-slate-400 font-medium">Kinetic Sequence Intelligence & Prescriptive Motor Learning
-        </p>
+        <p class="text-[11px] text-slate-400">Sagittal Player Angle Detection &amp; Keyframe Motion Analysis</p>
       </div>
     </div>
 
-    <!-- Center Navigation Tabs -->
-    <nav
-      class="hidden md:flex items-center space-x-1.5 bg-navy-950/80 p-1.5 rounded-2xl border border-white/10 shadow-inner">
+    <!-- Workspace Navigation Tabs -->
+    <nav class="hidden md:flex items-center space-x-1 bg-[#0F1216] p-1 rounded-lg border border-[#2A313C]">
       <button onclick="switchTab('analyzer')" id="tab-analyzer"
-        class="px-4 py-2 text-xs font-semibold rounded-xl transition-all bg-gradient-to-r from-kinetic-teal/20 to-kinetic-cyan/20 text-kinetic-teal border border-kinetic-teal/40 shadow-glow-teal flex items-center space-x-2">
-        <i data-lucide="video" class="w-4 h-4 text-kinetic-teal"></i>
-        <span>Live Shot Analyzer</span>
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#212832] text-white border border-[#38BDF8]/40 flex items-center space-x-1.5">
+        <i data-lucide="video" class="w-3.5 h-3.5 text-sky-400"></i>
+        <span>Angle &amp; Video Analyzer</span>
       </button>
       <button onclick="switchTab('dashboard')" id="tab-dashboard"
-        class="px-4 py-2 text-xs font-semibold rounded-xl transition-all text-slate-400 hover:text-white flex items-center space-x-2">
-        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-        <span>Coach Analytics</span>
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-400 hover:text-white flex items-center space-x-1.5">
+        <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+        <span>Roster Analytics</span>
       </button>
       <button onclick="switchTab('drills')" id="tab-drills"
-        class="px-4 py-2 text-xs font-semibold rounded-xl transition-all text-slate-400 hover:text-white flex items-center space-x-2">
-        <i data-lucide="dumbbell" class="w-4 h-4"></i>
-        <span>Drill Library</span>
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-400 hover:text-white flex items-center space-x-1.5">
+        <i data-lucide="dumbbell" class="w-3.5 h-3.5"></i>
+        <span>Corrective Drills</span>
       </button>
       <button onclick="switchTab('report')" id="tab-report"
-        class="px-4 py-2 text-xs font-semibold rounded-xl transition-all text-slate-400 hover:text-white flex items-center space-x-2">
-        <i data-lucide="file-badge" class="w-4 h-4"></i>
-        <span>Scouting Report</span>
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-400 hover:text-white flex items-center space-x-1.5">
+        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+        <span>Shot Reports</span>
       </button>
     </nav>
 
-    <!-- Right Controls: Status & System Specs -->
-    <div class="flex items-center space-x-3.5">
-      <div
-        class="hidden xl:flex items-center space-x-3 px-3.5 py-1.5 rounded-xl bg-navy-900 border border-white/5 text-xs">
-        <div class="w-2 h-2 rounded-full bg-kinetic-teal animate-pulse"></div>
-        <div class="flex flex-col text-left">
-          <span class="text-[11px] font-bold text-slate-200">Res-TCN + BiLSTM + Attention</span>
-          <span class="text-[9px] font-mono text-kinetic-teal">100.0% Validated • 14.8ms Latency</span>
-        </div>
+    <div class="flex items-center space-x-2.5">
+      <div class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-md bg-[#0F1216] border border-[#2A313C] text-[11px] font-mono text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Engine Online • 30 FPS Sagittal</span>
       </div>
-
       <a href="/docs" target="_blank"
-        class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-navy-800 hover:bg-navy-700 text-slate-200 transition-all border border-white/10 hover:border-kinetic-cyan flex items-center space-x-2 shadow-sm">
-        <i data-lucide="terminal" class="w-3.5 h-3.5 text-kinetic-cyan"></i>
-        <span>REST API</span>
+        class="px-3 py-1.5 text-xs font-medium rounded-md bg-[#212832] hover:bg-[#2A3240] text-slate-200 border border-[#303845] flex items-center space-x-1.5">
+        <i data-lucide="code-2" class="w-3.5 h-3.5 text-slate-400"></i>
+        <span>API</span>
       </a>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="flex-1 max-w-[1440px] w-full mx-auto p-4 md:p-6 space-y-6">
+  <main class="flex-1 max-w-[1440px] w-full mx-auto p-4 md:p-5 space-y-4">
 
     <!-- ============================================================== -->
-    <!-- TAB 1: LIVE SHOT ANALYZER (TIER 1 & TIER 5)                     -->
+    <!-- TAB 1: ANGLE & VIDEO ANALYZER WORKSTATION                      -->
     <!-- ============================================================== -->
-    <div id="view-analyzer" class="space-y-6">
+    <div id="view-analyzer" class="space-y-4">
 
-      <!-- ============================================================== -->
-      <!-- USER-FRIENDLY QUICK-START HERO HUB                             -->
-      <!-- ============================================================== -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-        <!-- Action 1: Live Webcam Capture -->
-        <div class="p-4 rounded-3xl bg-gradient-to-br from-kinetic-teal/20 via-navy-900 to-navy-950 border border-kinetic-teal/40 hover:border-kinetic-teal text-left flex items-center justify-between shadow-glow-teal group transition-all">
-          <button onclick="toggleCamera()" class="flex items-center space-x-3.5 flex-1 min-w-0 text-left">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-kinetic-teal to-kinetic-cyan text-navy-950 flex items-center justify-center font-bold text-xl group-hover:scale-110 shadow-glow-teal transition-transform shrink-0">
-              <i data-lucide="video" class="w-6 h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-kinetic-teal animate-pulse"></span>
-                <span class="text-[10px] font-mono font-bold text-kinetic-teal uppercase tracking-wider">Method 1 • Live Feed</span>
-              </div>
-              <h4 class="text-base font-bold text-white font-display mt-0.5" id="hero-cam-title">Start Live Camera</h4>
-              <p class="text-xs text-slate-300 truncate">Step back 2.5m & shoot in real-time</p>
-            </div>
-          </button>
-          <button onclick="openCameraHelpModal()" title="Camera Options & Access Help" class="p-2.5 rounded-xl bg-navy-800/80 hover:bg-navy-700 text-slate-300 hover:text-kinetic-teal border border-white/10 transition-all shrink-0 ml-2">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- Action 2: Upload Pre-recorded Shot Video -->
-        <label for="videoUploadInputHero"
-          class="p-4 rounded-3xl bg-gradient-to-br from-navy-900 via-navy-900 to-navy-950 border border-white/10 hover:border-kinetic-cyan text-left flex items-center space-x-4 cursor-pointer group transition-all shadow-lg">
-          <div
-            class="w-12 h-12 rounded-2xl bg-navy-800 text-kinetic-cyan flex items-center justify-center font-bold text-xl group-hover:scale-110 border border-white/10 transition-transform shrink-0">
-            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+      <!-- Clean Workstation Capture & Input Bar -->
+      <div class="bg-[#161B22] border border-[#2A313C] rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Athlete Selector -->
+          <div class="flex items-center space-x-2 bg-[#0F1216] border border-[#2A313C] rounded-lg px-2.5 py-1.5">
+            <span class="text-[11px] font-mono text-slate-400 uppercase">Athlete:</span>
+            <select id="athleteSelect" class="bg-transparent text-xs font-semibold text-white outline-none cursor-pointer">
+              <option value="ATH-001" class="bg-[#161B22]">K. Perera (Point Guard)</option>
+              <option value="ATH-002" class="bg-[#161B22]">D. Silva (Shooting Guard)</option>
+              <option value="ATH-003" class="bg-[#161B22]">M. Fernando (Small Forward)</option>
+              <option value="ATH-004" class="bg-[#161B22]">T. Kirindegama (Guard)</option>
+              <option value="ATH-005" class="bg-[#161B22]">S. Alwis (Power Forward)</option>
+            </select>
           </div>
-          <div class="min-w-0">
-            <span class="text-[10px] font-mono font-bold text-kinetic-cyan uppercase tracking-wider block">Method 2 •
-              Video File</span>
-            <h4 class="text-base font-bold text-white font-display mt-0.5">Upload Phone Video</h4>
-            <p class="text-xs text-slate-400 truncate">Select MP4 or MOV from your device</p>
-          </div>
-        </label>
-        <input type="file" id="videoUploadInputHero" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
 
-        <!-- Action 3: Interactive Demo Presets -->
-        <div
-          class="p-4 rounded-3xl bg-gradient-to-br from-navy-900 via-navy-900 to-navy-950 border border-white/10 flex flex-col justify-between shadow-lg">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[10px] font-mono font-bold text-kinetic-gold uppercase tracking-wider">Method 3 • Instant
-              Demos</span>
-            <span class="text-[10px] text-slate-400 font-mono">1-Click Test</span>
-          </div>
-          <div class="flex flex-wrap gap-1.5">
-            <button onclick="runBenchmark(0)" id="btn-bm-0"
-              class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-kinetic-teal text-navy-950 shadow-glow-teal transition-all border border-kinetic-teal">✅
-              Ideal Swish</button>
-            <button onclick="runBenchmark(1)" id="btn-bm-1"
-              class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-navy-800 hover:bg-kinetic-crimson hover:text-white text-slate-200 transition-all border border-white/10">⚠️
-              Low Elbow</button>
-            <button onclick="runBenchmark(2)" id="btn-bm-2"
-              class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-navy-800 hover:bg-kinetic-amber hover:text-navy-950 text-slate-200 transition-all border border-white/10">⚠️
-              Short Snap</button>
-            <button onclick="runBenchmark(3)" id="btn-bm-3"
-              class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-navy-800 hover:bg-purple-500 hover:text-white text-slate-200 transition-all border border-white/10">⚠️
-              Off-Balance</button>
-            <button onclick="runBenchmark(4)" id="btn-bm-4"
-              class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-navy-800 hover:bg-kinetic-cyan hover:text-navy-950 text-slate-200 transition-all border border-white/10">⚠️
-              Early Release</button>
-          </div>
-        </div>
+          <!-- Upload Shot Video (Primary Video Ingestion) -->
+          <label for="videoUploadInputHero"
+            class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold cursor-pointer flex items-center space-x-2 transition-colors">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>Upload Shot Video (3D / MP4 / MOV)</span>
+          </label>
+          <input type="file" id="videoUploadInputHero" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
 
-      </div>
-
-      
-
-      <!-- FYP Evaluation: Pre-Loaded Sample Video Dataset Station -->
-      <div class="glass-panel rounded-3xl p-5 border border-kinetic-teal/30 shadow-xl space-y-3 bg-gradient-to-r from-navy-900/90 via-navy-900/80 to-navy-950">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-          <div class="flex items-center space-x-2.5">
-            <div class="w-8 h-8 rounded-xl bg-kinetic-teal/20 text-kinetic-teal flex items-center justify-center border border-kinetic-teal/40">
-              <i data-lucide="clapperboard" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold font-display text-white">Pre-Loaded FYP Basketball Sample Videos & Benchmarks</h4>
-              <p class="text-[11px] text-slate-400">Click any sample video below to test real monocular video ingestion, full kinematic curves, and prescriptive coaching</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-[10px] font-mono px-2.5 py-1 rounded-lg bg-kinetic-teal/15 text-kinetic-teal border border-kinetic-teal/30 font-bold">5 SAMPLES READY</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 pt-1">
-          <button onclick="loadSampleVideo(0)" id="sample-card-0" class="p-3 rounded-2xl bg-kinetic-teal/20 border border-kinetic-teal text-left transition-all space-y-1.5 shadow-glow-teal group">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-mono font-bold text-kinetic-teal">SAMPLE 01</span>
-              <span class="w-2 h-2 rounded-full bg-kinetic-teal animate-pulse"></span>
-            </div>
-            <h5 class="text-xs font-bold text-white group-hover:text-kinetic-teal transition-colors truncate">1. Ideal Form (Swish)</h5>
-            <p class="text-[10px] text-slate-400">88.5° elbow • 52.0° arc</p>
-          </button>
-
-          <button onclick="loadSampleVideo(1)" id="sample-card-1" class="p-3 rounded-2xl bg-navy-950/70 hover:bg-kinetic-crimson/10 border border-white/10 hover:border-kinetic-crimson text-left transition-all space-y-1.5 shadow-md group">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-mono font-bold text-kinetic-crimson">SAMPLE 02</span>
-              <span class="w-2 h-2 rounded-full bg-kinetic-crimson"></span>
-            </div>
-            <h5 class="text-xs font-bold text-white group-hover:text-kinetic-crimson transition-colors truncate">2. Low Elbow Fault</h5>
-            <p class="text-[10px] text-slate-400">37.1° elbow set point</p>
-          </button>
-
-          <button onclick="loadSampleVideo(2)" id="sample-card-2" class="p-3 rounded-2xl bg-navy-950/70 hover:bg-kinetic-amber/10 border border-white/10 hover:border-kinetic-amber text-left transition-all space-y-1.5 shadow-md group">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-mono font-bold text-kinetic-amber">SAMPLE 03</span>
-              <span class="w-2 h-2 rounded-full bg-kinetic-amber"></span>
-            </div>
-            <h5 class="text-xs font-bold text-white group-hover:text-kinetic-amber transition-colors truncate">3. Short Follow-Through</h5>
-            <p class="text-[10px] text-slate-400">Truncated wrist snap</p>
-          </button>
-
-          <button onclick="loadSampleVideo(3)" id="sample-card-3" class="p-3 rounded-2xl bg-navy-950/70 hover:bg-purple-500/10 border border-white/10 hover:border-purple-400 text-left transition-all space-y-1.5 shadow-md group">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-mono font-bold text-purple-400">SAMPLE 04</span>
-              <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-            </div>
-            <h5 class="text-xs font-bold text-white group-hover:text-purple-400 transition-colors truncate">4. Imbalanced Base</h5>
-            <p class="text-[10px] text-slate-400">28.4° excessive trunk tilt</p>
-          </button>
-
-          <button onclick="loadSampleVideo(4)" id="sample-card-4" class="p-3 rounded-2xl bg-navy-950/70 hover:bg-kinetic-cyan/10 border border-white/10 hover:border-kinetic-cyan text-left transition-all space-y-1.5 shadow-md group">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-mono font-bold text-kinetic-cyan">SAMPLE 05</span>
-              <span class="w-2 h-2 rounded-full bg-kinetic-cyan"></span>
-            </div>
-            <h5 class="text-xs font-bold text-white group-hover:text-kinetic-cyan transition-colors truncate">5. Early Release</h5>
-            <p class="text-[10px] text-slate-400">Arm fired before leg drive</p>
-          </button>
-        </div>
-      </div>
-
-
-      <!-- Friendly 3-Step Player Guide Pill -->
-      <div
-        class="px-5 py-3 rounded-2xl bg-navy-900/60 border border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center space-x-3 text-slate-300">
-          <span
-            class="px-2 py-0.5 rounded-md bg-kinetic-teal/20 text-kinetic-teal font-mono font-bold text-[10px]">COACH
-            TIP</span>
-          <span>Position camera 2.5m (8-10 ft) to your shooting profile. Listen for audio countdown beeps (3... 2...
-            1... SHOOT!).</span>
-        </div>
-        <div class="flex items-center space-x-2 text-[11px] text-slate-400 font-mono">
-          <span>Target Release: <strong class="text-kinetic-teal">52.0°</strong></span>
-          <span>•</span>
-          <span>Min Elbow: <strong class="text-kinetic-gold">&ge; 43.3°</strong></span>
-        </div>
-      </div>
-
-      <!-- Main Dual-Pane: Tracking Viewport (Left) & Coaching Card (Right) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-        <!-- LEFT PANE: 3D SKELETAL CANVAS & VIDEO INGESTION (7 Cols) -->
-        <div
-          class="lg:col-span-7 glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col">
-
-          <!-- Viewport Header Toolbar -->
-          <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-navy-900/60">
-            <div class="flex items-center space-x-3">
-              <span class="relative flex h-3 w-3">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-kinetic-teal opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-kinetic-teal"></span>
-              </span>
-              <span class="text-sm font-bold font-display text-white tracking-wide">3D Kinematic Pose Tracker</span>
-              <span
-                class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5">SAGITTAL
-                PLANE (2.5M)</span>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <!-- Live Camera Toggle Button -->
-              <button onclick="toggleCamera()" id="btn-camera"
-                class="px-3 py-1.5 rounded-xl bg-navy-800 text-slate-300 border border-white/10 hover:border-kinetic-teal hover:text-kinetic-teal text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-sm">
-                <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-kinetic-teal"></i>
-                <span id="text-camera">Live Camera</span>
+          <!-- Live Camera Trigger -->
+          <div class="flex items-center">
+            <button onclick="toggleCamera()" id="btn-camera"
+              class="px-3 py-1.5 rounded-l-lg bg-[#212832] hover:bg-[#2A3240] text-slate-200 border border-[#303845] text-xs font-semibold flex items-center space-x-1.5 transition-colors">
+              <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span id="text-camera">Live Camera</span>
+            </button>
+            <div class="relative inline-block">
+              <button onclick="toggleCameraOptionsMenu()" id="btn-cam-options" title="Camera Settings"
+                class="px-2 py-1.5 rounded-r-lg bg-[#212832] hover:bg-[#2A3240] text-slate-400 hover:text-white border-y border-r border-[#303845] text-xs flex items-center">
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
               </button>
+              <div id="camOptionsMenu" class="hidden absolute left-0 mt-2 w-64 rounded-lg bg-[#161B22] border border-[#303845] shadow-xl z-50 p-3 space-y-2.5">
+                <div class="border-b border-[#2A313C] pb-2 flex items-center justify-between">
+                  <span class="text-xs font-semibold text-white">Camera Source</span>
+                  <button onclick="openCameraHelpModal()" class="text-[11px] text-sky-400 hover:underline font-mono">Help</button>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] font-mono text-slate-400 uppercase">Input Device</label>
+                  <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)" class="w-full px-2 py-1.5 rounded bg-[#0F1216] text-slate-200 border border-[#303845] text-xs font-mono outline-none">
+                    <option value="">Default Camera</option>
+                  </select>
+                </div>
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-xs text-slate-300">Mirror Video</span>
+                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-[#212832] text-[10px] font-mono text-sky-400 border border-[#303845]">ON</button>
+                </div>
+                <div class="pt-2 border-t border-[#2A313C]">
+                  <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-200 border border-[#303845] flex items-center justify-center space-x-1.5">
+                    <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-sky-400"></i>
+                    <span>Test Virtual Camera</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span id="hero-cam-title" class="hidden"></span>
+        </div>
 
-              <!-- Camera Options & Device Dropdown -->
-              <div class="relative inline-block text-left">
-                <button onclick="toggleCameraOptionsMenu()" id="btn-cam-options" title="Camera Options & Access"
-                  class="px-2.5 py-1.5 rounded-xl bg-navy-800 text-slate-300 border border-white/10 hover:border-kinetic-cyan hover:text-white text-xs font-medium transition-all flex items-center space-x-1">
-                  <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400"></i>
-                  <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        <!-- Reference Sample Clips -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-[10px] font-mono text-slate-400 uppercase mr-1">Reference Clips:</span>
+          <button onclick="loadSampleVideo(0)" id="btn-bm-0"
+            class="px-2.5 py-1 text-[11px] font-medium rounded bg-blue-600 text-white border border-blue-500 transition-colors">
+            Ideal Form
+          </button>
+          <button onclick="loadSampleVideo(1)" id="btn-bm-1"
+            class="px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors">
+            Low Elbow
+          </button>
+          <button onclick="loadSampleVideo(2)" id="btn-bm-2"
+            class="px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors">
+            Short Follow-Through
+          </button>
+          <button onclick="loadSampleVideo(3)" id="btn-bm-3"
+            class="px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors">
+            Imbalanced Base
+          </button>
+          <button onclick="loadSampleVideo(4)" id="btn-bm-4"
+            class="px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors">
+            Early Release
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Dual-Pane Workstation: Video/Angle Viewport (Left) & Diagnostics (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+        <!-- LEFT PANE (7 Cols): VIDEO VIEWPORT + ANGLE PROTRACTOR + KEYFRAMES -->
+        <div class="lg:col-span-7 flex flex-col space-y-4">
+          <div class="bg-[#161B22] rounded-xl border border-[#2A313C] overflow-hidden flex flex-col">
+
+            <!-- Viewport Header -->
+            <div class="px-4 py-2.5 border-b border-[#2A313C] flex flex-wrap items-center justify-between gap-2 bg-[#1B212A]">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-2 h-2 rounded-full bg-sky-400" id="hud-pulse-dot"></span>
+                <span class="text-xs font-semibold text-white" id="viewportModeLabel">Sagittal Kinematics &amp; Angle Viewport</span>
+                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-blue-600/20 text-sky-300 border border-blue-500/30 truncate max-w-[180px]"></span>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <!-- Toggle Video Background vs Skeleton Only (Visible when uploaded video active) -->
+                <button onclick="toggleVideoOverlayMode()" id="btn-video-overlay-toggle"
+                  class="hidden px-2.5 py-1 rounded bg-[#212832] text-sky-300 border border-sky-500/40 text-[11px] font-medium hover:bg-[#2A3240] transition-colors">
+                  Mode: Video + Skeleton
+                </button>
+                <button onclick="toggleSagittalGuide()" id="btn-guide"
+                  class="px-2.5 py-1 rounded bg-[#212832] text-slate-300 border border-[#303845] hover:text-white text-[11px] font-medium transition-colors flex items-center space-x-1">
+                  <i data-lucide="scan" class="w-3 h-3"></i>
+                  <span>Guide</span>
+                </button>
+                <button onclick="toggleSlowMo()" id="btn-slowmo"
+                  class="px-2.5 py-1 rounded bg-[#212832] text-slate-300 border border-[#303845] text-[11px] font-mono">
+                  1.0x
+                </button>
+              </div>
+            </div>
+
+            <!-- Video & Kinematic Canvas Stage -->
+            <div class="relative w-full aspect-[4/3] court-grid flex items-center justify-center overflow-hidden">
+
+              <!-- Real-Time Camera Stream Video Element -->
+              <video id="webcamVideo" autoplay playsinline muted
+                class="absolute inset-0 w-full h-full object-cover z-0 hidden scale-x-[-1]"></video>
+
+              <!-- Uploaded Shot Video Playback Element (Behind Canvas Protractors) -->
+              <video id="uploadedVideo" playsinline muted
+                class="absolute inset-0 w-full h-full object-contain z-0 hidden bg-black"></video>
+
+              <!-- Precision Kinematic Overlay & Angle Canvas -->
+              <canvas id="skeletalCanvas" width="640" height="480"
+                class="w-full h-full object-contain relative z-10"></canvas>
+
+              <!-- Compact Angle Telemetry Readout Strip (Top Left) -->
+              <div id="liveKinematicsHUD"
+                class="absolute top-3 left-3 z-30 bg-[#0F1216]/90 px-3 py-1.5 rounded-md border border-[#2A313C] text-[11px] font-mono flex items-center space-x-3 text-slate-200">
+                <span class="text-slate-400 font-semibold uppercase text-[10px]" id="hud-mode-title">ANGLES</span>
+                <span class="text-slate-600">|</span>
+                <span>Elbow: <strong id="live-elbow-val" class="text-sky-400">88.5°</strong></span>
+                <span>Trunk: <strong id="live-trunk-val" class="text-emerald-400">24.5°</strong></span>
+                <span>Knee: <strong id="live-knee-val" class="text-amber-400">110.0°</strong></span>
+              </div>
+
+              <!-- Video Frame Extraction Progress Overlay -->
+              <div id="videoExtractionOverlay"
+                class="absolute inset-0 z-40 bg-[#0F1216]/90 flex flex-col items-center justify-center p-6 hidden">
+                <div class="w-full max-w-sm bg-[#161B22] border border-[#2A313C] rounded-xl p-5 space-y-3">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-semibold text-white" id="extractionStatusTitle">Extracting 3D Video Landmarks...</span>
+                    <span class="font-mono text-sky-400" id="extractionProgressPct">0%</span>
+                  </div>
+                  <div class="w-full h-2 bg-[#0F1216] rounded-full overflow-hidden border border-[#2A313C]">
+                    <div id="extractionProgressBar" class="h-full bg-blue-600 transition-all duration-150" style="width: 0%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-mono" id="extractionDetailText">
+                    Detecting pose joints &amp; computing biomechanical angles frame-by-frame...
+                  </p>
+                </div>
+              </div>
+
+              <!-- Countdown Overlay for Live Shot Capture -->
+              <div id="countdownOverlay"
+                class="absolute inset-0 z-50 bg-[#0F1216]/85 flex flex-col items-center justify-center hidden pointer-events-none">
+                <span id="countdownNumber" class="text-6xl font-bold font-mono text-sky-400">3</span>
+                <span id="countdownLabel" class="text-xs font-mono text-slate-300 mt-2 uppercase tracking-wider">Position in Side View</span>
+              </div>
+
+              <!-- Sagittal Alignment Guide Overlay (Hidden by default) -->
+              <div id="sagittalOverlay"
+                class="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center hidden">
+                <div class="w-56 h-80 border border-dashed border-sky-400/60 rounded-xl flex flex-col items-center justify-between p-3 bg-[#0F1216]/30">
+                  <span class="bg-[#0F1216]/90 px-2.5 py-0.5 rounded border border-[#2A313C] text-[10px] font-mono text-sky-300">2.5m - 3.0m SAGITTAL VIEW</span>
+                  <span class="bg-[#0F1216]/90 px-2.5 py-0.5 rounded border border-[#2A313C] text-[10px] font-mono text-slate-300">SIDE PROFILE ALIGNMENT</span>
+                </div>
+              </div>
+
+              <!-- Frame Counter Bottom-Left -->
+              <div class="absolute bottom-3 left-3 z-30 bg-[#0F1216]/90 px-3 py-1 rounded-md border border-[#2A313C] text-[11px] font-mono flex items-center space-x-2.5 text-slate-300">
+                <span class="text-sky-400 font-semibold" id="telemetry-frame">Frame: 1 / 30</span>
+                <span class="text-slate-600">|</span>
+                <span id="telemetry-time">0.00s</span>
+                <span class="text-slate-600">|</span>
+                <span class="text-emerald-400" id="telemetry-status">Ready</span>
+              </div>
+
+              <!-- Floating Record Button (Camera Mode) -->
+              <div id="floatingRecordBar" class="absolute bottom-4 inset-x-0 z-30 hidden flex justify-center items-center">
+                <button onclick="startShotCapture()"
+                  class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold text-xs border border-red-400/40 flex items-center space-x-2 shadow-lg">
+                  <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                  <span>Record Shot (3s Countdown)</span>
+                </button>
+              </div>
+
+              <!-- Drag & Drop Upload Overlay -->
+              <div id="dropZone"
+                class="absolute inset-0 z-40 bg-[#0F1216]/95 flex flex-col items-center justify-center border-2 border-dashed border-blue-500 p-6 transition-all opacity-0 pointer-events-none">
+                <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-400 mb-2"></i>
+                <p class="text-sm font-semibold text-white">Drop Athlete Shot Video to Measure Angles &amp; Keyframes</p>
+                <p class="text-xs text-slate-400 mt-1">Supports MP4, MOV, WebM</p>
+              </div>
+            </div>
+
+            <!-- Interactive Playback & Frame Scrubbing Toolbar -->
+            <div class="p-3 bg-[#1B212A] border-t border-[#2A313C] flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="togglePlayback()" id="btn-play" title="Play / Pause"
+                  class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition-colors">
+                  <i data-lucide="pause" class="w-4 h-4" id="icon-play"></i>
+                </button>
+                <button onclick="resetPlayback()" title="Reset to Frame 0"
+                  class="w-9 h-9 rounded-lg bg-[#212832] text-slate-300 border border-[#303845] flex items-center justify-center hover:text-white transition-colors">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                 </button>
 
-                <!-- Dropdown Menu -->
-                <div id="camOptionsMenu" class="hidden absolute right-0 mt-2 w-64 rounded-2xl bg-navy-900 border border-white/15 shadow-2xl z-50 p-3 space-y-2.5 backdrop-blur-xl">
-                  <div class="border-b border-white/10 pb-2 flex items-center justify-between">
-                    <span class="text-[11px] font-bold text-white font-display">Camera Source & Access</span>
-                    <button onclick="openCameraHelpModal()" class="text-[10px] text-kinetic-teal hover:underline font-mono">Help</button>
-                  </div>
-                  
-                  <!-- Device Select -->
-                  <div class="space-y-1">
-                    <label class="text-[10px] font-mono text-slate-400 uppercase">Input Device</label>
-                    <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)" class="w-full px-2.5 py-1.5 rounded-xl bg-navy-950 text-slate-200 border border-white/10 text-xs font-mono outline-none focus:border-kinetic-teal">
-                      <option value="">Default WebCam</option>
-                    </select>
-                  </div>
-
-                  <!-- Flip Mirror Toggle -->
-                  <div class="flex items-center justify-between pt-1">
-                    <span class="text-xs text-slate-300">Mirror Video Feed</span>
-                    <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-1 rounded-lg bg-navy-800 text-[10px] font-mono text-kinetic-teal border border-white/10">ON</button>
-                  </div>
-
-                  <!-- Virtual Simulation Camera Toggle -->
-                  <div class="pt-2 border-t border-white/10">
-                    <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-bold rounded-xl bg-kinetic-cyan/15 hover:bg-kinetic-cyan/25 text-kinetic-cyan border border-kinetic-cyan/30 transition-all flex items-center justify-center space-x-1.5">
-                      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                      <span>Simulate Virtual Shooter Feed</span>
-                    </button>
-                  </div>
+                <!-- Frame Stepper Controls -->
+                <div class="flex items-center space-x-1 bg-[#0F1216] p-1 rounded-lg border border-[#2A313C]">
+                  <button onclick="stepFrame(-1)" title="Step Back 1 Frame"
+                    class="px-2 py-1 rounded text-slate-300 hover:text-white hover:bg-[#212832] text-[11px] font-mono flex items-center space-x-0.5">
+                    <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                    <span>-1F</span>
+                  </button>
+                  <button onclick="stepFrame(1)" title="Step Forward 1 Frame"
+                    class="px-2 py-1 rounded text-slate-300 hover:text-white hover:bg-[#212832] text-[11px] font-mono flex items-center space-x-0.5">
+                    <span>+1F</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
+
+                <!-- Speed Controls -->
+                <div class="flex items-center space-x-1 bg-[#0F1216] p-1 rounded-lg border border-[#2A313C]">
+                  <button onclick="setSpeed(0.25)" id="btn-spd-025" class="px-2 py-1 rounded bg-[#161B22] text-slate-300 hover:text-white font-mono text-[11px]">0.25x</button>
+                  <button onclick="setSpeed(0.5)" id="btn-spd-05" class="px-2 py-1 rounded bg-[#161B22] text-slate-300 hover:text-white font-mono text-[11px]">0.5x</button>
+                  <button onclick="setSpeed(1.0)" id="btn-spd-10" class="px-2 py-1 rounded bg-blue-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
+                  <button onclick="setSpeed(1.5)" id="btn-spd-15" class="px-2 py-1 rounded bg-[#161B22] text-slate-300 hover:text-white font-mono text-[11px]">1.5x</button>
+                </div>
+
+                <button onclick="startShotCapture()" id="btn-capture-shot"
+                  class="hidden px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white flex items-center space-x-1.5">
+                  <i data-lucide="circle" class="w-3 h-3 fill-current"></i>
+                  <span id="text-capture-shot">Record Shot</span>
+                </button>
               </div>
 
-              <button onclick="toggleSagittalGuide()" id="btn-guide"
-                class="px-3 py-1.5 rounded-xl bg-navy-800 text-kinetic-teal border border-kinetic-teal/40 hover:bg-kinetic-teal/10 text-xs font-medium transition-all flex items-center space-x-1.5">
-                <i data-lucide="scan" class="w-3.5 h-3.5"></i>
-                <span>Alignment Guide</span>
-              </button>
-              <button onclick="toggleSlowMo()" id="btn-slowmo"
-                class="px-3 py-1.5 rounded-xl bg-navy-800 text-slate-300 border border-white/10 hover:border-white text-xs font-mono font-medium transition-all">
-                1.0x Speed
-              </button>
+              <!-- Scrubbing Timeline Slider -->
+              <div class="flex-1 min-w-[140px] flex items-center">
+                <input type="range" id="timelineSlider" min="0" max="29" value="0"
+                  class="w-full h-1.5 bg-[#0F1216] rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  oninput="seekFrame(this.value)">
+              </div>
+
+              <div>
+                <label for="videoUploadInput"
+                  class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#212832] hover:bg-[#2A3240] text-slate-200 border border-[#303845] cursor-pointer flex items-center space-x-1.5">
+                  <i data-lucide="folder-open" class="w-3.5 h-3.5 text-sky-400"></i>
+                  <span>Open Video</span>
+                </label>
+                <input type="file" id="videoUploadInput" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
+              </div>
             </div>
           </div>
 
-          <!-- Video & Canvas Stage -->
-          <div
-            class="relative w-full aspect-[4/3] bg-navy-950 court-grid flex items-center justify-center overflow-hidden">
-
-            <!-- Real-Time Camera Stream Video Element -->
-            <video id="webcamVideo" autoplay playsinline muted
-              class="absolute inset-0 w-full h-full object-cover z-0 hidden scale-x-[-1]"></video>
-
-            <!-- High-Precision 3D Skeletal Canvas -->
-            <canvas id="skeletalCanvas" width="640" height="480"
-              class="w-full h-full object-contain relative z-10"></canvas>
-
-            <!-- Real-Time Live Kinematics Telemetry HUD Bar (Always Active) -->
-            <div id="liveKinematicsHUD"
-              class="absolute top-4 left-4 z-30 bg-navy-950/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-kinetic-teal/30 text-xs font-mono flex items-center space-x-3 text-slate-200 shadow-glow-teal">
-              <div class="flex items-center space-x-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-kinetic-teal animate-ping" id="hud-pulse-dot"></span>
-                <span class="text-white font-bold text-[10px]" id="hud-mode-title">LIVE TELEMETRY</span>
+          <!-- IDENTIFIED BIOMECHANICAL KEY FRAMES STRIP (Click any phase frame to inspect angles) -->
+          <div class="bg-[#161B22] rounded-xl border border-[#2A313C] p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-[#2A313C] pb-2.5">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="film" class="w-4 h-4 text-sky-400"></i>
+                <h3 class="text-xs font-semibold text-white uppercase tracking-wider font-mono">Identified Biomechanical Key Frames</h3>
               </div>
-              <span class="text-slate-600">|</span>
-              <span class="text-[11px]">Elbow: <strong id="live-elbow-val" class="text-kinetic-teal">88.5°</strong></span>
-              <span class="text-[11px]">Trunk: <strong id="live-trunk-val" class="text-kinetic-cyan">24.5°</strong></span>
-              <span class="text-[11px]">Knee: <strong id="live-knee-val" class="text-kinetic-gold">110.0°</strong></span>
+              <span class="text-[11px] font-mono text-slate-400">Click a phase frame to jump &amp; inspect joint angles</span>
             </div>
 
-            <!-- Countdown Overlay for Live Shot Capture -->
-            <div id="countdownOverlay"
-              class="absolute inset-0 z-50 bg-navy-950/80 backdrop-blur-sm flex flex-col items-center justify-center hidden pointer-events-none">
-              <span id="countdownNumber"
-                class="text-7xl font-extrabold font-display text-kinetic-teal animate-bounce">3</span>
-              <span id="countdownLabel" class="text-xs font-mono text-slate-300 mt-2 uppercase tracking-widest">GET SET
-                IN SAGITTAL VIEW</span>
-            </div>
-
-            <!-- Sagittal Alignment Guide Overlay (Thesis Section 4.6.5, Hidden by default during playback) -->
-            <div id="sagittalOverlay"
-              class="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center transition-opacity duration-300 hidden">
-              <div
-                class="w-56 h-88 border-2 border-dashed border-kinetic-teal/70 rounded-3xl flex flex-col items-center justify-between p-4 shadow-glow-teal bg-navy-950/40 backdrop-blur-[2px]">
-                <div
-                  class="flex items-center space-x-1.5 bg-navy-950/90 px-3 py-1 rounded-full border border-kinetic-teal/40 text-[10px] font-mono font-bold text-kinetic-teal">
-                  <i data-lucide="crosshair" class="w-3 h-3"></i>
-                  <span>2.5m - 3.0m SAGITTAL PLANE</span>
-                </div>
-
-                <div class="w-16 h-16 rounded-full border-2 border-kinetic-teal/30 flex items-center justify-center">
-                  <i data-lucide="user" class="w-8 h-8 text-kinetic-teal/40"></i>
-                </div>
-
-                <div
-                  class="bg-navy-950/90 px-3 py-1 rounded-full border border-kinetic-teal/40 text-[10px] font-mono text-slate-300 text-center">
-                  ALIGN ANKLE-TO-WRIST KINETIC CHAIN
-                </div>
-              </div>
-            </div>
-
-            <!-- Real-time HUD Watermark -->
-            <div
-              class="absolute bottom-4 left-4 z-30 bg-navy-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 text-xs font-mono flex items-center space-x-3 text-slate-300 shadow-lg">
-              <span class="text-kinetic-teal font-bold" id="telemetry-frame">Frame: 0 / 30</span>
-              <span class="text-slate-600">•</span>
-              <span id="telemetry-time">Time: 0.00s</span>
-              <span class="text-slate-600">•</span>
-              <span class="text-kinetic-emerald font-semibold" id="telemetry-status">Model Ready</span>
-            </div>
-
-            <!-- Floating Live Record Button directly over video -->
-            <div id="floatingRecordBar"
-              class="absolute bottom-6 inset-x-0 z-30 hidden flex justify-center items-center pointer-events-auto">
-              <button onclick="startShotCapture()"
-                class="px-6 py-3.5 rounded-full bg-gradient-to-r from-kinetic-crimson via-red-600 to-kinetic-crimson hover:scale-105 active:scale-95 text-white font-extrabold text-xs tracking-wider shadow-glow-crimson transition-all flex items-center space-x-2.5 border border-white/20">
-                <span class="w-3 h-3 rounded-full bg-white animate-ping"></span>
-                <span>🔴 TAP TO RECORD SHOT (3-SEC COUNTDOWN)</span>
-              </button>
-            </div>
-
-            <!-- Drag & Drop Overlay -->
-            <div id="dropZone"
-              class="absolute inset-0 z-40 bg-navy-950/95 backdrop-blur-md flex flex-col items-center justify-center border-2 border-dashed border-kinetic-teal p-6 transition-all opacity-0 pointer-events-none">
-              <div class="w-16 h-16 rounded-2xl bg-kinetic-teal/10 flex items-center justify-center mb-3">
-                <i data-lucide="upload-cloud" class="w-8 h-8 text-kinetic-teal animate-bounce"></i>
-              </div>
-              <p class="text-base font-bold text-white font-display">Drop Athlete Shot Video to Analyze</p>
-              <p class="text-xs text-slate-400 mt-1">Accepts standard MP4, MOV, WebM (1080p @ 30fps)</p>
-            </div>
-          </div>
-
-          <!-- Interactive Playback Toolbar -->
-          <div class="p-4 bg-navy-900/70 border-t border-white/10 flex items-center justify-between gap-4">
-            <div class="flex items-center space-x-2.5">
-              <button onclick="togglePlayback()" id="btn-play"
-                class="w-10 h-10 rounded-xl bg-gradient-to-tr from-kinetic-teal to-kinetic-cyan text-navy-950 font-bold flex items-center justify-center hover:scale-105 shadow-glow-teal transition-all">
-                <i data-lucide="play" id="icon-play" class="w-5 h-5 fill-current"></i>
-              </button>
-              <button onclick="resetPlayback()"
-                class="w-10 h-10 rounded-xl bg-navy-800 text-slate-300 border border-white/10 flex items-center justify-center hover:text-white hover:border-white/30 transition-all">
-                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-              </button>
-
-              <!-- Live Shot Capture Trigger Button (Active when camera is running) -->
-              <button onclick="startShotCapture()" id="btn-capture-shot"
-                class="hidden px-3.5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-kinetic-crimson to-kinetic-coral text-white shadow-glow-crimson hover:scale-105 transition-all flex items-center space-x-2">
-                <i data-lucide="aperture" class="w-4 h-4 animate-spin"></i>
-                <span id="text-capture-shot">Record Shot (30 Frames)</span>
-              </button>
-            </div>
-
-            <!-- Scrubbing Timeline Slider -->
-            <div class="flex-1 flex items-center space-x-3">
-              <input type="range" id="timelineSlider" min="0" max="29" value="0"
-                class="w-full h-2 bg-navy-950 rounded-lg appearance-none cursor-pointer accent-kinetic-teal"
-                oninput="seekFrame(this.value)">
-            </div>
-
-            <!-- Upload Video Button -->
-            <div>
-              <label for="videoUploadInput"
-                class="px-4 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-navy-800 to-navy-700 hover:from-navy-700 hover:to-navy-600 text-white border border-white/15 cursor-pointer flex items-center space-x-2 transition-all shadow-sm">
-                <i data-lucide="video" class="w-4 h-4 text-kinetic-cyan"></i>
-                <span>Upload Video</span>
-              </label>
-              <input type="file" id="videoUploadInput" accept="video/*" class="hidden"
-                onchange="handleFileUpload(event)">
+            <div id="biomechanicalFramesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <!-- Populated dynamically by renderBiomechanicalFrames(frames) -->
             </div>
           </div>
         </div>
 
-        <!-- RIGHT PANE: THE ACTIONABLE COACHING CARD & KINEMATICS (5 Cols) -->
-        <div class="lg:col-span-5 flex flex-col space-y-6">
+        <!-- RIGHT PANE (5 Cols): ANGLE DIAGNOSTICS & CORRECTIVE FEEDBACK -->
+        <div class="lg:col-span-5 flex flex-col space-y-4">
 
-          <!-- The Actionable Coaching Card (Thesis Section 4.6.6) -->
-          <div class="glass-panel rounded-3xl border border-white/10 p-6 relative overflow-hidden shadow-2xl space-y-5">
-            <!-- Glow background orb -->
-            <div id="cardGlow"
-              class="absolute -top-10 -right-10 w-44 h-44 bg-kinetic-teal/15 rounded-full blur-3xl pointer-events-none transition-colors duration-500">
-            </div>
-
-            <!-- Card Header & Severity Badge -->
-            <div class="flex items-center justify-between border-b border-white/10 pb-4">
-              <div class="flex items-center space-x-2">
-                <i data-lucide="sparkles" class="w-4 h-4 text-kinetic-gold"></i>
-                <span class="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase">The Coaching
-                  Card</span>
-              </div>
+          <div class="bg-[#161B22] rounded-xl border border-[#2A313C] p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-[#2A313C] pb-3">
+              <span class="text-xs font-mono font-semibold tracking-wider text-slate-400 uppercase">Shot Mechanics Diagnosis</span>
               <span id="severityBadge"
-                class="text-xs font-bold px-3 py-1 rounded-full bg-kinetic-emerald/15 text-kinetic-emerald border border-kinetic-emerald/30">
+                class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                 Optimal Execution
               </span>
             </div>
+            <!-- Hidden cardGlow placeholder for backward compatibility -->
+            <div id="cardGlow" class="hidden"></div>
 
-            <!-- Primary Fault Title, Form Score & Confidence -->
+            <!-- Diagnosis Title & Score -->
             <div class="flex items-start justify-between gap-4">
               <div class="space-y-1.5 flex-1 min-w-0">
-                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Shot Evaluation</span>
-                <h2 id="faultTitle"
-                  class="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight truncate">Ideal
-                  Shooting Form</h2>
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                  <div
-                    class="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs">
+                <span class="text-[11px] font-mono text-slate-400 uppercase block">Detected Classification</span>
+                <h2 id="faultTitle" class="text-2xl font-bold text-white tracking-tight truncate">Ideal Shooting Form</h2>
+                <div class="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
+                  <div class="px-2.5 py-1 rounded bg-[#0F1216] border border-[#2A313C]">
                     <span class="text-slate-400">Confidence:</span>
-                    <span id="confidenceScore" class="font-bold text-kinetic-teal font-mono">98.5%</span>
+                    <span id="confidenceScore" class="font-semibold text-sky-400 ml-1">98.5%</span>
                   </div>
-                  <div
-                    class="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs">
-                    <span class="text-slate-400">Kinematic Delta:</span>
-                    <span id="deviationText" class="font-bold text-slate-200 font-mono">0.0°</span>
+                  <div class="px-2.5 py-1 rounded bg-[#0F1216] border border-[#2A313C]">
+                    <span class="text-slate-400">Angle Delta:</span>
+                    <span id="deviationText" class="font-semibold text-white ml-1">0.0°</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Form Quality Score Ring -->
-              <div
-                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-navy-950/80 border border-white/10 shrink-0 shadow-lg text-center min-w-[90px]">
-                <span class="text-[9px] font-mono uppercase tracking-wider text-slate-400">Form Score</span>
+              <div class="flex flex-col items-center justify-center p-2.5 rounded-lg bg-[#0F1216] border border-[#2A313C] shrink-0 text-center min-w-[84px]">
+                <span class="text-[9px] font-mono uppercase text-slate-400">Form Score</span>
                 <div class="flex items-baseline justify-center mt-0.5">
-                  <span id="formScoreNum" class="text-2xl font-extrabold font-display text-kinetic-teal">98</span>
-                  <span class="text-[10px] text-slate-400 font-mono">/100</span>
+                  <span id="formScoreNum" class="text-2xl font-bold text-emerald-400 font-mono">98</span>
+                  <span class="text-[10px] text-slate-500 font-mono">/100</span>
                 </div>
-                <span id="formScoreLabel"
-                  class="text-[9px] font-bold text-kinetic-emerald uppercase tracking-wider mt-0.5">ELITE SWISH</span>
+                <span id="formScoreLabel" class="text-[9px] font-semibold text-emerald-400 uppercase mt-0.5">OPTIMAL</span>
               </div>
             </div>
 
-            <!-- SECTION 1: Biomechanical Consequence ("Why It Matters") -->
-            <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2">
-              <div class="flex items-center space-x-2 text-kinetic-amber font-bold text-xs uppercase tracking-wide">
-                <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                <span>Biomechanical Consequence ("Why It Matters"):</span>
+            <!-- Measured Joint Angle Summary Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-[#1B212A] p-3 rounded-lg border border-[#2A313C]">
+                <span class="text-[10px] font-mono uppercase text-slate-400 block">Min Elbow Angle</span>
+                <div class="flex items-baseline space-x-1.5 mt-0.5">
+                  <span id="metricElbow" class="text-lg font-bold font-mono text-white">88.5°</span>
+                  <span class="text-[10px] font-mono text-slate-500">ideal 88.5°</span>
+                </div>
+              </div>
+
+              <div class="bg-[#1B212A] p-3 rounded-lg border border-[#2A313C]">
+                <span class="text-[10px] font-mono uppercase text-slate-400 block">Release Elevation</span>
+                <div class="flex items-baseline space-x-1.5 mt-0.5">
+                  <span id="metricRelease" class="text-lg font-bold font-mono text-white">52.0°</span>
+                  <span class="text-[10px] font-mono text-slate-500">target 52.0°</span>
+                </div>
+              </div>
+
+              <div class="bg-[#1B212A] p-3 rounded-lg border border-[#2A313C]">
+                <span class="text-[10px] font-mono uppercase text-slate-400 block">Max Trunk Tilt</span>
+                <div class="flex items-baseline space-x-1.5 mt-0.5">
+                  <span id="metricTrunk" class="text-lg font-bold font-mono text-white">24.2°</span>
+                  <span class="text-[10px] font-mono text-slate-500">&lt; 48.7°</span>
+                </div>
+              </div>
+
+              <div class="bg-[#1B212A] p-3 rounded-lg border border-[#2A313C]">
+                <span class="text-[10px] font-mono uppercase text-slate-400 block">Processing Time</span>
+                <div class="flex items-baseline space-x-1.5 mt-0.5">
+                  <span id="metricLatency" class="text-lg font-bold font-mono text-sky-400">14 ms</span>
+                  <span class="text-[10px] font-mono text-slate-500">30 FPS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Biomechanical Finding -->
+            <div class="bg-[#1B212A] rounded-lg p-3.5 border border-[#2A313C] space-y-1.5">
+              <div class="flex items-center space-x-1.5 text-amber-400 font-semibold text-[11px] uppercase font-mono">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                <span>Biomechanical Finding</span>
               </div>
               <p id="whyItMatters" class="text-xs leading-relaxed text-slate-300">
-                Your kinetic chain demonstrates optimal sequential power transfer and release trajectory. Maintain this
-                muscle memory.
+                Your kinetic chain demonstrates sequential power transfer and balanced release trajectory.
               </p>
             </div>
 
-            <!-- SECTION 2: Targeted Drill Prescription ("What to do next") -->
-            <div
-              class="rounded-2xl p-4.5 bg-gradient-to-br from-navy-800/90 to-navy-900 border border-kinetic-teal/30 shadow-glow-teal space-y-3">
+            <!-- Corrective Drill Prescription -->
+            <div class="rounded-lg p-3.5 bg-[#1B212A] border border-blue-500/30 space-y-2.5">
               <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2 text-kinetic-teal font-bold text-xs uppercase tracking-wide">
-                  <i data-lucide="target" class="w-4 h-4"></i>
-                  <span>Targeted Drill Prescription:</span>
-                </div>
-                <span id="drillSets"
-                  class="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-navy-950 text-kinetic-teal border border-kinetic-teal/30">
+                <span class="text-[11px] font-mono font-semibold text-sky-400 uppercase flex items-center space-x-1.5">
+                  <i data-lucide="target" class="w-3.5 h-3.5"></i>
+                  <span>Recommended Drill</span>
+                </span>
+                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0F1216] text-slate-300 border border-[#2A313C]">
                   3 sets of 15 makes
                 </span>
               </div>
-
-              <h4 id="drillTitle" class="text-lg font-bold font-display text-white">Form Shooting Progression</h4>
-
-              <div class="bg-navy-950/80 rounded-xl p-3 border border-white/10 flex items-start space-x-2.5">
-                <i data-lucide="lightbulb" class="w-4 h-4 text-kinetic-gold shrink-0 mt-0.5"></i>
-                <p id="actionCue" class="text-xs text-slate-200 italic leading-relaxed">
-                  "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
-                </p>
+              <h4 id="drillTitle" class="text-base font-bold text-white">Form Shooting Progression</h4>
+              <div class="bg-[#0F1216] rounded p-2.5 border border-[#2A313C] text-xs text-slate-300 italic" id="actionCue">
+                "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
               </div>
             </div>
-
-            <!-- Kinematic Checkpoints Live Meters -->
-            <div class="grid grid-cols-2 gap-3 pt-1">
-              <div class="glass-card p-3 rounded-2xl border border-white/5 space-y-0.5">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">Elbow Angle</span>
-                <div class="flex items-baseline space-x-1.5">
-                  <span id="metricElbow" class="text-xl font-bold font-display text-white">88.5°</span>
-                  <span class="text-[10px] font-mono text-slate-500">/ 88.5° ideal</span>
-                </div>
-              </div>
-
-              <div class="glass-card p-3 rounded-2xl border border-white/5 space-y-0.5">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">Release Angle</span>
-                <div class="flex items-baseline space-x-1.5">
-                  <span id="metricRelease" class="text-xl font-bold font-display text-white">52.1°</span>
-                  <span class="text-[10px] font-mono text-slate-500">/ 52.0° target</span>
-                </div>
-              </div>
-
-              <div class="glass-card p-3 rounded-2xl border border-white/5 space-y-0.5">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">Trunk Tilt</span>
-                <div class="flex items-baseline space-x-1.5">
-                  <span id="metricTrunk" class="text-xl font-bold font-display text-white">24.2°</span>
-                  <span class="text-[10px] font-mono text-slate-500">&lt; 48.7° max</span>
-                </div>
-              </div>
-
-              <div class="glass-card p-3 rounded-2xl border border-white/5 space-y-0.5">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">Inference Speed</span>
-                <div class="flex items-baseline space-x-1.5">
-                  <span id="metricLatency" class="text-xl font-bold font-display text-kinetic-teal">14 ms</span>
-                  <span class="text-[10px] font-mono text-slate-500">&lt; 1500ms NFR</span>
-                </div>
-              </div>
-            </div>
-
           </div>
-
         </div>
-
       </div>
 
-      <!-- Kinetic Chain Velocity Transmission Chart (Thesis Section 3.3.4 & 7.3.2) -->
-      <div class="glass-panel rounded-3xl border border-white/10 p-6 space-y-4 shadow-xl">
+      <!-- Kinetic Chain Velocity Curve Chart -->
+      <div class="bg-[#161B22] rounded-xl border border-[#2A313C] p-5 space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-lg bg-kinetic-cyan/15 text-kinetic-cyan flex items-center justify-center">
-              <i data-lucide="activity" class="w-4 h-4 text-kinetic-cyan"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-bold font-display text-white tracking-wide">Kinetic Chain Velocity Transmission &
-                Sequencing</h3>
-              <p class="text-xs text-slate-400">Proximal-to-Distal Impulse Timing: Knee Drive vs. Elbow Acceleration vs.
-                Wrist Flick</p>
-            </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider font-mono text-white">Angular Velocity &amp; Kinematic Sequencing</h3>
+            <p class="text-xs text-slate-400">Knee drive vs. elbow extension angular velocity vs. wrist release snap across frame sequence</p>
           </div>
-          <span
-            class="text-xs font-mono text-kinetic-teal bg-kinetic-teal/10 px-3 py-1 rounded-full border border-kinetic-teal/20">
-            Validated 41% Improvement in Coordination
-          </span>
         </div>
-
-        <div class="h-60 w-full pt-2">
+        <div class="h-56 w-full">
           <canvas id="velocityChart"></canvas>
         </div>
       </div>
-
     </div>
 
-    <!-- ============================================================== -->
     <!-- TAB 2: COACH ANALYTICS DASHBOARD (THESIS SECTION 4.8)          -->
     <!-- ============================================================== -->
     <div id="view-dashboard" class="space-y-6 hidden">
@@ -1142,35 +948,16 @@
       return (Math.acos(cosTheta) * 180.0) / Math.PI;
     }
 
-    // Load Pre-Loaded FYP Sample Basketball Shot Video
+    // Load Reference Sample Shot Clip
     function loadSampleVideo(sampleIdx) {
-      for (let i = 0; i < 5; i++) {
-        const card = document.getElementById(`sample-card-${i}`);
-        if (card) {
-          if (i === sampleIdx) {
-            card.className = "p-3 rounded-2xl bg-kinetic-teal/20 border border-kinetic-teal text-left transition-all space-y-1.5 shadow-glow-teal";
-          } else {
-            card.className = "p-3 rounded-2xl bg-navy-950/70 hover:bg-navy-800 border border-white/10 text-left transition-all space-y-1.5 shadow-md";
-          }
-        }
-      }
-
-      const sampleNames = [
-        "Sample 01: Ideal Swish Shot",
-        "Sample 02: Low Elbow Set Point",
-        "Sample 03: Truncated Follow-Through",
-        "Sample 04: Imbalanced Base (Lateral Sway)",
-        "Sample 05: Early Release Desynchronization"
-      ];
-
+      resetUploadedVideoMode();
       const statusPill = document.getElementById('telemetry-status');
       if (statusPill) {
-        statusPill.innerText = `Ingesting: ${sampleNames[sampleIdx]}`;
-        statusPill.className = "text-kinetic-teal font-semibold animate-pulse";
+        statusPill.innerText = `Reference Clip #${sampleIdx + 1}`;
+        statusPill.className = "text-sky-400 font-semibold";
       }
-
       const hudTitle = document.getElementById('hud-mode-title');
-      if (hudTitle) hudTitle.innerText = "SAMPLE VIDEO TELEMETRY";
+      if (hudTitle) hudTitle.innerText = "ANGLES";
 
       if (isCameraOn) stopCamera();
       runBenchmark(sampleIdx);
@@ -2055,11 +1842,11 @@
           // Trigger CSS reflow for smooth re-entry
           void view.offsetWidth;
           view.classList.add('tab-view-fade');
-          btn.className = "px-4 py-2 text-xs font-semibold rounded-xl transition-all bg-gradient-to-r from-kinetic-teal/20 to-kinetic-cyan/20 text-kinetic-teal border border-kinetic-teal/40 shadow-glow-teal flex items-center space-x-2";
+          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#212832] text-white border border-[#38BDF8]/40 flex items-center space-x-1.5";
         } else {
           view.classList.add('hidden');
           view.classList.remove('tab-view-fade');
-          btn.className = "px-4 py-2 text-xs font-semibold rounded-xl transition-all text-slate-400 hover:text-white flex items-center space-x-2";
+          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-400 hover:text-white flex items-center space-x-1.5";
         }
       });
       lucide.createIcons();
@@ -2073,16 +1860,17 @@
         const btn = document.getElementById(`btn-bm-${i}`);
         if (btn) {
           if (i === faultType) {
-            btn.className = "px-2.5 py-1 text-[11px] font-bold rounded-xl bg-kinetic-teal text-navy-950 shadow-glow-teal transition-all border border-kinetic-teal";
+            btn.className = "px-2.5 py-1 text-[11px] font-medium rounded bg-blue-600 text-white border border-blue-500 transition-colors";
           } else {
-            btn.className = "px-2.5 py-1 text-[11px] font-bold rounded-xl bg-navy-800 hover:border-white/30 text-slate-300 transition-all border border-white/10";
+            btn.className = "px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors";
           }
         }
       }
 
       try {
         const formData = new FormData();
-        formData.append('athlete_id', 'ATH-001');
+        const athleteSel = document.getElementById('athleteSelect');
+        formData.append('athlete_id', athleteSel ? athleteSel.value : 'ATH-001');
         formData.append('benchmark_fault', faultType);
 
         const res = await fetch('/api/analyze-shot', {
@@ -2098,13 +1886,191 @@
       }
     }
 
-    async function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    // State for Uploaded Video + Real 3D/2D Overlay Sync
+    let isUploadedVideoMode = false;
+    let showVideoBackground = true;
+    let uploadedOverlayFrames = []; // 2D normalized image landmarks [x,y] per frame matching uploadedVideo
+    let uploadedVideoDuration = 2.0;
+    let currentBioFrames = [];
+    let isExtractingVideo = false;
 
+    function toggleVideoOverlayMode() {
+      showVideoBackground = !showVideoBackground;
+      const vid = document.getElementById('uploadedVideo');
+      const btn = document.getElementById('btn-video-overlay-toggle');
+      if (vid && isUploadedVideoMode) {
+        if (showVideoBackground) vid.classList.remove('hidden');
+        else vid.classList.add('hidden');
+      }
+      if (btn) {
+        btn.innerText = showVideoBackground ? 'Mode: Video + Skeleton' : 'Mode: Skeleton Only';
+      }
+      renderSkeletalFrame(currentFrameFloat);
+    }
+
+    function resetUploadedVideoMode() {
+      isUploadedVideoMode = false;
+      uploadedOverlayFrames = [];
+      const vid = document.getElementById('uploadedVideo');
+      if (vid) {
+        vid.pause();
+        vid.classList.add('hidden');
+      }
+      const badge = document.getElementById('uploadedFileBadge');
+      if (badge) badge.classList.add('hidden');
+      const toggleBtn = document.getElementById('btn-video-overlay-toggle');
+      if (toggleBtn) toggleBtn.classList.add('hidden');
+    }
+
+    // Promise-wrapped frame pose extractor using MediaPipe Pose
+    function extractPoseForCurrentVideoFrame(videoEl) {
+      return new Promise((resolve) => {
+        if (!mediaPipePose) {
+          resolve(null);
+          return;
+        }
+        let settled = false;
+        const timer = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            resolve(null);
+          }
+        }, 1200);
+
+        mediaPipePose.onResults((results) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve(results);
+        });
+
+        mediaPipePose.send({ image: videoEl }).catch(() => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timer);
+            resolve(null);
+          }
+        });
+      });
+    }
+
+    function seekVideoElement(videoEl, timeSec) {
+      return new Promise((resolve) => {
+        const onSeeked = () => {
+          videoEl.removeEventListener('seeked', onSeeked);
+          resolve();
+        };
+        videoEl.addEventListener('seeked', onSeeked);
+        videoEl.currentTime = Math.max(0, Math.min(videoEl.duration || 0, timeSec));
+      });
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || isExtractingVideo) return;
+
+      if (isCameraOn) stopCamera();
+      pausePlayback();
+      isExtractingVideo = true;
+
+      const vid = document.getElementById('uploadedVideo');
+      const overlay = document.getElementById('videoExtractionOverlay');
+      const progBar = document.getElementById('extractionProgressBar');
+      const progPct = document.getElementById('extractionProgressPct');
+      const detailTxt = document.getElementById('extractionDetailText');
+      const badge = document.getElementById('uploadedFileBadge');
+      const toggleBtn = document.getElementById('btn-video-overlay-toggle');
+
+      if (overlay) overlay.classList.remove('hidden');
+      if (badge) {
+        badge.innerText = file.name;
+        badge.classList.remove('hidden');
+      }
+
+      const objectUrl = URL.createObjectURL(file);
+      vid.src = objectUrl;
+      vid.classList.remove('hidden');
+      isUploadedVideoMode = true;
+      showVideoBackground = true;
+      if (toggleBtn) {
+        toggleBtn.classList.remove('hidden');
+        toggleBtn.innerText = 'Mode: Video + Skeleton';
+      }
+
+      // Wait for metadata (duration & natural dimensions)
+      await new Promise((resolve) => {
+        if (vid.readyState >= 1 && vid.duration) return resolve();
+        vid.onloadedmetadata = () => resolve();
+      });
+
+      uploadedVideoDuration = vid.duration && isFinite(vid.duration) ? vid.duration : 2.0;
+      const sampleCount = 30;
+      const extractedWorld3D = [];
+      const extractedOverlay2D = [];
+
+      // Ensure MediaPipe Pose is initialized
+      if (!mediaPipePose) setupMediaPipePose();
+
+      let validCount = 0;
+      for (let i = 0; i < sampleCount; i++) {
+        const tSec = (i / (sampleCount - 1)) * Math.max(0.1, uploadedVideoDuration - 0.05);
+        await seekVideoElement(vid, tSec);
+
+        const pct = Math.round(((i + 1) / sampleCount) * 100);
+        if (progBar) progBar.style.width = `${pct}%`;
+        if (progPct) progPct.innerText = `${pct}%`;
+        if (detailTxt) detailTxt.innerText = `Scanning biomechanical frame ${i + 1} / ${sampleCount} (${tSec.toFixed(2)}s)...`;
+
+        const results = await extractPoseForCurrentVideoFrame(vid);
+        if (results && results.poseLandmarks && results.poseLandmarks.length === 33) {
+          validCount++;
+          // Store 2D image-space landmarks [0..1, 0..1] for pixel-accurate overlay on <video>
+          extractedOverlay2D.push(results.poseLandmarks.map(p => [p.x, p.y, p.z || 0]));
+
+          // Prefer 3D metric world landmarks for clinical angle math
+          if (results.poseWorldLandmarks && results.poseWorldLandmarks.length === 33) {
+            extractedWorld3D.push(results.poseWorldLandmarks.map(p => [p.x, p.y, p.z]));
+          } else {
+            extractedWorld3D.push(results.poseLandmarks.map(p => [(p.x - 0.5) * 2, (p.y - 0.5) * 2, p.z || 0]));
+          }
+        } else {
+          extractedOverlay2D.push(null);
+          extractedWorld3D.push(null);
+        }
+      }
+
+      // Restore live camera callback on mediaPipePose
+      if (mediaPipePose) {
+        mediaPipePose.onResults(onMediaPipeResults);
+      }
+
+      // Interpolate missing pose frames from nearest detected frame
+      let lastValid2D = extractedOverlay2D.find(f => f !== null);
+      let lastValid3D = extractedWorld3D.find(f => f !== null);
+
+      if (validCount > 0 && lastValid2D && lastValid3D) {
+        for (let i = 0; i < sampleCount; i++) {
+          if (extractedOverlay2D[i] === null) extractedOverlay2D[i] = lastValid2D;
+          else lastValid2D = extractedOverlay2D[i];
+
+          if (extractedWorld3D[i] === null) extractedWorld3D[i] = lastValid3D;
+          else lastValid3D = extractedWorld3D[i];
+        }
+        uploadedOverlayFrames = extractedOverlay2D;
+      } else {
+        uploadedOverlayFrames = [];
+      }
+
+      const athleteSel = document.getElementById('athleteSelect');
+      const athleteId = athleteSel ? athleteSel.value : 'ATH-001';
       const formData = new FormData();
       formData.append('video', file);
-      formData.append('athlete_id', 'ATH-001');
+      formData.append('athlete_id', athleteId);
+      if (validCount >= 5) {
+        formData.append('landmarks_json', JSON.stringify(extractedWorld3D));
+      }
+
+      if (detailTxt) detailTxt.innerText = 'Computing 3D joint angles & identifying biomechanical key frames...';
 
       try {
         const res = await fetch('/api/analyze-shot', {
@@ -2115,17 +2081,83 @@
         if (data.status === 'success') {
           updateUIWithResults(data);
           switchTab('analyzer');
-          document.getElementById('faultTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } catch (err) {
         console.error('File upload analysis error:', err);
+      } finally {
+        if (overlay) overlay.classList.add('hidden');
+        if (progBar) progBar.style.width = '0%';
+        isExtractingVideo = false;
       }
+    }
+
+    function renderBiomechanicalFrames(frames) {
+      currentBioFrames = frames || [];
+      const grid = document.getElementById('biomechanicalFramesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      if (!currentBioFrames.length) {
+        grid.innerHTML = '<div class="col-span-4 text-xs text-slate-400 font-mono">No biomechanical keyframes segmented.</div>';
+        return;
+      }
+
+      currentBioFrames.forEach((f, i) => {
+        const card = document.createElement('button');
+        card.id = `bio-frame-card-${f.id}`;
+        card.onclick = () => jumpToBiomechanicalFrame(f);
+        card.className = "text-left p-2.5 rounded-lg bg-[#1B212A] hover:bg-[#212832] border border-[#2A313C] hover:border-blue-500/60 transition-colors space-y-1";
+
+        let primaryMetric = `Elbow: ${f.elbow_deg}°`;
+        if (f.id === 'dip') primaryMetric = `Knee: ${f.knee_deg}°`;
+        else if (f.id === 'release') primaryMetric = `Release: ${f.release_deg}°`;
+        else if (f.id === 'follow_through') primaryMetric = `Ext: ${f.elbow_deg}°`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono font-semibold text-sky-400">${f.phase}</span>
+            <span class="text-[10px] font-mono text-slate-400">F${f.frame_idx + 1} (${f.time_sec}s)</span>
+          </div>
+          <div class="text-xs font-semibold text-white truncate">${f.title}</div>
+          <div class="text-[11px] font-mono font-semibold text-emerald-400">${primaryMetric}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function jumpToBiomechanicalFrame(frameObj) {
+      pausePlayback();
+      currentBioFrames.forEach(f => {
+        const el = document.getElementById(`bio-frame-card-${f.id}`);
+        if (el) {
+          el.className = f.id === frameObj.id
+            ? "text-left p-2.5 rounded-lg bg-blue-600/15 border border-blue-500 transition-colors space-y-1"
+            : "text-left p-2.5 rounded-lg bg-[#1B212A] hover:bg-[#212832] border border-[#2A313C] hover:border-blue-500/60 transition-colors space-y-1";
+        }
+      });
+
+      const targetFrame = Math.min((currentWireframes.length || 30) - 1, Math.max(0, frameObj.frame_idx));
+      currentFrameFloat = targetFrame;
+      currentFrameIdx = targetFrame;
+      const slider = document.getElementById('timelineSlider');
+      if (slider) slider.value = targetFrame;
+
+      // Sync uploaded video to this exact frame timestamp
+      if (isUploadedVideoMode) {
+        const vid = document.getElementById('uploadedVideo');
+        if (vid && uploadedVideoDuration > 0) {
+          const ratio = frameObj.progress_ratio !== undefined ? frameObj.progress_ratio : (targetFrame / Math.max(1, (currentWireframes.length || 30) - 1));
+          vid.currentTime = ratio * uploadedVideoDuration;
+        }
+      }
+
+      renderSkeletalFrame(targetFrame);
     }
 
     function updateUIWithResults(data) {
       const card = data.coaching_card;
       const kin = data.kinematic_summary;
-      
+
       document.getElementById('faultTitle').innerText = card.primary_fault;
       document.getElementById('confidenceScore').innerText = `${card.confidence_score}%`;
       document.getElementById('deviationText').innerText = `${card.deviation_degrees}°`;
@@ -2134,58 +2166,45 @@
       document.getElementById('drillSets').innerText = card.drill_sets_reps;
       document.getElementById('actionCue').innerText = `"${card.actionable_cue}"`;
 
-      // Form Quality Score Ring (0-100)
       const formScores = {
-        0: { score: 98, label: "ELITE SWISH", color: "text-kinetic-teal" },
-        1: { score: 64, label: "LOW ELBOW", color: "text-kinetic-coral" },
-        2: { score: 72, label: "SHORT SNAP", color: "text-kinetic-amber" },
-        3: { score: 58, label: "OFF BALANCE", color: "text-purple-400" },
-        4: { score: 69, label: "EARLY RELEASE", color: "text-kinetic-cyan" }
+        0: { score: 98, label: "OPTIMAL", color: "text-emerald-400" },
+        1: { score: 64, label: "LOW ELBOW", color: "text-red-400" },
+        2: { score: 72, label: "SHORT SNAP", color: "text-amber-400" },
+        3: { score: 58, label: "OFF BALANCE", color: "text-amber-400" },
+        4: { score: 69, label: "EARLY RELEASE", color: "text-sky-400" }
       };
       const fId = card.fault_id !== undefined ? card.fault_id : 0;
-      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-kinetic-teal" };
+      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-sky-400" };
       const scoreNumEl = document.getElementById('formScoreNum');
       const scoreLabelEl = document.getElementById('formScoreLabel');
       if (scoreNumEl) {
         scoreNumEl.innerText = fInfo.score;
-        scoreNumEl.className = `text-2xl font-extrabold font-display ${fInfo.color}`;
+        scoreNumEl.className = `text-2xl font-bold font-mono ${fInfo.color}`;
       }
       if (scoreLabelEl) {
         scoreLabelEl.innerText = fInfo.label;
-        scoreLabelEl.className = `text-[9px] font-bold uppercase tracking-wider mt-0.5 ${fInfo.color}`;
+        scoreLabelEl.className = `text-[9px] font-semibold uppercase mt-0.5 ${fInfo.color}`;
       }
 
-      // Severity badge styling (Clarifying technique classification vs server health)
       const sevBadge = document.getElementById('severityBadge');
-      const cardGlow = document.getElementById('cardGlow');
-      
-      let badgeLabel = card.severity_tier || "Form Analyzed";
+      let badgeLabel = card.severity_tier || "Analyzed";
       if (card.fault_id === 0 || card.severity_level === 0) {
-        badgeLabel = "Optimal Shooting Form";
-        sevBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-kinetic-emerald/15 text-kinetic-emerald border border-kinetic-emerald/30";
-        cardGlow.className = "absolute -top-10 -right-10 w-44 h-44 bg-kinetic-emerald/15 rounded-full blur-3xl pointer-events-none";
+        badgeLabel = "Optimal Execution";
+        sevBadge.className = "text-[11px] font-semibold px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
       } else if (card.severity_level === 3 || badgeLabel.includes("Breakdown") || badgeLabel.includes("Major")) {
-        badgeLabel = "Form Severity: Major Technique Flaw";
-        sevBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-kinetic-crimson/20 text-kinetic-coral border border-kinetic-crimson/40";
-        cardGlow.className = "absolute -top-10 -right-10 w-44 h-44 bg-kinetic-crimson/20 rounded-full blur-3xl pointer-events-none";
-      } else if (card.severity_level === 2) {
-        badgeLabel = "Form Severity: Moderate Fault";
-        sevBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-kinetic-amber/20 text-kinetic-gold border border-kinetic-amber/30";
-        cardGlow.className = "absolute -top-10 -right-10 w-44 h-44 bg-kinetic-amber/20 rounded-full blur-3xl pointer-events-none";
+        badgeLabel = "Major Technique Flaw";
+        sevBadge.className = "text-[11px] font-semibold px-2.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30";
       } else {
-        badgeLabel = "Form Severity: Minor Deviation";
-        sevBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-kinetic-cyan/20 text-kinetic-cyan border border-kinetic-cyan/30";
-        cardGlow.className = "absolute -top-10 -right-10 w-44 h-44 bg-kinetic-cyan/20 rounded-full blur-3xl pointer-events-none";
+        badgeLabel = "Moderate Deviation";
+        sevBadge.className = "text-[11px] font-semibold px-2.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30";
       }
       sevBadge.innerText = badgeLabel;
 
-      // Checkpoints
       document.getElementById('metricElbow').innerText = `${kin.min_elbow_angle}°`;
       document.getElementById('metricRelease').innerText = `${kin.release_angle_deg}°`;
       document.getElementById('metricTrunk').innerText = `${kin.max_trunk_tilt}°`;
       document.getElementById('metricLatency').innerText = `${data.latency_ms} ms`;
 
-      // Report View
       document.getElementById('reportElbow').innerText = `${kin.min_elbow_angle}° (Ideal: 88.5°)`;
       document.getElementById('reportRelease').innerText = `${kin.release_angle_deg}° (Target: 52.0°)`;
       document.getElementById('reportTrunk').innerText = `${kin.max_trunk_tilt}° (Max: 48.7°)`;
@@ -2195,11 +2214,13 @@
 
       currentWireframes = data.wireframes;
       currentFrameIdx = 0;
+      currentFrameFloat = 0;
       document.getElementById('timelineSlider').max = currentWireframes.length - 1;
       document.getElementById('timelineSlider').value = 0;
 
+      renderBiomechanicalFrames(data.biomechanical_frames || []);
       updateVelocityChart(data.velocity_curve);
-      renderSkeletalFrame(currentFrameIdx);
+      renderSkeletalFrame(0);
       startPlayback();
     }
 
@@ -2217,232 +2238,178 @@
 
       ctx.clearRect(0, 0, W, H);
 
-      // 1. Draw Basketball Court Floor & Target Regulation Hoop
-      drawHoopWireframe(ctx, W, H);
+      const vid = document.getElementById('uploadedVideo');
+      const overlayActive = isUploadedVideoMode && showVideoBackground && uploadedOverlayFrames.length > 0 && vid && vid.videoWidth > 0;
 
-      // 2. High-Accuracy Anatomical Coordinate Transformation (Sagittal Projection)
-      function toScreen(pt) {
-        if (!pt || !Array.isArray(pt)) return [W * 0.34, H * 0.5];
-        const x = pt[0] || 0;
-        const y = pt[1] || 0;
-        // Biomechanical projection: Pelvis center (0, 0) at (W * 0.34, H * 0.48)
-        // Floor line at H * 0.86, Head apex at H * 0.18
-        const screenX = W * 0.34 + x * W * 0.42;
-        const screenY = H * 0.48 + y * H * 0.42;
-        return [screenX, screenY];
+      // Sync <video> timestamp during active uploaded video playback
+      if (isUploadedVideoMode && vid && uploadedVideoDuration > 0 && currentWireframes.length > 1) {
+        const targetTime = (frameFloat / (currentWireframes.length - 1)) * uploadedVideoDuration;
+        if (Math.abs(vid.currentTime - targetTime) > 0.04) {
+          vid.currentTime = Math.max(0, Math.min(uploadedVideoDuration, targetTime));
+        }
       }
 
-      const joints = frameData.joints || {};
+      // Draw Court Floor & Hoop only in Skeleton-Only view (so we don't draw over user's real gym video)
+      if (!overlayActive) {
+        drawHoopWireframe(ctx, W, H);
+      }
+
+      // Compute video letterbox transform when overlaying directly onto uploaded <video>
+      let vidRect = { x: 0, y: 0, w: W, h: H };
+      if (overlayActive) {
+        const vRatio = vid.videoWidth / vid.videoHeight;
+        const cRatio = W / H;
+        if (vRatio > cRatio) {
+          vidRect.w = W;
+          vidRect.h = W / vRatio;
+          vidRect.x = 0;
+          vidRect.y = (H - vidRect.h) / 2;
+        } else {
+          vidRect.h = H;
+          vidRect.w = H * vRatio;
+          vidRect.x = (W - vidRect.w) / 2;
+          vidRect.y = 0;
+        }
+      }
+
+      // Map 3D joint metrics -> 2D screen coordinates (Video-locked overlay OR synthetic sagittal stage)
+      let joints = frameData.joints || {};
       const colors = frameData.joint_colors || {};
 
-      // Calculate Landmark Coordinates
-      const nose = joints.nose ? toScreen(joints.nose) : [W * 0.38, H * 0.20];
-      const shL = joints.left_shoulder ? toScreen(joints.left_shoulder) : [W * 0.34, H * 0.28];
-      const shR = joints.right_shoulder ? toScreen(joints.right_shoulder) : [W * 0.42, H * 0.28];
-      const elL = joints.left_elbow ? toScreen(joints.left_elbow) : [W * 0.30, H * 0.36];
-      const elR = joints.right_elbow ? toScreen(joints.right_elbow) : [W * 0.45, H * 0.36];
-      const wrL = joints.left_wrist ? toScreen(joints.left_wrist) : [W * 0.32, H * 0.32];
-      const wrR = joints.right_wrist ? toScreen(joints.right_wrist) : [W * 0.46, H * 0.24];
-      const hipL = joints.left_hip ? toScreen(joints.left_hip) : [W * 0.32, H * 0.48];
-      const hipR = joints.right_hip ? toScreen(joints.right_hip) : [W * 0.36, H * 0.48];
-      const knL = joints.left_knee ? toScreen(joints.left_knee) : [W * 0.32, H * 0.67];
-      const knR = joints.right_knee ? toScreen(joints.right_knee) : [W * 0.37, H * 0.67];
-      const akL = joints.left_ankle ? toScreen(joints.left_ankle) : [W * 0.32, H * 0.86];
-      const akR = joints.right_ankle ? toScreen(joints.right_ankle) : [W * 0.36, H * 0.86];
+      let nose, shL, shR, elL, elR, wrL, wrR, hipL, hipR, knL, knR, akL, akR;
 
-      // Anatomical Centers
+      if (overlayActive) {
+        const fA = uploadedOverlayFrames[frameIdx];
+        const fB = uploadedOverlayFrames[(frameIdx + 1) % uploadedOverlayFrames.length] || fA;
+        const alpha = frameFloat - Math.floor(frameFloat);
+        const map2D = (lmIdx) => {
+          const a = fA[lmIdx], b = fB[lmIdx] || a;
+          const nx = a[0] + (b[0] - a[0]) * alpha;
+          const ny = a[1] + (b[1] - a[1]) * alpha;
+          return [vidRect.x + nx * vidRect.w, vidRect.y + ny * vidRect.h];
+        };
+        nose = map2D(0);
+        shL = map2D(11); shR = map2D(12);
+        elL = map2D(13); elR = map2D(14);
+        wrL = map2D(15); wrR = map2D(16);
+        hipL = map2D(23); hipR = map2D(24);
+        knL = map2D(25); knR = map2D(26);
+        akL = map2D(27); akR = map2D(28);
+      } else {
+        function toScreen(pt) {
+          if (!pt || !Array.isArray(pt)) return [W * 0.34, H * 0.5];
+          const x = pt[0] || 0;
+          const y = pt[1] || 0;
+          return [W * 0.34 + x * W * 0.42, H * 0.48 + y * H * 0.42];
+        }
+        nose = joints.nose ? toScreen(joints.nose) : [W * 0.38, H * 0.20];
+        shL = joints.left_shoulder ? toScreen(joints.left_shoulder) : [W * 0.34, H * 0.28];
+        shR = joints.right_shoulder ? toScreen(joints.right_shoulder) : [W * 0.42, H * 0.28];
+        elL = joints.left_elbow ? toScreen(joints.left_elbow) : [W * 0.30, H * 0.36];
+        elR = joints.right_elbow ? toScreen(joints.right_elbow) : [W * 0.45, H * 0.36];
+        wrL = joints.left_wrist ? toScreen(joints.left_wrist) : [W * 0.32, H * 0.32];
+        wrR = joints.right_wrist ? toScreen(joints.right_wrist) : [W * 0.46, H * 0.24];
+        hipL = joints.left_hip ? toScreen(joints.left_hip) : [W * 0.32, H * 0.48];
+        hipR = joints.right_hip ? toScreen(joints.right_hip) : [W * 0.36, H * 0.48];
+        knL = joints.left_knee ? toScreen(joints.left_knee) : [W * 0.32, H * 0.67];
+        knR = joints.right_knee ? toScreen(joints.right_knee) : [W * 0.37, H * 0.67];
+        akL = joints.left_ankle ? toScreen(joints.left_ankle) : [W * 0.32, H * 0.86];
+        akR = joints.right_ankle ? toScreen(joints.right_ankle) : [W * 0.36, H * 0.86];
+      }
+
       const neck = [(shL[0] + shR[0]) / 2, (shL[1] + shR[1]) / 2];
       const pelvis = [(hipL[0] + hipR[0]) / 2, (hipL[1] + hipR[1]) / 2];
-
       const hoopX = W * 0.82;
       const hoopY = H * 0.33;
 
-      // 3. Vision Gaze Vector Line (Athletic focus on basket rim)
-      ctx.save();
-      ctx.setLineDash([3, 5]);
-      ctx.strokeStyle = 'rgba(0, 245, 212, 0.30)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(nose[0], nose[1]);
-      ctx.lineTo(hoopX, hoopY);
-      ctx.stroke();
-      ctx.restore();
-
-      // 4. Draw Guide Arm (Off-Ball Support Left Arm) in Distinct Slate-Lavender
-      ctx.save();
-      ctx.lineWidth = 3.5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#818CF8';
-      ctx.shadowColor = '#818CF8';
-      ctx.shadowBlur = 6;
-      ctx.beginPath();
-      ctx.moveTo(shL[0], shL[1]);
-      ctx.lineTo(elL[0], elL[1]);
-      ctx.lineTo(wrL[0], wrL[1]);
-      ctx.stroke();
-
-      // Guide Arm Joint Nodes
-      [shL, elL, wrL].forEach(pt => {
-        ctx.fillStyle = '#C7D2FE';
-        ctx.beginPath();
-        ctx.arc(pt[0], pt[1], 4, 0, 2 * Math.PI);
-        ctx.fill();
-      });
-      ctx.restore();
-
-      // 5. Draw Lower Body Kinetic Chain (Both Legs & Planted Feet)
-      ctx.save();
-      ctx.lineWidth = 4.5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#00F5D4';
-      ctx.shadowColor = '#00F5D4';
-      ctx.shadowBlur = 8;
-
-      // Left Leg
-      ctx.beginPath();
-      ctx.moveTo(hipL[0], hipL[1]);
-      ctx.lineTo(knL[0], knL[1]);
-      ctx.lineTo(akL[0], akL[1]);
-      ctx.lineTo(akL[0] + 16, akL[1]); // Foot to toe
-      ctx.stroke();
-
-      // Right Leg (Dominant drive)
-      const isLegFault = (colors.right_knee === '#FF3366');
-      ctx.strokeStyle = isLegFault ? '#F72585' : '#00F5D4';
-      ctx.shadowColor = isLegFault ? '#F72585' : '#00F5D4';
-      ctx.beginPath();
-      ctx.moveTo(hipR[0], hipR[1]);
-      ctx.lineTo(knR[0], knR[1]);
-      ctx.lineTo(akR[0], akR[1]);
-      ctx.lineTo(akR[0] + 18, akR[1]); // Foot to toe
-      ctx.stroke();
-      ctx.restore();
-
-      // 6. Draw Torso Core & Spinal Column
-      const isTrunkFault = (colors.right_shoulder === '#FF3366');
-      ctx.save();
-      ctx.lineWidth = 5.5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = isTrunkFault ? '#F72585' : '#00F5D4';
-      ctx.shadowColor = isTrunkFault ? '#F72585' : '#00F5D4';
-      ctx.shadowBlur = isTrunkFault ? 16 : 10;
-
-      // Spinal Column (Neck to Pelvic Center)
-      ctx.beginPath();
-      ctx.moveTo(neck[0], neck[1]);
-      ctx.lineTo(pelvis[0], pelvis[1]);
-      ctx.stroke();
-
-      // Shoulder and Hip Bridges
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(shL[0], shL[1]);
-      ctx.lineTo(shR[0], shR[1]);
-      ctx.moveTo(hipL[0], hipL[1]);
-      ctx.lineTo(hipR[0], hipR[1]);
-      ctx.stroke();
-
-      // Center of Mass (COM) Crosshair Reticle at Pelvis
-      ctx.fillStyle = isTrunkFault ? '#F72585' : '#10B981';
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(pelvis[0], pelvis[1], 5, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-
-      // 7. Anatomical Cranium / Head
-      ctx.save();
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      ctx.strokeStyle = '#00F5D4';
-      ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#00F5D4';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(nose[0], nose[1], 13, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
-
-      // Eye pupil facing right towards rim
-      ctx.fillStyle = '#00F5D4';
-      ctx.beginPath();
-      ctx.arc(nose[0] + 5, nose[1] - 1, 2.5, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.restore();
-
-      // 8. Draw Dominant Shooting Arm (The Active Kinetic Chain)
       const isElbowFault = (colors.right_elbow === '#FF3366');
       const isWristFault = (colors.right_wrist === '#FF3366');
+      const isTrunkFault = (colors.right_shoulder === '#FF3366');
+      const isLegFault = (colors.right_knee === '#FF3366');
+
+      // Helper for high-contrast crisp clinical vector lines
+      function drawSegment(p1, p2, strokeColor, width) {
+        ctx.save();
+        ctx.lineCap = 'round';
+        // Dark contrast halo so segments stay crisp over bright court videos
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.lineWidth = width + 2;
+        ctx.beginPath();
+        ctx.moveTo(p1[0], p1[1]);
+        ctx.lineTo(p2[0], p2[1]);
+        ctx.stroke();
+
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = width;
+        ctx.beginPath();
+        ctx.moveTo(p1[0], p1[1]);
+        ctx.lineTo(p2[0], p2[1]);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Guide Arm (Support Left)
+      drawSegment(shL, elL, '#94A3B8', 3);
+      drawSegment(elL, wrL, '#94A3B8', 3);
+
+      // Lower Body Legs
+      drawSegment(hipL, knL, '#CBD5E1', 3.5);
+      drawSegment(knL, akL, '#CBD5E1', 3.5);
+      drawSegment(hipR, knR, isLegFault ? '#EF4444' : '#E2E8F0', 4);
+      drawSegment(knR, akR, isLegFault ? '#EF4444' : '#E2E8F0', 4);
+
+      // Torso Core & Shoulders
+      drawSegment(neck, pelvis, isTrunkFault ? '#EF4444' : '#E2E8F0', 4);
+      drawSegment(shL, shR, '#CBD5E1', 3);
+      drawSegment(hipL, hipR, '#CBD5E1', 3);
+
+      // Head marker
       ctx.save();
-      ctx.lineWidth = 5.5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = (isElbowFault || isWristFault) ? '#F72585' : '#00F5D4';
-      ctx.shadowColor = (isElbowFault || isWristFault) ? '#F72585' : '#00F5D4';
-      ctx.shadowBlur = (isElbowFault || isWristFault) ? 18 : 12;
-
-      // Upper Arm: Shoulder -> Elbow
+      ctx.strokeStyle = '#38BDF8';
+      ctx.fillStyle = 'rgba(15, 18, 22, 0.6)';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(shR[0], shR[1]);
-      ctx.lineTo(elR[0], elR[1]);
-      ctx.stroke();
-
-      // Forearm: Elbow -> Wrist
-      ctx.strokeStyle = isWristFault ? '#F72585' : '#00F5D4';
-      ctx.beginPath();
-      ctx.moveTo(elR[0], elR[1]);
-      ctx.lineTo(wrR[0], wrR[1]);
-      ctx.stroke();
-
-      // Follow-Through Hand Fingers
-      const fingerAngle = Math.atan2(wrR[1] - elR[1], wrR[0] - elR[0]);
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(wrR[0], wrR[1]);
-      ctx.lineTo(wrR[0] + 12 * Math.cos(fingerAngle), wrR[1] + 12 * Math.sin(fingerAngle));
+      ctx.arc(nose[0], nose[1], overlayActive ? 8 : 11, 0, 2 * Math.PI);
+      ctx.fill();
       ctx.stroke();
       ctx.restore();
 
-      // 9. Pulsing Glowing Joint Nodes
-      const keyJoints = [
-        { pt: shR, faulty: isTrunkFault },
-        { pt: elR, faulty: isElbowFault, r: 7 },
-        { pt: wrR, faulty: isWristFault, r: 6 },
-        { pt: hipR, faulty: isTrunkFault },
-        { pt: knR, faulty: isLegFault, r: 6 },
-        { pt: akR, faulty: false }
-      ];
+      // Dominant Shooting Arm (Highlighted Clinical Blue or Crimson Fault)
+      const armColor = (isElbowFault || isWristFault) ? '#EF4444' : '#38BDF8';
+      drawSegment(shR, elR, armColor, 4.5);
+      drawSegment(elR, wrR, isWristFault ? '#EF4444' : '#38BDF8', 4.5);
 
-      keyJoints.forEach(j => {
-        ctx.fillStyle = j.faulty ? '#F72585' : '#FFFFFF';
-        ctx.shadowColor = j.faulty ? '#F72585' : '#00BBF9';
-        ctx.shadowBlur = j.faulty ? 16 : 8;
+      // Key Joint Nodes
+      [
+        { pt: shR, faulty: isTrunkFault, r: 4.5 },
+        { pt: elR, faulty: isElbowFault, r: 6 },
+        { pt: wrR, faulty: isWristFault, r: 5 },
+        { pt: hipR, faulty: isTrunkFault, r: 4.5 },
+        { pt: knR, faulty: isLegFault, r: 5 },
+        { pt: akR, faulty: false, r: 4 }
+      ].forEach(j => {
+        ctx.save();
+        ctx.fillStyle = j.faulty ? '#EF4444' : '#FFFFFF';
+        ctx.strokeStyle = '#0F1216';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(j.pt[0], j.pt[1], j.r || 5, 0, 2 * Math.PI);
+        ctx.arc(j.pt[0], j.pt[1], j.r, 0, 2 * Math.PI);
         ctx.fill();
-
-        if (j.faulty) {
-          ctx.strokeStyle = 'rgba(247, 37, 133, 0.7)';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(j.pt[0], j.pt[1], (j.r || 5) + 6, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
+        ctx.stroke();
+        ctx.restore();
       });
 
-      // 10. CLINICAL JOINT ANGLE PROTRACTOR ARCS (Vicon/KinaTrax Biomechanics Standard)
-      let liveElbowDeg = 88.5;
+      // Clinical Protractor Angle Arcs (3D Measured Angles)
       if (joints.right_shoulder && joints.right_elbow && joints.right_wrist) {
-        liveElbowDeg = calc3DAngle(joints.right_shoulder, joints.right_elbow, joints.right_wrist);
-        drawProtractorArc(ctx, elR, shR, wrR, 24, `${liveElbowDeg.toFixed(1)}°`, isElbowFault);
+        const liveElbowDeg = calc3DAngle(joints.right_shoulder, joints.right_elbow, joints.right_wrist);
+        drawProtractorArc(ctx, elR, shR, wrR, 22, `${liveElbowDeg.toFixed(1)}°`, isElbowFault);
         const el = document.getElementById('live-elbow-val');
         if (el) el.innerText = `${liveElbowDeg.toFixed(1)}°`;
       }
 
-      let liveKneeDeg = 110.0;
       if (joints.right_hip && joints.right_knee && joints.right_ankle) {
-        liveKneeDeg = calc3DAngle(joints.right_hip, joints.right_knee, joints.right_ankle);
-        drawProtractorArc(ctx, knR, hipR, akR, 20, `${liveKneeDeg.toFixed(1)}°`, isLegFault);
+        const liveKneeDeg = calc3DAngle(joints.right_hip, joints.right_knee, joints.right_ankle);
+        drawProtractorArc(ctx, knR, hipR, akR, 18, `${liveKneeDeg.toFixed(1)}°`, isLegFault);
         const el = document.getElementById('live-knee-val');
         if (el) el.innerText = `${liveKneeDeg.toFixed(1)}°`;
       }
@@ -2460,81 +2427,39 @@
         if (el) el.innerText = `${liveTrunk.toFixed(1)}°`;
       }
 
-      // 11. Launch Vector Arrow at Release ($frameIdx >= 15)
-      const releaseIdx = 15;
-      if (frameIdx >= releaseIdx) {
-        drawLaunchArrow(ctx, wrR, 52.0);
+      // Draw Synthetic Ball & Launch Vector only in Skeleton-Only Reference mode
+      if (!overlayActive) {
+        const releaseIdx = 15;
+        if (frameIdx >= releaseIdx) {
+          drawLaunchArrow(ctx, wrR, 52.0);
+        }
+        const totalFrames = currentWireframes.length;
+        let ballX, ballY;
+        if (frameFloat < releaseIdx) {
+          ballX = wrR[0] + 12;
+          ballY = wrR[1] - 12;
+        } else {
+          const flightT = Math.min(1.0, (frameFloat - releaseIdx) / Math.max(1, totalFrames - 1 - releaseIdx));
+          const startX = wrR[0] + 12, startY = wrR[1] - 12;
+          ballX = startX + (hoopX - startX) * flightT;
+          ballY = startY + (hoopY - startY) * flightT - Math.sin(flightT * Math.PI) * 85;
+        }
+        ctx.save();
+        ctx.fillStyle = '#D97706';
+        ctx.strokeStyle = '#451A03';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, 12, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
       }
-
-      // 12. Animated Basketball Shooting Motion & Continuous Parabolic Trajectory
-      let ballX, ballY;
-      const totalFrames = currentWireframes.length;
-      const currentProgress = typeof frameFloat !== 'undefined' ? frameFloat : frameIdx;
-
-      if (currentProgress < releaseIdx) {
-        // Gathering & rising smoothly with shooting hand
-        ballX = wrR[0] + 12;
-        ballY = wrR[1] - 14;
-      } else {
-        // Continuous smooth parabolic arc flight to target hoop
-        const flightT = Math.min(1.0, (currentProgress - releaseIdx) / Math.max(1, totalFrames - 1 - releaseIdx));
-        const startX = wrR[0] + 12;
-        const startY = wrR[1] - 14;
-        ballX = startX + (hoopX - startX) * flightT;
-        const peakArcHeight = 88;
-        ballY = startY + (hoopY - startY) * flightT - Math.sin(flightT * Math.PI) * peakArcHeight;
-      }
-
-      // Trajectory Guidance Arc (Dashed Line)
-      ctx.save();
-      ctx.setLineDash([4, 6]);
-      ctx.strokeStyle = 'rgba(0, 245, 212, 0.40)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(wrR[0] + 12, wrR[1] - 14);
-      const midArcX = (wrR[0] + 12 + hoopX) / 2;
-      const midArcY = Math.min(wrR[1] - 14, hoopY) - 85;
-      ctx.quadraticCurveTo(midArcX, midArcY, hoopX, hoopY);
-      ctx.stroke();
-      ctx.restore();
-
-      // Render Glowing Official Basketball with Seams
-      ctx.save();
-      ctx.fillStyle = '#FF9E00';
-      ctx.shadowColor = '#FF9E00';
-      ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.arc(ballX, ballY, 13, 0, 2 * Math.PI);
-      ctx.fill();
-
-      // Leather Seams
-      ctx.strokeStyle = '#804000';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(ballX, ballY, 13, 0, 2 * Math.PI);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(ballX - 13, ballY);
-      ctx.lineTo(ballX + 13, ballY);
-      ctx.moveTo(ballX, ballY - 13);
-      ctx.lineTo(ballX, ballY + 13);
-      ctx.stroke();
-      ctx.restore();
-
-      // Phase Status Watermark Indicator
-      let phaseLabel = "PHASE 1: PREPARATION & DIP";
-      if (frameIdx >= 8 && frameIdx < 15) phaseLabel = "PHASE 2: VERTICAL PROPULSION";
-      else if (frameIdx >= 15 && frameIdx < 22) phaseLabel = "PHASE 3: BALL RELEASE (52.0°)";
-      else if (frameIdx >= 22) phaseLabel = "PHASE 4: FOLLOW-THROUGH HOLD";
-
-      ctx.save();
-      ctx.fillStyle = 'rgba(0, 245, 212, 0.9)';
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText(phaseLabel, 20, 30);
-      ctx.restore();
 
       document.getElementById('telemetry-frame').innerText = `Frame: ${frameIdx + 1} / ${currentWireframes.length}`;
-      document.getElementById('telemetry-time').innerText = `Time: ${frameData.time_sec}s`;
+      const dispTime = isUploadedVideoMode && uploadedVideoDuration > 0
+        ? ((frameFloat / Math.max(1, currentWireframes.length - 1)) * uploadedVideoDuration).toFixed(2)
+        : frameData.time_sec;
+      document.getElementById('telemetry-time').innerText = `${dispTime}s`;
     }
 
     // Helper: Draw Circular Joint Protractor Arc with Biomechanical Degree Badge
@@ -2553,13 +2478,13 @@
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, radius, a1, a1 + diff, diff < 0);
       ctx.closePath();
-      ctx.fillStyle = isFaulty ? 'rgba(247, 37, 133, 0.25)' : 'rgba(0, 245, 212, 0.18)';
+      ctx.fillStyle = isFaulty ? 'rgba(239, 68, 68, 0.25)' : 'rgba(56, 189, 248, 0.22)';
       ctx.fill();
 
       // Arc stroke
       ctx.beginPath();
       ctx.arc(cx, cy, radius, a1, a1 + diff, diff < 0);
-      ctx.strokeStyle = isFaulty ? '#F72585' : '#00F5D4';
+      ctx.strokeStyle = isFaulty ? '#EF4444' : '#38BDF8';
       ctx.lineWidth = 2.2;
       ctx.stroke();
 
@@ -2569,7 +2494,7 @@
       const badgeY = cy + (radius + 20) * Math.sin(midAngle);
 
       ctx.fillStyle = 'rgba(10, 15, 30, 0.92)';
-      ctx.strokeStyle = isFaulty ? '#F72585' : '#00F5D4';
+      ctx.strokeStyle = isFaulty ? '#EF4444' : '#38BDF8';
       ctx.lineWidth = 1.2;
       const textWidth = ctx.measureText(label).width + 10;
       ctx.beginPath();
@@ -2577,7 +2502,7 @@
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = isFaulty ? '#FF70A6' : '#00F5D4';
+      ctx.fillStyle = isFaulty ? '#FCA5A5' : '#E0F2FE';
       ctx.font = 'bold 10px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -2755,9 +2680,9 @@
         if (btn) {
           const match = (s === '025' && speedVal === 0.25) || (s === '05' && speedVal === 0.5) || (s === '10' && speedVal === 1.0) || (s === '15' && speedVal === 1.5);
           if (match) {
-            btn.className = "px-2.5 py-1 rounded-lg bg-kinetic-teal text-navy-950 font-mono font-bold text-xs shadow-glow-teal transition-all";
+            btn.className = "px-2 py-1 rounded bg-blue-600 text-white font-mono font-semibold text-[11px]";
           } else {
-            btn.className = "px-2.5 py-1 rounded-lg bg-navy-800 text-slate-300 hover:text-white font-mono text-xs border border-white/5 transition-all";
+            btn.className = "px-2 py-1 rounded bg-[#161B22] text-slate-300 hover:text-white font-mono text-[11px]";
           }
         }
       });
