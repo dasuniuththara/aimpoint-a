@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AimPoint Biomechanics — Launching</title>
+  <title>AimPoint Motion — Launching</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #161B22;
-      color: #E6EDF3;
+      background: #060608;
+      color: #F4F4F5;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100vh;
       display: flex;
@@ -16,59 +16,62 @@
       justify-content: center;
       user-select: none;
       overflow: hidden;
-      border: 1px solid #2A313C;
-      border-radius: 12px;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 14px;
     }
     .logo-ring {
-      width: 56px;
-      height: 56px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
-      border: 3px solid #2A313C;
-      border-top-color: #2563EB;
-      animation: spin 1s linear infinite;
+      border: 3px solid #1C1D22;
+      border-top-color: #F59E0B;
+      border-right-color: #EA580C;
+      animation: spin 0.9s linear infinite;
       margin-bottom: 20px;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.25);
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     .title {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 21px;
+      font-weight: 800;
       letter-spacing: -0.3px;
       margin-bottom: 6px;
       color: #FFFFFF;
     }
+    .title span { color: #FBBF24; }
     .subtitle {
       font-size: 11px;
-      color: #94A3B8;
+      color: #A1A1AA;
       font-family: monospace;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.9px;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
     .status {
       font-size: 12px;
-      color: #38BDF8;
+      color: #FDE68A;
       font-family: monospace;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .status-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #10B981;
+      background: #34D399;
     }
   </style>
 </head>
 <body>
   <div class="logo-ring"></div>
-  <h1 class="title">AimPoint Biomechanics</h1>
-  <p class="subtitle">Sagittal Angle &amp; Motion Analysis Workstation</p>
+  <h1 class="title">AimPoint <span>Motion</span></h1>
+  <p class="subtitle">Moving-Sticks Biomechanics Desktop Studio</p>
   <div class="status">
     <div class="status-dot"></div>
-    <span id="statusText">Starting Biomechanical Analysis Engine...</span>
+    <span id="statusText">Connecting to 30 FPS Analysis Engine...</span>
   </div>
 </body>
 </html>

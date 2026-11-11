@@ -105,8 +105,8 @@ function createMainWindow() {
     minWidth: 1080,
     minHeight: 720,
     show: false,
-    backgroundColor: '#070A12',
-    title: 'AimPointAI - Basketball Biomechanics & Shooting Form Correction',
+    backgroundColor: '#060608',
+    title: 'AimPoint Motion — Desktop Basketball Biomechanics Studio',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -148,21 +148,34 @@ ipcMain.on('window-maximize', () => {
 });
 ipcMain.on('window-close', () => { if (mainWindow) mainWindow.close(); });
 
-// Application Lifecycle
-app.whenReady().then(() => {
-  createSplashWindow();
-  startPythonBackend();
+function isServerHealthy() {
+  return new Promise((resolve) => {
+    const req = http.get(`${SERVER_URL}/api/health`, (res) => {
+      res.resume();
+      resolve(res.statusCode === 200);
+    });
+    req.on('error', () => resolve(false));
+    req.setTimeout(800, () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
 
-  waitForServer((isReady) => {
-    if (isReady) {
+// Application Lifecycle
+app.whenReady().then(async () => {
+  createSplashWindow();
+  const alreadyUp = await isServerHealthy();
+  if (alreadyUp) {
+    console.log('[AimPointAI Desktop] Existing backend detected on port 8080.');
+    createMainWindow();
+  } else {
+    startPythonBackend();
+    waitForServer(() => {
       console.log('[AimPointAI Desktop] Server live! Launching main window...');
       createMainWindow();
-    } else {
-      console.error('[AimPointAI Desktop] Failed to connect to local server in time.');
-      // Attempt to launch anyway
-      createMainWindow();
-    }
-  });
+    });
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
