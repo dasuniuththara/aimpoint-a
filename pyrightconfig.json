@@ -1,0 +1,23 @@
+{
+  "include": [
+    "backend",
+    "start_server.py"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".venv",
+    "venv",
+    "scratch"
+  ],
+  "extraPaths": [
+    ".",
+    "./backend",
+    "C:/Users/Dasuni Work/AppData/Roaming/Python/Python314/site-packages",
+    "C:/Python314/Lib/site-packages"
+  ],
+  "typeCheckingMode": "off",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "pythonVersion": "3.14"
+}
