@@ -43,11 +43,11 @@ export default function App() {
       <StatusBar style="light" />
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          headerStyle: { backgroundColor: '#121214' },
-          headerTitleStyle: { fontWeight: '700', color: '#F4F4F5', fontSize: 16 },
-          tabBarActiveTintColor: '#F97316',
+          headerStyle: { backgroundColor: '#101114' },
+          headerTitleStyle: { fontWeight: '800', color: '#F4F4F5', fontSize: 16 },
+          tabBarActiveTintColor: '#FBBF24',
           tabBarInactiveTintColor: '#71717A',
-          tabBarStyle: { backgroundColor: '#121214', borderTopColor: '#27272A', height: 60, paddingBottom: 6 },
+          tabBarStyle: { backgroundColor: '#101114', borderTopColor: 'rgba(255,255,255,0.09)', height: 60, paddingBottom: 6 },
           tabBarIcon: ({ color, size }) => {
             let icon = 'videocam-outline';
             if (route.name === 'CoachingCard') icon = 'analytics-outline';

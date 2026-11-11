@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Svg, { Line, Circle, Rect, Ellipse, Text as SvgText } from 'react-native-svg';
+import Svg, { Line, Circle, Rect, Ellipse, Defs, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 
 function computeNorm(wireframes) {
   if (!wireframes || !wireframes.length) return null;
@@ -109,11 +109,10 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
   const trunkFault = colors.right_shoulder === '#FF3366';
   const legFault = colors.right_knee === '#FF3366';
 
-  const armCol = elbowFault || wristFault ? '#EF4444' : '#10B981';
-  const trunkCol = trunkFault ? '#EF4444' : '#18181B';
-  const legCol = legFault ? '#EF4444' : '#2DD4BF';
+  const armCol = elbowFault || wristFault ? '#F87171' : '#34D399';
+  const trunkCol = trunkFault ? '#F87171' : '#F4F4F5';
+  const legCol = legFault ? '#F87171' : '#2DD4BF';
 
-  // Ball position trajectory toward hoop at (284, 80)
   const relFrame = Math.floor(wireframes.length * 0.5);
   let ballX = wrR[0] + 10;
   let ballY = wrR[1] - 10;
@@ -126,17 +125,32 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
   return (
     <View style={styles.container}>
       <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x="0" y="0" width={W} height={H} fill="#0C0A09" rx="12" />
-        {/* Floor line & vertical plumb guide */}
-        <Line x1="0" y1={H * 0.87} x2={W} y2={H * 0.87} stroke="#D97706" strokeWidth="1.5" />
-        <Line x1={pelvis[0]} y1="24" x2={pelvis[0]} y2={H * 0.87} stroke="rgba(148,163,184,0.3)" strokeDasharray="4 4" strokeWidth="1.2" />
+        <Defs>
+          <LinearGradient id="arenaBg" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#090A0D" />
+            <Stop offset="0.82" stopColor="#060608" />
+            <Stop offset="1" stopColor="#1B130B" />
+          </LinearGradient>
+        </Defs>
 
-        {/* Hoop Schematic */}
-        <Line x1="306" y1="42" x2="306" y2="108" stroke="#94A3B8" strokeWidth="3" />
-        <Ellipse cx="284" cy="80" rx="16" ry="3.5" fill="none" stroke="#F97316" strokeWidth="3" />
+        <Rect x="0" y="0" width={W} height={H} fill="url(#arenaBg)" rx="12" />
+
+        {/* Subtle Court Grid & Illuminated Floor */}
+        <Line x1="0" y1={H * 0.87} x2={W} y2={H * 0.87} stroke="#F59E0B" strokeWidth="1.8" />
+        <Line x1={pelvis[0]} y1="22" x2={pelvis[0]} y2={H * 0.87} stroke="rgba(251,191,36,0.22)" strokeDasharray="4 4" strokeWidth="1.2" />
+
+        {/* Court Contact Shadow */}
+        <Ellipse cx={pelvis[0]} cy={H * 0.875} rx="24" ry="4.5" fill="rgba(0,0,0,0.6)" />
+
+        {/* Illuminated Backboard, Rim & Net */}
+        <Line x1="308" y1="42" x2="308" y2="112" stroke="#D4D4D8" strokeWidth="3" />
+        <Line x1="272" y1="80" x2="278" y2="102" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
+        <Line x1="284" y1="80" x2="284" y2="102" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
+        <Line x1="296" y1="80" x2="290" y2="102" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
+        <Ellipse cx="284" cy="80" rx="16" ry="3.8" fill="none" stroke="#FB923C" strokeWidth="3.2" />
 
         {/* Guide Arm & Far Leg (Moving Sticks) */}
-        <Line x1={shL[0]} y1={shL[1]} x2={elL[0]} y2={elL[1]} stroke="#FB923C" strokeWidth="3.5" strokeLinecap="round" />
+        <Line x1={shL[0]} y1={shL[1]} x2={elL[0]} y2={elL[1]} stroke="#38BDF8" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={elL[0]} y1={elL[1]} x2={wrL[0]} y2={wrL[1]} stroke="#0EA5E9" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={hipL[0]} y1={hipL[1]} x2={knL[0]} y2={knL[1]} stroke="#A78BFA" strokeWidth="3.5" strokeLinecap="round" />
         <Line x1={knL[0]} y1={knL[1]} x2={akL[0]} y2={akL[1]} stroke="#8B5CF6" strokeWidth="3.5" strokeLinecap="round" />
@@ -145,25 +159,25 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
         <Line x1={hipR[0]} y1={hipR[1]} x2={knR[0]} y2={knR[1]} stroke={legCol} strokeWidth="4.5" strokeLinecap="round" />
         <Line x1={knR[0]} y1={knR[1]} x2={akR[0]} y2={akR[1]} stroke={legCol} strokeWidth="4.5" strokeLinecap="round" />
         <Line x1={neck[0]} y1={neck[1]} x2={pelvis[0]} y2={pelvis[1]} stroke={trunkCol} strokeWidth="4.5" strokeLinecap="round" />
-        <Line x1={neck[0]} y1={neck[1]} x2={nose[0]} y2={nose[1]} stroke="#FACC15" strokeWidth="3" strokeLinecap="round" />
+        <Line x1={neck[0]} y1={neck[1]} x2={nose[0]} y2={nose[1]} stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
 
-        {/* Dominant Shooting Arm */}
+        {/* Shooting Arm */}
         <Line x1={shR[0]} y1={shR[1]} x2={elR[0]} y2={elR[1]} stroke={armCol} strokeWidth="5" strokeLinecap="round" />
         <Line x1={elR[0]} y1={elR[1]} x2={wrR[0]} y2={wrR[1]} stroke={armCol} strokeWidth="5" strokeLinecap="round" />
 
-        {/* Head & Basketball */}
-        <Circle cx={nose[0]} cy={nose[1]} r="9" fill="#F4F4F5" stroke="#FACC15" strokeWidth="2.2" />
-        <Circle cx={ballX} cy={ballY} r="9" fill="#EA580C" stroke="#7C2D12" strokeWidth="1.5" />
+        {/* Head & Glowing Basketball */}
+        <Circle cx={nose[0]} cy={nose[1]} r="9" fill="#101114" stroke="#FBBF24" strokeWidth="2.2" />
+        <Circle cx={ballX} cy={ballY} r="9.5" fill="#F97316" stroke="#7C2D12" strokeWidth="1.5" />
 
-        {/* Key Joint Pins */}
-        <Circle cx={shR[0]} cy={shR[1]} r="4" fill={trunkFault ? '#EF4444' : '#FFFFFF'} />
-        <Circle cx={elR[0]} cy={elR[1]} r="5.5" fill={elbowFault ? '#EF4444' : '#10B981'} stroke="#0C0A09" strokeWidth="1.5" />
-        <Circle cx={wrR[0]} cy={wrR[1]} r="4.5" fill={wristFault ? '#EF4444' : '#FFFFFF'} />
-        <Circle cx={knR[0]} cy={knR[1]} r="4.5" fill={legFault ? '#EF4444' : '#FFFFFF'} />
+        {/* Joint Keypoint Pins */}
+        <Circle cx={shR[0]} cy={shR[1]} r="4" fill={trunkFault ? '#F87171' : '#FFFFFF'} />
+        <Circle cx={elR[0]} cy={elR[1]} r="6" fill={elbowFault ? '#F87171' : '#34D399'} stroke="#060608" strokeWidth="1.5" />
+        <Circle cx={wrR[0]} cy={wrR[1]} r="4.5" fill={wristFault ? '#F87171' : '#FFFFFF'} />
+        <Circle cx={knR[0]} cy={knR[1]} r="4.5" fill={legFault ? '#F87171' : '#FFFFFF'} />
 
-        {/* Top-Right Status Label */}
-        <Rect x={W - 146} y="10" width="136" height="24" rx="5" fill="rgba(15,23,42,0.88)" stroke={isFaulty ? '#EF4444' : '#10B981'} strokeWidth="1.2" />
-        <SvgText x={W - 78} y="25" fill={isFaulty ? '#FCA5A5' : '#6EE7B7'} fontSize="10" fontWeight="bold" textAnchor="middle">
+        {/* Top-Right Status Badge */}
+        <Rect x={W - 148} y="10" width="138" height="24" rx="6" fill="rgba(16,17,20,0.92)" stroke={isFaulty ? '#F87171' : '#34D399'} strokeWidth="1.2" />
+        <SvgText x={W - 79} y="25" fill={isFaulty ? '#FCA5A5' : '#6EE7B7'} fontSize="9.5" fontWeight="bold" textAnchor="middle">
           {faultName.slice(0, 19).toUpperCase()}
         </SvgText>
       </Svg>
@@ -173,10 +187,9 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
+    borderRadius: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#E4E4E7',
+    borderColor: 'rgba(255,255,255,0.10)',
   },
 });
-

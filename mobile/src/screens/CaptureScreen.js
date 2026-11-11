@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert
+  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Animated
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -8,6 +8,13 @@ import * as Speech from 'expo-speech';
 import Svg, { Rect, Line, Circle, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import { runBenchmarkShot, uploadAndAnalyzeVideo } from '../services/api';
+
+const PLAYERS = [
+  { id: 'ATH-001', jersey: '01', name: 'K. Perera' },
+  { id: 'ATH-002', jersey: '07', name: 'D. Silva' },
+  { id: 'ATH-003', jersey: '11', name: 'M. Fernando' },
+  { id: 'ATH-004', jersey: '23', name: 'Kirindegama' },
+];
 
 const FAULT_CHIPS = [
   { id: 0, label: 'Ideal Form' },
@@ -25,6 +32,16 @@ export default function CaptureScreen({ onAnalysisComplete }) {
   const [athleteId, setAthleteId] = useState('ATH-001');
   const [facing, setFacing] = useState('back');
   const cameraRef = useRef(null);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.04, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.0, duration: 900, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [pulseAnim]);
 
   const handleAnalyzeResponse = (res) => {
     if (res && res.status === 'success') {
@@ -52,7 +69,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
       const res = await uploadAndAnalyzeVideo(asset.uri, asset.fileName || 'shot_upload.mp4', athleteId);
       handleAnalyzeResponse(res);
     } catch (err) {
-      Alert.alert('Upload Failed', `${err.message}\n\nCheck Settings tab to set your FastAPI backend URL.`);
+      Alert.alert('Upload Failed', `${err.message}\n\nOpen Drills & API tab to set your FastAPI backend IP.`);
     } finally {
       setLoading(false);
     }
@@ -99,13 +116,11 @@ export default function CaptureScreen({ onAnalysisComplete }) {
             }
           }
         } catch (err) {
-          // Fallback cleanly if emulator camera cannot record video
         } finally {
           setCountdown(null);
           setLoading(false);
         }
 
-        // Benchmark evaluation fallback if virtual emulator camera has no video recorder
         setLoading(true);
         try {
           const res = await runBenchmarkShot(0, athleteId);
@@ -125,7 +140,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
       const res = await runBenchmarkShot(faultType, athleteId);
       handleAnalyzeResponse(res);
     } catch (err) {
-      Alert.alert('Backend Connection Needed', `${err.message}\n\nOpen Settings tab to verify FastAPI URL.`);
+      Alert.alert('Backend Connection Needed', `${err.message}\n\nOpen Drills & API tab to verify FastAPI URL.`);
     } finally {
       setLoading(false);
     }
@@ -133,47 +148,60 @@ export default function CaptureScreen({ onAnalysisComplete }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {/* Step Header matching Thesis Section 4.6.5 */}
-      <View style={styles.headerCard}>
-        <Text style={styles.title}>Step 1: Video Capture &amp; Sagittal Framing</Text>
-        <Text style={styles.subtitle}>
-          Position the shooter 2.5m–3.0m in side-profile (sagittal view) or upload any shooting video from your phone.
-        </Text>
-      </View>
+      {/* Active Jersey Selector Bar */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.playerStrip}>
+        {PLAYERS.map((p) => {
+          const active = athleteId === p.id;
+          return (
+            <TouchableOpacity
+              key={p.id}
+              style={[styles.playerPill, active && styles.playerPillActive]}
+              onPress={() => setAthleteId(p.id)}
+            >
+              <View style={[styles.jerseyBadge, active && styles.jerseyBadgeActive]}>
+                <Text style={[styles.jerseyNum, active && styles.jerseyNumActive]}>#{p.jersey}</Text>
+              </View>
+              <Text style={[styles.playerName, active && styles.playerNameActive]}>{p.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
-      {/* Camera Preview Box + Semi-Transparent Sagittal Wireframe Overlay */}
+      {/* Camera Viewfinder with Broadcast Viewfinder Corner Brackets */}
       <View style={styles.cameraContainer}>
         {permission && permission.granted ? (
           <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing={facing} mode="video" />
         ) : (
           <View style={styles.cameraPlaceholder}>
-            <Ionicons name="videocam-outline" size={44} color="#A1A1AA" />
-            <Text style={styles.placeholderText}>Camera Preview Ready</Text>
+            <View style={styles.camIconGlow}>
+              <Ionicons name="videocam" size={32} color="#FBBF24" />
+            </View>
+            <Text style={styles.placeholderText}>Sagittal Court Camera</Text>
+            <Text style={styles.placeholderSub}>Position shooter 2.5m–3.0m in side profile</Text>
             <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
               <Text style={styles.permBtnText}>Enable Camera Access</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Interactive Sagittal Wireframe Guide Overlay (Thesis 4.6.5) */}
         {showGuide && (
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             <Svg width="100%" height="100%" viewBox="0 0 320 260">
-              <Rect x="72" y="18" width="176" height="224" rx="14" stroke="#FB923C" strokeWidth="1.8" strokeDasharray="6 4" fill="rgba(15,23,42,0.18)" />
-              <Circle cx="160" cy="52" r="14" stroke="#FB923C" strokeWidth="2" fill="none" />
-              <Line x1="160" y1="66" x2="152" y2="132" stroke="#FB923C" strokeWidth="2.5" strokeDasharray="4 3" />
-              <Line x1="156" y1="80" x2="188" y2="96" stroke="#FB923C" strokeWidth="2.5" />
-              <Line x1="188" y1="96" x2="194" y2="60" stroke="#FB923C" strokeWidth="2.5" />
-              <Line x1="152" y1="132" x2="164" y2="178" stroke="#FB923C" strokeWidth="2.5" />
-              <Line x1="164" y1="178" x2="152" y2="224" stroke="#FB923C" strokeWidth="2.5" />
-              <SvgText x="160" y="236" fill="#FFEDD5" fontSize="10" fontWeight="bold" textAnchor="middle">
-                2.5m – 3.0m SAGITTAL SIDE VIEW
+              {/* Pro Broadcast Framing Box */}
+              <Rect x="72" y="18" width="176" height="224" rx="14" stroke="#FBBF24" strokeWidth="1.6" strokeDasharray="6 4" fill="rgba(6,6,8,0.22)" />
+              <Circle cx="160" cy="52" r="14" stroke="#FBBF24" strokeWidth="2" fill="none" />
+              <Line x1="160" y1="66" x2="152" y2="132" stroke="#FBBF24" strokeWidth="2.4" strokeDasharray="4 3" />
+              <Line x1="156" y1="80" x2="188" y2="96" stroke="#34D399" strokeWidth="2.4" />
+              <Line x1="188" y1="96" x2="194" y2="60" stroke="#34D399" strokeWidth="2.4" />
+              <Line x1="152" y1="132" x2="164" y2="178" stroke="#FBBF24" strokeWidth="2.4" />
+              <Line x1="164" y1="178" x2="152" y2="224" stroke="#FBBF24" strokeWidth="2.4" />
+              <SvgText x="160" y="236" fill="#FDE68A" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+                2.5m – 3.0m SAGITTAL ALIGNMENT
               </SvgText>
             </Svg>
           </View>
         )}
 
-        {/* Countdown Overlay */}
         {countdown !== null && (
           <View style={styles.countdownOverlay}>
             <Text style={styles.countdownText}>{countdown}</Text>
@@ -181,12 +209,15 @@ export default function CaptureScreen({ onAnalysisComplete }) {
           </View>
         )}
 
-        {/* Top Guide Toggle & Flip Controls */}
         <View style={styles.camTopControls}>
           <TouchableOpacity style={styles.camPill} onPress={() => setShowGuide(!showGuide)}>
-            <Ionicons name="scan-outline" size={14} color="#FFFFFF" />
-            <Text style={styles.camPillText}>{showGuide ? 'Guide: ON' : 'Guide: OFF'}</Text>
+            <Ionicons name="scan-outline" size={14} color="#FBBF24" />
+            <Text style={styles.camPillText}>{showGuide ? 'Guide ON' : 'Guide OFF'}</Text>
           </TouchableOpacity>
+          <View style={styles.liveTag}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveTagTxt}>30 FPS</Text>
+          </View>
           <TouchableOpacity style={styles.camPill} onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}>
             <Ionicons name="camera-reverse-outline" size={14} color="#FFFFFF" />
             <Text style={styles.camPillText}>Flip</Text>
@@ -194,33 +225,38 @@ export default function CaptureScreen({ onAnalysisComplete }) {
         </View>
       </View>
 
-      {/* Primary Capture & Upload Action Row */}
+      {/* Reactive Animated Action Buttons */}
       <View style={styles.actionRow}>
-        <TouchableOpacity style={styles.primaryBtn} onPress={handleCameraShotCapture} disabled={loading}>
-          <Ionicons name="radio-button-on" size={18} color="#FFFFFF" />
-          <Text style={styles.primaryBtnText}>Record Shot (3s)</Text>
-        </TouchableOpacity>
+        <Animated.View style={{ flex: 1, transform: [{ scale: pulseAnim }] }}>
+          <TouchableOpacity style={styles.primaryBtn} onPress={handleCameraShotCapture} disabled={loading} activeOpacity={0.85}>
+            <Ionicons name="radio-button-on" size={18} color="#060608" />
+            <Text style={styles.primaryBtnText}>Record Shot</Text>
+          </TouchableOpacity>
+        </Animated.View>
 
-        <TouchableOpacity style={styles.secondaryBtn} onPress={handlePickVideo} disabled={loading}>
-          <Ionicons name="cloud-upload-outline" size={18} color="#FB923C" />
-          <Text style={styles.secondaryBtnText}>Upload Video</Text>
+        <TouchableOpacity style={styles.secondaryBtn} onPress={handlePickVideo} disabled={loading} activeOpacity={0.85}>
+          <Ionicons name="cloud-upload-outline" size={18} color="#FBBF24" />
+          <Text style={styles.secondaryBtnText}>Upload Clip</Text>
         </TouchableOpacity>
       </View>
 
       {loading && (
         <View style={styles.loadingCard}>
-          <ActivityIndicator size="small" color="#EA580C" />
-          <Text style={styles.loadingText}>Converting 3D video to 2D Moving Sticks &amp; identifying faults...</Text>
+          <ActivityIndicator size="small" color="#FBBF24" />
+          <Text style={styles.loadingText}>Running 3D→2D Moving-Sticks Pose Extraction &amp; Error Audit...</Text>
         </View>
       )}
 
-      {/* Quick Test Samples Card */}
+      {/* Instant Court Condition Simulator */}
       <View style={styles.sampleCard}>
-        <Text style={styles.sampleHeading}>Quick Fault Benchmarks (Instant Test)</Text>
-        <Text style={styles.sampleDesc}>Tap any shooting condition below to inspect the Moving-Sticks 2D Model &amp; Coaching Card:</Text>
+        <View style={styles.sampleHeadRow}>
+          <Ionicons name="basketball" size={16} color="#F59E0B" />
+          <Text style={styles.sampleHeading}>Instant Fault Benchmarks</Text>
+        </View>
+        <Text style={styles.sampleDesc}>Tap any shooting condition to inspect 2D Moving Sticks &amp; Coaching Card:</Text>
         <View style={styles.chipGrid}>
           {FAULT_CHIPS.map((c) => (
-            <TouchableOpacity key={c.id} style={styles.chip} onPress={() => handleBenchmarkTest(c.id)} disabled={loading}>
+            <TouchableOpacity key={c.id} style={styles.chip} onPress={() => handleBenchmarkTest(c.id)} disabled={loading} activeOpacity={0.75}>
               <Text style={styles.chipText}>{c.label}</Text>
             </TouchableOpacity>
           ))}
@@ -231,34 +267,45 @@ export default function CaptureScreen({ onAnalysisComplete }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#09090B' },
+  screen: { flex: 1, backgroundColor: '#060608' },
   content: { padding: 14, gap: 12 },
-  headerCard: { backgroundColor: '#121214', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#27272A' },
-  title: { fontSize: 16, fontWeight: '700', color: '#F4F4F5' },
-  subtitle: { fontSize: 12, color: '#A1A1AA', marginTop: 4, lineHeight: 17 },
-  cameraContainer: { height: 270, backgroundColor: '#14110F', borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#E4E4E7', justifyContent: 'center' },
-  cameraPlaceholder: { alignItems: 'center', justifyContent: 'center', gap: 8 },
-  placeholderText: { color: '#94A3B8', fontSize: 13, fontWeight: '600' },
-  permBtn: { backgroundColor: '#EA580C', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, marginTop: 4 },
-  permBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
-  camTopControls: { position: 'absolute', top: 10, left: 10, right: 10, flexDirection: 'row', justifyContent: 'space-between' },
-  camPill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(15,23,42,0.78)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' },
+  playerStrip: { gap: 8, paddingVertical: 2 },
+  playerPill: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#101114', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingRight: 12, paddingLeft: 5, paddingVertical: 5, borderRadius: 20 },
+  playerPillActive: { borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.12)' },
+  jerseyBadge: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#1C1D22', alignItems: 'center', justifyContent: 'center' },
+  jerseyBadgeActive: { backgroundColor: '#F59E0B' },
+  jerseyNum: { fontSize: 10, fontWeight: '800', color: '#A1A1AA' },
+  jerseyNumActive: { color: '#060608' },
+  playerName: { fontSize: 12, fontWeight: '600', color: '#A1A1AA' },
+  playerNameActive: { color: '#FDE68A' },
+  cameraContainer: { height: 278, backgroundColor: '#090A0D', borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', justifyContent: 'center' },
+  cameraPlaceholder: { alignItems: 'center', justifyContent: 'center', gap: 7 },
+  camIconGlow: { width: 58, height: 58, borderRadius: 29, backgroundColor: 'rgba(245,158,11,0.14)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.35)', alignItems: 'center', justifyContent: 'center', marginBottom: 2 },
+  placeholderText: { color: '#F4F4F5', fontSize: 14, fontWeight: '700' },
+  placeholderSub: { color: '#A1A1AA', fontSize: 11 },
+  permBtn: { backgroundColor: '#F59E0B', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8, marginTop: 6 },
+  permBtnText: { color: '#060608', fontSize: 12, fontWeight: '800' },
+  camTopControls: { position: 'absolute', top: 10, left: 10, right: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  camPill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(16,17,20,0.85)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.16)' },
   camPillText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
-  countdownOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(9,13,22,0.82)', alignItems: 'center', justifyContent: 'center' },
-  countdownText: { color: '#FB923C', fontSize: 56, fontWeight: '800' },
-  countdownSub: { color: '#27272A', fontSize: 12, marginTop: 6 },
+  liveTag: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(16,17,20,0.85)', paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(52,211,153,0.35)' },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#34D399' },
+  liveTagTxt: { color: '#34D399', fontSize: 10, fontWeight: '800' },
+  countdownOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(6,6,8,0.86)', alignItems: 'center', justifyContent: 'center' },
+  countdownText: { color: '#FBBF24', fontSize: 58, fontWeight: '900' },
+  countdownSub: { color: '#D4D4D8', fontSize: 12, marginTop: 6 },
   actionRow: { flexDirection: 'row', gap: 10 },
-  primaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#DC2626', paddingVertical: 13, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  primaryBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 13 },
-  secondaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#121214', borderWidth: 1, borderColor: '#FDBA74', paddingVertical: 13, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  secondaryBtnText: { color: '#FB923C', fontWeight: '700', fontSize: 13 },
-  loadingCard: { flexDirection: 'row', gap: 10, alignItems: 'center', backgroundColor: '#1F1209', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#FDBA74' },
-  loadingText: { fontSize: 12, color: '#FDBA74', flex: 1, fontWeight: '500' },
-  sampleCard: { backgroundColor: '#121214', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#27272A', gap: 8 },
+  primaryBtn: { flexDirection: 'row', gap: 7, backgroundColor: '#F59E0B', paddingVertical: 13.5, borderRadius: 11, alignItems: 'center', justifyContent: 'center', shadowColor: '#F59E0B', shadowOpacity: 0.35, shadowRadius: 10 },
+  primaryBtnText: { color: '#060608', fontWeight: '800', fontSize: 13.5 },
+  secondaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#101114', borderWidth: 1, borderColor: 'rgba(245,158,11,0.45)', paddingVertical: 13.5, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  secondaryBtnText: { color: '#FBBF24', fontWeight: '700', fontSize: 13.5 },
+  loadingCard: { flexDirection: 'row', gap: 10, alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.12)', borderRadius: 11, padding: 12, borderWidth: 1, borderColor: 'rgba(245,158,11,0.35)' },
+  loadingText: { fontSize: 12, color: '#FDE68A', flex: 1, fontWeight: '600' },
+  sampleCard: { backgroundColor: '#101114', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 7 },
+  sampleHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sampleHeading: { fontSize: 14, fontWeight: '700', color: '#F4F4F5' },
   sampleDesc: { fontSize: 12, color: '#A1A1AA' },
   chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  chip: { backgroundColor: '#18181B', borderWidth: 1, borderColor: '#27272A', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 8 },
+  chip: { backgroundColor: '#16171C', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 12, paddingVertical: 7.5, borderRadius: 9 },
   chipText: { fontSize: 12, fontWeight: '600', color: '#E4E4E7' },
 });
-

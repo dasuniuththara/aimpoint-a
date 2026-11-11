@@ -59,7 +59,7 @@
 
   <style>
     body {
-      background-color: #09090B;
+      background-color: #060608;
       color: #F4F4F5;
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
@@ -79,8 +79,8 @@
       background-color: #050507;
       background-size: 28px 28px;
       background-image:
-        linear-gradient(to right, rgba(234, 88, 12, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(234, 88, 12, 0.08) 1px, transparent 1px);
+        linear-gradient(to right, rgba(245, 158, 11, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(245, 158, 11, 0.09) 1px, transparent 1px);
     }
 
     /* Clean Light Studio Overrides for Secondary Views & Legacy Panels */
@@ -154,28 +154,28 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased selection:bg-orange-600 selection:text-white bg-[#09090B] text-zinc-100">
+<body class="min-h-screen flex flex-col antialiased selection:bg-orange-600 selection:text-white bg-[#060608] text-zinc-100">
 
   <!-- Moving-Sticks Sports Analytics Studio Header -->
-  <header class="sticky top-0 z-50 bg-[#121214]/95 backdrop-blur border-b border-zinc-800 px-5 py-3 flex items-center justify-between shadow-sm">
+  <header class="sticky top-0 z-50 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]/95 backdrop-blur border-b border-white/10 px-5 py-3 flex items-center justify-between shadow-sm">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-lg bg-orange-600 text-white flex items-center justify-center shadow-sm">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-zinc-950 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.35)]">
         <i data-lucide="dribbble" class="w-5 h-5 text-white"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="font-bold text-lg tracking-tight text-zinc-100">AimPoint <span class="text-orange-400">Motion</span></span>
-          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#18181B] text-zinc-300 border border-zinc-700 uppercase">Moving Sticks Studio</span>
+          <span class="font-bold text-lg tracking-tight text-zinc-100">AimPoint <span class="text-amber-400">Motion</span></span>
+          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#16171C] text-zinc-300 border border-zinc-700 uppercase">Moving Sticks Studio</span>
         </div>
         <p class="text-[11px] text-zinc-400">Pose-to-2D Stick Conversion &amp; Automated Throwing Fault Detection</p>
       </div>
     </div>
 
     <!-- Clean Navigation Tabs -->
-    <nav class="hidden md:flex items-center space-x-1 bg-[#18181B] p-1 rounded-lg border border-zinc-800">
+    <nav class="hidden md:flex items-center space-x-1 bg-[#16171C] p-1 rounded-lg border border-white/10">
       <button onclick="switchTab('analyzer')" id="tab-analyzer"
-        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#27272A] text-white shadow-sm border border-orange-500/40 flex items-center space-x-1.5">
-        <i data-lucide="video" class="w-3.5 h-3.5 text-orange-400"></i>
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#27272A] text-white shadow-sm border border-amber-500/40 flex items-center space-x-1.5">
+        <i data-lucide="video" class="w-3.5 h-3.5 text-amber-400"></i>
         <span>Pose &amp; Error Studio</span>
       </button>
       <button onclick="switchTab('dashboard')" id="tab-dashboard"
@@ -201,7 +201,7 @@
         <span>30 FPS Pose Active</span>
       </div>
       <a href="/docs" target="_blank"
-        class="px-3 py-1.5 text-xs font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center space-x-1.5">
+        class="px-3 py-1.5 text-xs font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center space-x-1.5">
         <i data-lucide="code-2" class="w-3.5 h-3.5 text-zinc-400"></i>
         <span>API</span>
       </a>
@@ -217,21 +217,21 @@
 
       <!-- Friendly Thesis 3-Step Workflow Guide -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-        <div class="bg-[#121214] border border-zinc-800 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
           <span class="w-6 h-6 rounded-full bg-orange-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">Upload or Frame Shot (2.5–3.0m)</div>
             <div class="text-[11px] text-zinc-400 truncate">Side-view phone clip or sample clip</div>
           </div>
         </div>
-        <div class="bg-[#121214] border border-zinc-800 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
           <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">3D→2D Pose Extraction</div>
             <div class="text-[11px] text-zinc-400 truncate">Red joints = fault • Green joints = optimal</div>
           </div>
         </div>
-        <div class="bg-[#121214] border border-zinc-800 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
           <span class="w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">Actionable Coaching Card</div>
@@ -241,17 +241,17 @@
       </div>
 
       <!-- Clean Pipeline Action Bar + Categorized Clip Library -->
-      <div class="bg-[#121214] border border-zinc-800 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+      <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2.5">
           <!-- Athlete Selector -->
-          <div class="flex items-center space-x-2 bg-[#18181B] border border-zinc-800 rounded-lg px-2.5 py-1.5">
+          <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
             <span class="text-[10px] font-mono font-semibold text-zinc-400 uppercase">Player:</span>
             <select id="athleteSelect" class="bg-transparent text-xs font-semibold text-zinc-100 outline-none cursor-pointer">
-              <option class="bg-[#18181B] text-white" value="ATH-001">K. Perera (Point Guard)</option>
-              <option class="bg-[#18181B] text-white" value="ATH-002">D. Silva (Shooting Guard)</option>
-              <option class="bg-[#18181B] text-white" value="ATH-003">M. Fernando (Small Forward)</option>
-              <option class="bg-[#18181B] text-white" value="ATH-004">T. Kirindegama (Guard)</option>
-              <option class="bg-[#18181B] text-white" value="ATH-005">S. Alwis (Power Forward)</option>
+              <option class="bg-[#16171C] text-white" value="ATH-001">K. Perera (Point Guard)</option>
+              <option class="bg-[#16171C] text-white" value="ATH-002">D. Silva (Shooting Guard)</option>
+              <option class="bg-[#16171C] text-white" value="ATH-003">M. Fernando (Small Forward)</option>
+              <option class="bg-[#16171C] text-white" value="ATH-004">T. Kirindegama (Guard)</option>
+              <option class="bg-[#16171C] text-white" value="ATH-005">S. Alwis (Power Forward)</option>
             </select>
           </div>
 
@@ -266,33 +266,33 @@
           <!-- Live Camera Trigger -->
           <div class="flex items-center">
             <button onclick="toggleCamera()" id="btn-camera"
-              class="px-3 py-1.5 rounded-l-lg bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center space-x-1.5 transition-colors">
-              <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-orange-400"></i>
+              class="px-3 py-1.5 rounded-l-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center space-x-1.5 transition-colors">
+              <i data-lucide="video" id="icon-camera" class="w-3.5 h-3.5 text-amber-400"></i>
               <span id="text-camera">Live Camera</span>
             </button>
             <div class="relative inline-block">
               <button onclick="toggleCameraOptionsMenu()" id="btn-cam-options" title="Camera Settings"
-                class="px-2 py-1.5 rounded-r-lg bg-white hover:bg-slate-50 text-zinc-400 hover:text-zinc-100 border-y border-r border-zinc-800 text-xs flex items-center">
+                class="px-2 py-1.5 rounded-r-lg bg-white hover:bg-slate-50 text-zinc-400 hover:text-zinc-100 border-y border-r border-white/10 text-xs flex items-center">
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
               </button>
-              <div id="camOptionsMenu" class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-[#121214] border border-zinc-800 shadow-xl z-50 p-3 space-y-2.5">
-                <div class="border-b border-zinc-800 pb-2 flex items-center justify-between">
+              <div id="camOptionsMenu" class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 shadow-xl z-50 p-3 space-y-2.5">
+                <div class="border-b border-white/10 pb-2 flex items-center justify-between">
                   <span class="text-xs font-semibold text-zinc-100">Camera Source</span>
-                  <button onclick="openCameraHelpModal()" class="text-[11px] text-orange-400 hover:underline font-mono">Help</button>
+                  <button onclick="openCameraHelpModal()" class="text-[11px] text-amber-400 hover:underline font-mono">Help</button>
                 </div>
                 <div class="space-y-1">
                   <label class="text-[10px] font-mono text-zinc-400 uppercase">Input Device</label>
-                  <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)" class="w-full px-2 py-1.5 rounded bg-[#18181B] text-zinc-200 border border-zinc-700 text-xs font-mono outline-none">
+                  <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)" class="w-full px-2 py-1.5 rounded bg-[#16171C] text-zinc-200 border border-zinc-700 text-xs font-mono outline-none">
                     <option value="">Default Camera</option>
                   </select>
                 </div>
                 <div class="flex items-center justify-between pt-1">
                   <span class="text-xs text-zinc-300">Mirror Video</span>
-                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-[#18181B] text-[10px] font-mono text-orange-400 border border-zinc-700">ON</button>
+                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-[#16171C] text-[10px] font-mono text-amber-400 border border-zinc-700">ON</button>
                 </div>
-                <div class="pt-2 border-t border-zinc-800">
-                  <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-medium rounded bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center justify-center space-x-1.5">
-                    <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-orange-400"></i>
+                <div class="pt-2 border-t border-white/10">
+                  <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-medium rounded bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center justify-center space-x-1.5">
+                    <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-amber-400"></i>
                     <span>Test Virtual Camera</span>
                   </button>
                 </div>
@@ -310,23 +310,23 @@
             Ideal
           </button>
           <button onclick="loadSampleVideo(1)" id="btn-bm-1"
-            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
+            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
             Low Elbow
           </button>
           <button onclick="loadSampleVideo(2)" id="btn-bm-2"
-            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
+            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
             Short Follow
           </button>
           <button onclick="loadSampleVideo(3)" id="btn-bm-3"
-            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
+            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
             Imbalanced
           </button>
           <button onclick="loadSampleVideo(4)" id="btn-bm-4"
-            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
+            class="px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors">
             Early Release
           </button>
           <select id="sampleLibrarySelect" onchange="loadNamedSampleVideo(this.value)"
-            class="bg-[#18181B] text-[11px] font-mono text-zinc-200 border border-zinc-700 rounded-md px-2.5 py-1 ml-1 focus:outline-none focus:border-orange-500 max-w-[260px]">
+            class="bg-[#16171C] text-[11px] font-mono text-zinc-200 border border-zinc-700 rounded-md px-2.5 py-1 ml-1 focus:outline-none focus:border-orange-500 max-w-[260px]">
             <option value="">Clip Library (Loading...)</option>
           </select>
         </div>
@@ -337,19 +337,19 @@
 
         <!-- LEFT PANE (7 Cols): CINEMA MOVING STICKS DUAL STAGE + KEYFRAMES -->
         <div class="lg:col-span-7 flex flex-col space-y-4">
-          <div class="bg-[#121214] rounded-xl border border-zinc-800 shadow-sm overflow-hidden flex flex-col">
+          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm overflow-hidden flex flex-col">
 
             <!-- Stage Header -->
-            <div class="px-4 py-2.5 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-2 bg-slate-50">
+            <div class="px-4 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 bg-slate-50">
               <div class="flex items-center space-x-2.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-orange-600" id="hud-pulse-dot"></span>
                 <span class="text-xs font-bold text-zinc-100" id="viewportModeLabel">Moving Sticks Pose Conversion (Source Video → 2D Skeleton)</span>
-                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-orange-950/40 text-orange-300 border border-orange-500/30 truncate max-w-[170px]"></span>
+                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/30 text-orange-300 border border-amber-500/30 truncate max-w-[170px]"></span>
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="cycleVideoDisplayMode()" id="btn-video-overlay-toggle"
-                  class="hidden px-2.5 py-1 rounded-md bg-[#18181B] text-orange-400 border border-orange-500/40 text-[11px] font-semibold hover:bg-orange-50 transition-colors">
+                  class="hidden px-2.5 py-1 rounded-md bg-[#16171C] text-amber-400 border border-amber-500/40 text-[11px] font-semibold hover:bg-orange-50 transition-colors">
                   View: Side-by-Side (Video | 2D Sticks)
                 </button>
                 <button onclick="export2DModelVideo()" id="btn-export-2d"
@@ -358,12 +358,12 @@
                   <span>Export 2D Video</span>
                 </button>
                 <button onclick="toggleSagittalGuide()" id="btn-guide"
-                  class="px-2.5 py-1 rounded-md bg-[#18181B] text-zinc-300 border border-zinc-700 hover:text-white text-[11px] font-medium transition-colors flex items-center space-x-1">
+                  class="px-2.5 py-1 rounded-md bg-[#16171C] text-zinc-300 border border-zinc-700 hover:text-white text-[11px] font-medium transition-colors flex items-center space-x-1">
                   <i data-lucide="scan" class="w-3 h-3"></i>
                   <span>Guide</span>
                 </button>
                 <button onclick="toggleSlowMo()" id="btn-slowmo"
-                  class="px-2.5 py-1 rounded-md bg-[#18181B] text-zinc-200 border border-zinc-700 text-[11px] font-mono">
+                  class="px-2.5 py-1 rounded-md bg-[#16171C] text-zinc-200 border border-zinc-700 text-[11px] font-mono">
                   1.0x
                 </button>
               </div>
@@ -439,15 +439,15 @@
               <!-- Image Processing & 3D->2D Extraction Progress Overlay -->
               <div id="videoExtractionOverlay"
                 class="absolute inset-0 z-40 bg-slate-950/90 flex flex-col items-center justify-center p-6 hidden">
-                <div class="w-full max-w-md bg-[#121214] border border-zinc-800 rounded-xl p-5 space-y-3 shadow-2xl">
+                <div class="w-full max-w-md bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-5 space-y-3 shadow-2xl">
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-zinc-100" id="extractionStatusTitle">Moving-Sticks Pose Extraction Pipeline</span>
                     <div class="flex items-center space-x-2">
-                      <span class="font-mono font-bold text-orange-400" id="extractionProgressPct">0%</span>
+                      <span class="font-mono font-bold text-amber-400" id="extractionProgressPct">0%</span>
                       <button onclick="cancelVideoExtraction()" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-red-950/60 text-zinc-300 hover:text-red-400 border border-zinc-700 text-[10px] font-mono">Cancel</button>
                     </div>
                   </div>
-                  <div class="w-full h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+                  <div class="w-full h-2 bg-zinc-900 rounded-full overflow-hidden border border-white/10">
                     <div id="extractionProgressBar" class="h-full bg-orange-600 transition-all duration-150" style="width: 0%"></div>
                   </div>
                   <p class="text-[11px] text-zinc-400 font-mono" id="extractionDetailText">
@@ -473,9 +473,9 @@
             </div>
 
             <!-- Pipeline Telemetry Summary Strip -->
-            <div id="imageProcSummary" class="px-4 py-2 bg-[#121214] border-t border-zinc-800 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-zinc-400">
+            <div id="imageProcSummary" class="px-4 py-2 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-zinc-400">
               <div class="flex items-center space-x-2">
-                <span class="text-orange-400 font-bold">PIPELINE:</span>
+                <span class="text-amber-400 font-bold">PIPELINE:</span>
                 <span id="imgProcRes">Ready for Real / 3D Video Upload</span>
               </div>
               <div class="flex items-center space-x-3">
@@ -486,18 +486,18 @@
             </div>
 
             <!-- Interactive Playback & Frame Scrubbing Bar -->
-            <div class="p-3 bg-[#121214] border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
               <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="togglePlayback()" id="btn-play" title="Play / Pause"
                   class="w-9 h-9 rounded-lg bg-orange-600 hover:bg-orange-700 text-white flex items-center justify-center transition-colors shadow-sm">
                   <i data-lucide="pause" class="w-4 h-4" id="icon-play"></i>
                 </button>
                 <button onclick="resetPlayback()" title="Reset to Frame 0"
-                  class="w-9 h-9 rounded-lg bg-[#18181B] text-zinc-300 border border-zinc-700 flex items-center justify-center hover:bg-slate-200 transition-colors">
+                  class="w-9 h-9 rounded-lg bg-[#16171C] text-zinc-300 border border-zinc-700 flex items-center justify-center hover:bg-slate-200 transition-colors">
                   <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                 </button>
 
-                <div class="flex items-center space-x-1 bg-[#18181B] p-1 rounded-lg border border-zinc-800">
+                <div class="flex items-center space-x-1 bg-[#16171C] p-1 rounded-lg border border-white/10">
                   <button onclick="stepFrame(-1)" title="Step Back 1 Frame"
                     class="px-2 py-1 rounded text-zinc-300 hover:text-zinc-100 hover:bg-white text-[11px] font-mono flex items-center space-x-0.5">
                     <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
@@ -510,11 +510,11 @@
                   </button>
                 </div>
 
-                <div class="flex items-center space-x-1 bg-[#18181B] p-1 rounded-lg border border-zinc-800">
-                  <button onclick="setSpeed(0.25)" id="btn-spd-025" class="px-2 py-1 rounded bg-[#18181B] text-zinc-300 hover:text-white font-mono text-[11px]">0.25x</button>
-                  <button onclick="setSpeed(0.5)" id="btn-spd-05" class="px-2 py-1 rounded bg-[#18181B] text-zinc-300 hover:text-white font-mono text-[11px]">0.5x</button>
+                <div class="flex items-center space-x-1 bg-[#16171C] p-1 rounded-lg border border-white/10">
+                  <button onclick="setSpeed(0.25)" id="btn-spd-025" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.25x</button>
+                  <button onclick="setSpeed(0.5)" id="btn-spd-05" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.5x</button>
                   <button onclick="setSpeed(1.0)" id="btn-spd-10" class="px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
-                  <button onclick="setSpeed(1.5)" id="btn-spd-15" class="px-2 py-1 rounded bg-[#18181B] text-zinc-300 hover:text-white font-mono text-[11px]">1.5x</button>
+                  <button onclick="setSpeed(1.5)" id="btn-spd-15" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">1.5x</button>
                 </div>
 
                 <button onclick="startShotCapture()" id="btn-capture-shot"
@@ -532,8 +532,8 @@
 
               <div>
                 <label for="videoUploadInput"
-                  class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 cursor-pointer flex items-center space-x-1.5">
-                  <i data-lucide="folder-open" class="w-3.5 h-3.5 text-orange-400"></i>
+                  class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 cursor-pointer flex items-center space-x-1.5">
+                  <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-400"></i>
                   <span>Open Video</span>
                 </label>
                 <input type="file" id="videoUploadInput" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
@@ -542,10 +542,10 @@
           </div>
 
           <!-- IDENTIFIED BIOMECHANICAL KEY FRAMES -->
-          <div class="bg-[#121214] rounded-xl border border-zinc-800 shadow-sm p-4 space-y-3">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div class="flex items-center space-x-2">
-                <i data-lucide="film" class="w-4 h-4 text-orange-400"></i>
+                <i data-lucide="film" class="w-4 h-4 text-amber-400"></i>
                 <h3 class="text-xs font-bold text-zinc-100 uppercase tracking-wider font-mono">Identified Biomechanical Key Frames</h3>
               </div>
               <span class="text-[11px] font-mono text-zinc-400">Click any phase to inspect joint sticks</span>
@@ -558,8 +558,8 @@
         <!-- RIGHT PANE (5 Cols): THROWING ERROR DIAGNOSIS & ADVICE -->
         <div class="lg:col-span-5 flex flex-col space-y-4">
 
-          <div class="bg-[#121214] rounded-xl border border-zinc-800 shadow-sm p-5 space-y-4">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
               <span class="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase">The Coaching Card (Actionable Minimalism)</span>
               <span id="severityBadge"
                 class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
@@ -574,30 +574,36 @@
                 <span class="text-[11px] font-mono text-zinc-400 uppercase block">Detected Classification</span>
                 <h2 id="faultTitle" class="text-2xl font-bold text-zinc-100 tracking-tight truncate">Ideal Shooting Form</h2>
                 <div class="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
-                  <div class="px-2.5 py-1 rounded bg-[#18181B] border border-zinc-800">
+                  <div class="px-2.5 py-1 rounded bg-[#16171C] border border-white/10">
                     <span class="text-zinc-400">Confidence:</span>
-                    <span id="confidenceScore" class="font-bold text-orange-400 ml-1">98.5%</span>
+                    <span id="confidenceScore" class="font-bold text-amber-400 ml-1">98.5%</span>
                   </div>
-                  <div class="px-2.5 py-1 rounded bg-[#18181B] border border-zinc-800">
+                  <div class="px-2.5 py-1 rounded bg-[#16171C] border border-white/10">
                     <span class="text-zinc-400">Angle Delta:</span>
                     <span id="deviationText" class="font-bold text-zinc-100 ml-1">0.0°</span>
                   </div>
                 </div>
               </div>
 
-              <div class="flex flex-col items-center justify-center p-2.5 rounded-lg bg-[#18181B] border border-zinc-800 shrink-0 text-center min-w-[84px]">
-                <span class="text-[9px] font-mono uppercase text-zinc-400">Form Score</span>
-                <div class="flex items-baseline justify-center mt-0.5">
-                  <span id="formScoreNum" class="text-2xl font-bold text-emerald-400 font-mono">98</span>
-                  <span class="text-[10px] text-slate-400 font-mono">/100</span>
+              <div class="relative flex flex-col items-center justify-center p-2 rounded-xl bg-[#16171C] border border-white/10 shrink-0 text-center w-[96px] h-[96px] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                <svg class="w-[76px] h-[76px] -rotate-90" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"></circle>
+                  <circle id="formScoreRingCircle" cx="40" cy="40" r="34" fill="none" stroke="#34D399" stroke-width="6"
+                    stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="4.3"
+                    style="transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center pt-0.5">
+                  <div class="flex items-baseline justify-center leading-none">
+                    <span id="formScoreNum" class="text-xl font-bold text-emerald-400 font-mono">98</span>
+                  </div>
+                  <span id="formScoreLabel" class="text-[8px] font-bold text-emerald-400 uppercase tracking-wider mt-0.5">OPTIMAL</span>
                 </div>
-                <span id="formScoreLabel" class="text-[9px] font-bold text-emerald-400 uppercase mt-0.5">OPTIMAL</span>
               </div>
             </div>
 
             <!-- Measured Joint Angle Summary Grid -->
             <div class="grid grid-cols-2 gap-2.5">
-              <div class="bg-[#18181B] p-3 rounded-lg border border-zinc-800">
+              <div class="bg-[#16171C] p-3 rounded-lg border border-white/10">
                 <span class="text-[10px] font-mono uppercase text-zinc-400 block">Min Elbow Angle</span>
                 <div class="flex items-baseline space-x-1.5 mt-0.5">
                   <span id="metricElbow" class="text-lg font-bold font-mono text-zinc-100">88.5°</span>
@@ -605,7 +611,7 @@
                 </div>
               </div>
 
-              <div class="bg-[#18181B] p-3 rounded-lg border border-zinc-800">
+              <div class="bg-[#16171C] p-3 rounded-lg border border-white/10">
                 <span class="text-[10px] font-mono uppercase text-zinc-400 block">Release Elevation</span>
                 <div class="flex items-baseline space-x-1.5 mt-0.5">
                   <span id="metricRelease" class="text-lg font-bold font-mono text-zinc-100">52.0°</span>
@@ -613,7 +619,7 @@
                 </div>
               </div>
 
-              <div class="bg-[#18181B] p-3 rounded-lg border border-zinc-800">
+              <div class="bg-[#16171C] p-3 rounded-lg border border-white/10">
                 <span class="text-[10px] font-mono uppercase text-zinc-400 block">Max Trunk Tilt</span>
                 <div class="flex items-baseline space-x-1.5 mt-0.5">
                   <span id="metricTrunk" class="text-lg font-bold font-mono text-zinc-100">24.2°</span>
@@ -621,10 +627,10 @@
                 </div>
               </div>
 
-              <div class="bg-[#18181B] p-3 rounded-lg border border-zinc-800">
+              <div class="bg-[#16171C] p-3 rounded-lg border border-white/10">
                 <span class="text-[10px] font-mono uppercase text-zinc-400 block">Processing Time</span>
                 <div class="flex items-baseline space-x-1.5 mt-0.5">
-                  <span id="metricLatency" class="text-lg font-bold font-mono text-orange-400">14 ms</span>
+                  <span id="metricLatency" class="text-lg font-bold font-mono text-amber-400">14 ms</span>
                   <span class="text-[10px] font-mono text-slate-400">30 FPS</span>
                 </div>
               </div>
@@ -642,23 +648,23 @@
             </div>
 
             <!-- Targeted Drill Prescription (Thesis Section 4.6.6) -->
-            <div class="rounded-lg p-3.5 bg-orange-950/25 border border-orange-500/30 space-y-2">
+            <div class="rounded-lg p-3.5 bg-amber-950/20 border border-amber-500/30 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-mono font-bold text-orange-400 uppercase flex items-center space-x-1.5">
+                <span class="text-[11px] font-mono font-bold text-amber-400 uppercase flex items-center space-x-1.5">
                   <i data-lucide="target" class="w-3.5 h-3.5"></i>
                   <span>Targeted Drill Prescription</span>
                 </span>
-                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#09090B] text-orange-300 border border-orange-500/30">
+                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#060608] text-orange-300 border border-amber-500/30">
                   3 sets of 15 makes
                 </span>
               </div>
               <h4 id="drillTitle" class="text-base font-bold text-zinc-100">Form Shooting Progression</h4>
-              <div class="bg-[#09090B] rounded p-2.5 border border-orange-500/30 text-xs text-zinc-200 italic" id="actionCue">
+              <div class="bg-[#060608] rounded p-2.5 border border-amber-500/30 text-xs text-zinc-200 italic" id="actionCue">
                 "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
               </div>
               <div class="flex items-center justify-between gap-2 pt-1">
                 <button onclick="speakCoachingCue()" type="button"
-                  class="flex-1 px-3 py-1.5 rounded-lg bg-[#18181B] hover:bg-zinc-800 text-orange-400 border border-orange-500/40 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
+                  class="flex-1 px-3 py-1.5 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-400 border border-amber-500/40 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors">
                   <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
                   <span>Read Advice Aloud</span>
                 </button>
@@ -672,8 +678,8 @@
           </div>
 
           <!-- ALL 5 BIOMECHANICAL CHECKPOINTS AUDIT -->
-          <div class="bg-[#121214] rounded-xl border border-zinc-800 shadow-sm p-4 space-y-2.5">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-2.5">
+            <div class="flex items-center justify-between border-b border-white/10 pb-2">
               <span class="text-xs font-mono font-bold text-zinc-100 uppercase tracking-wider">5-Checkpoint Error &amp; Advice Audit</span>
               <span class="text-[10px] font-mono text-zinc-400">Automated Breakdown</span>
             </div>
@@ -683,7 +689,7 @@
       </div>
 
       <!-- Kinetic Chain Velocity Curve Chart -->
-      <div class="bg-[#121214] rounded-xl border border-zinc-800 shadow-sm p-5 space-y-3">
+      <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider font-mono text-zinc-100">Angular Velocity &amp; Kinematic Sequencing</h3>
@@ -1028,13 +1034,13 @@
         </div>
 
                 <!-- Verified Full LLM & RAG Dataset Summary Card -->
-        <div id="llmDatasetCard" class="p-4 bg-[#18181B] rounded-2xl border border-zinc-800 space-y-2">
+        <div id="llmDatasetCard" class="p-4 bg-[#16171C] rounded-2xl border border-white/10 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono font-bold text-zinc-200 uppercase flex items-center space-x-1.5">
-              <i data-lucide="database" class="w-4 h-4 text-orange-400"></i>
+              <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
               <span>AimPoint Full LLM &amp; RAG Coaching Dataset</span>
             </span>
-            <span id="llmDatasetTotalBadge" class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-orange-950/50 text-orange-300 border border-orange-500/30">Loading...</span>
+            <span id="llmDatasetTotalBadge" class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-orange-950/50 text-orange-300 border border-amber-500/30">Loading...</span>
           </div>
           <p class="text-xs text-zinc-400" id="llmDatasetDesc">
             Multi-turn ChatML (JSONL), Alpaca tuning export, 15-column kinematic telemetry CSV, and RAG clinical threshold rules.
@@ -1103,7 +1109,7 @@
         if (btn) {
           btn.className = i === activeIdx
             ? "px-2.5 py-1 text-[11px] font-semibold rounded-md bg-orange-600 text-white border border-orange-600 transition-colors"
-            : "px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#18181B] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors";
+            : "px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition-colors";
         }
       }
     }
@@ -2080,7 +2086,7 @@
           // Trigger CSS reflow for smooth re-entry
           void view.offsetWidth;
           view.classList.add('tab-view-fade');
-          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#27272A] text-white shadow-sm border border-orange-500/40 flex items-center space-x-1.5";
+          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#27272A] text-white shadow-sm border border-amber-500/40 flex items-center space-x-1.5";
         } else {
           view.classList.add('hidden');
           view.classList.remove('tab-view-fade');
@@ -2678,7 +2684,7 @@
         const row = document.createElement('div');
         row.className = isFault
           ? 'p-2.5 rounded-lg bg-red-950/35 border border-red-500/40 space-y-1'
-          : 'p-2.5 rounded-lg bg-[#18181B] border border-zinc-800 space-y-1';
+          : 'p-2.5 rounded-lg bg-[#16171C] border border-white/10 space-y-1';
 
         row.innerHTML = `
           <div class="flex items-center justify-between gap-2">
@@ -2689,7 +2695,7 @@
               <span class="text-xs font-bold text-zinc-100">${item.checkpoint}</span>
             </div>
             <div class="text-[11px] font-mono">
-              <strong class="${isFault ? 'text-red-400' : 'text-orange-400'}">${item.measured}</strong>
+              <strong class="${isFault ? 'text-red-400' : 'text-amber-400'}">${item.measured}</strong>
               <span class="text-zinc-400 ml-1">(${item.target})</span>
             </div>
           </div>
@@ -2714,7 +2720,7 @@
         const card = document.createElement('button');
         card.id = `bio-frame-card-${f.id}`;
         card.onclick = () => jumpToBiomechanicalFrame(f);
-        card.className = "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-zinc-800 hover:border-orange-300 transition-colors space-y-1";
+        card.className = "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-white/10 hover:border-orange-300 transition-colors space-y-1";
 
         let primaryMetric = `Elbow: ${f.elbow_deg}°`;
         if (f.id === 'dip') primaryMetric = `Knee: ${f.knee_deg}°`;
@@ -2723,7 +2729,7 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono font-bold text-orange-400">${f.phase}</span>
+            <span class="text-[10px] font-mono font-bold text-amber-400">${f.phase}</span>
             <span class="text-[10px] font-mono text-zinc-400">F${f.frame_idx + 1} (${f.time_sec}s)</span>
           </div>
           <div class="text-xs font-bold text-zinc-100 truncate">${f.title}</div>
@@ -2739,8 +2745,8 @@
         const el = document.getElementById(`bio-frame-card-${f.id}`);
         if (el) {
           el.className = f.id === frameObj.id
-            ? "text-left p-2.5 rounded-lg bg-orange-950/40 border-2 border-orange-500 transition-colors space-y-1"
-            : "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-zinc-800 hover:border-orange-300 transition-colors space-y-1";
+            ? "text-left p-2.5 rounded-lg bg-amber-950/30 border-2 border-orange-500 transition-colors space-y-1"
+            : "text-left p-2.5 rounded-lg bg-slate-50 hover:bg-orange-50/70 border border-white/10 hover:border-orange-300 transition-colors space-y-1";
         }
       });
 
@@ -2792,15 +2798,21 @@
         1: { score: 64, label: "LOW ELBOW", color: "text-red-400" },
         2: { score: 72, label: "SHORT SNAP", color: "text-amber-400" },
         3: { score: 58, label: "OFF BALANCE", color: "text-amber-400" },
-        4: { score: 69, label: "EARLY RELEASE", color: "text-orange-400" }
+        4: { score: 69, label: "EARLY RELEASE", color: "text-amber-400" }
       };
       const fId = card.fault_id !== undefined ? card.fault_id : 0;
-      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-orange-400" };
+      const fInfo = formScores[fId] || { score: 75, label: "ANALYZED", color: "text-amber-400" };
       const scoreNumEl = document.getElementById('formScoreNum');
       const scoreLabelEl = document.getElementById('formScoreLabel');
       if (scoreNumEl) {
         scoreNumEl.innerText = fInfo.score;
-        scoreNumEl.className = `text-2xl font-bold font-mono ${fInfo.color}`;
+        scoreNumEl.className = `text-xl font-bold font-mono ${fInfo.color}`;
+      }
+      const ringEl = document.getElementById('formScoreRingCircle');
+      if (ringEl) {
+        const circ = 213.6;
+        ringEl.style.strokeDashoffset = (circ * (1 - fInfo.score / 100)).toFixed(1);
+        ringEl.setAttribute('stroke', fId === 0 ? '#34D399' : (fId === 1 ? '#F87171' : '#FBBF24'));
       }
       if (scoreLabelEl) {
         scoreLabelEl.innerText = fInfo.label;
@@ -3455,7 +3467,7 @@
           if (match) {
             btn.className = "px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]";
           } else {
-            btn.className = "px-2 py-1 rounded bg-[#18181B] text-zinc-300 hover:text-white font-mono text-[11px]";
+            btn.className = "px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]";
           }
         }
       });
