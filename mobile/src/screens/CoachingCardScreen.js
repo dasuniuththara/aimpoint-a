@@ -124,7 +124,7 @@ export default function CoachingCardScreen({ analysis, onOpenHistory }) {
 
         <View style={styles.ctaRow}>
           <TouchableOpacity style={styles.speakBtn} onPress={handleSpeakCue}>
-            <Ionicons name="volume-high-outline" size={16} color="#C2410C" />
+            <Ionicons name="volume-high-outline" size={16} color="#FB923C" />
             <Text style={styles.speakText}>Speak Cue</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.historyBtn} onPress={onOpenHistory}>
@@ -139,7 +139,7 @@ export default function CoachingCardScreen({ analysis, onOpenHistory }) {
         <Text style={styles.auditToggleText}>
           {showAudit ? 'Hide 5-Checkpoint Breakdown' : 'Show All 5 Checkpoint Measurements'}
         </Text>
-        <Ionicons name={showAudit ? 'chevron-up' : 'chevron-down'} size={18} color="#475569" />
+        <Ionicons name={showAudit ? 'chevron-up' : 'chevron-down'} size={18} color="#A1A1AA" />
       </TouchableOpacity>
 
       {showAudit && (
@@ -163,56 +163,56 @@ export default function CoachingCardScreen({ analysis, onOpenHistory }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F7F4EF' },
+  screen: { flex: 1, backgroundColor: '#09090B' },
   content: { padding: 14, gap: 12 },
-  emptyWrap: { flex: 1, backgroundColor: '#F7F4EF', alignItems: 'center', justifyContent: 'center', padding: 28 },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: '#0F172A', marginTop: 10 },
-  emptySub: { fontSize: 13, color: '#64748B', textAlign: 'center', marginTop: 6, lineHeight: 19 },
-  playerCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#E7E2D8', gap: 10 },
+  emptyWrap: { flex: 1, backgroundColor: '#09090B', alignItems: 'center', justifyContent: 'center', padding: 28 },
+  emptyTitle: { fontSize: 17, fontWeight: '700', color: '#F4F4F5', marginTop: 10 },
+  emptySub: { fontSize: 13, color: '#A1A1AA', textAlign: 'center', marginTop: 6, lineHeight: 19 },
+  playerCard: { backgroundColor: '#121214', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#27272A', gap: 10 },
   controlsBar: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   ctrlBtn: { flexDirection: 'row', gap: 5, alignItems: 'center', backgroundColor: '#EA580C', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 7 },
   ctrlBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
-  stepBtn: { backgroundColor: '#F1F5F9', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 7, borderWidth: 1, borderColor: '#CBD5E1' },
-  stepText: { color: '#0F172A', fontSize: 11, fontWeight: '700' },
-  frameLabel: { marginLeft: 'auto', fontSize: 11, color: '#64748B', fontWeight: '600' },
+  stepBtn: { backgroundColor: '#18181B', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 7, borderWidth: 1, borderColor: '#27272A' },
+  stepText: { color: '#F4F4F5', fontSize: 11, fontWeight: '700' },
+  frameLabel: { marginLeft: 'auto', fontSize: 11, color: '#A1A1AA', fontWeight: '600' },
   telemetryGrid: { flexDirection: 'row', gap: 6 },
-  teleBox: { flex: 1, backgroundColor: '#F8FAFC', padding: 8, borderRadius: 8, borderWidth: 1, borderColor: '#E7E2D8' },
-  teleLbl: { fontSize: 10, color: '#64748B', fontWeight: '600' },
-  teleVal: { fontSize: 13, fontWeight: '800', color: '#0F172A', marginTop: 2 },
-  coachingCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 15, borderWidth: 1, borderColor: '#E7E2D8', gap: 10 },
+  teleBox: { flex: 1, backgroundColor: '#18181B', padding: 8, borderRadius: 8, borderWidth: 1, borderColor: '#27272A' },
+  teleLbl: { fontSize: 10, color: '#A1A1AA', fontWeight: '600' },
+  teleVal: { fontSize: 13, fontWeight: '800', color: '#F4F4F5', marginTop: 2 },
+  coachingCard: { backgroundColor: '#121214', borderRadius: 12, padding: 15, borderWidth: 1, borderColor: '#27272A', gap: 10 },
   cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardHeader: { fontSize: 11, fontWeight: '800', color: '#64748B', letterSpacing: 0.8 },
+  cardHeader: { fontSize: 11, fontWeight: '800', color: '#A1A1AA', letterSpacing: 0.8 },
   sevBadge: { paddingHorizontal: 9, paddingVertical: 3, borderRadius: 6, borderWidth: 1 },
-  sevGreen: { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' },
-  sevRed: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
+  sevGreen: { backgroundColor: '#071E14', borderColor: '#065F46' },
+  sevRed: { backgroundColor: '#220B0B', borderColor: '#991B1B' },
   sevText: { fontSize: 11, fontWeight: '700' },
-  sevTextGreen: { color: '#047857' },
-  sevTextRed: { color: '#B91C1C' },
-  faultTitle: { fontSize: 21, fontWeight: '800', color: '#0F172A' },
-  confLine: { fontSize: 12, color: '#475569', fontWeight: '500' },
-  whyBox: { backgroundColor: '#FFFBEB', borderColor: '#FDE68A', borderWidth: 1, borderRadius: 9, padding: 11, gap: 4 },
-  whyHeading: { fontSize: 10, fontWeight: '800', color: '#92400E' },
-  whyBody: { fontSize: 12, color: '#334155', lineHeight: 17 },
-  drillBox: { backgroundColor: '#FFF7ED', borderColor: '#FED7AA', borderWidth: 1, borderRadius: 9, padding: 11, gap: 5 },
+  sevTextGreen: { color: '#34D399' },
+  sevTextRed: { color: '#F87171' },
+  faultTitle: { fontSize: 21, fontWeight: '800', color: '#F4F4F5' },
+  confLine: { fontSize: 12, color: '#A1A1AA', fontWeight: '500' },
+  whyBox: { backgroundColor: '#1C1507', borderColor: '#FCD34D', borderWidth: 1, borderRadius: 9, padding: 11, gap: 4 },
+  whyHeading: { fontSize: 10, fontWeight: '800', color: '#FCD34D' },
+  whyBody: { fontSize: 12, color: '#D4D4D8', lineHeight: 17 },
+  drillBox: { backgroundColor: '#1F1209', borderColor: '#FDBA74', borderWidth: 1, borderRadius: 9, padding: 11, gap: 5 },
   drillHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  drillHeading: { fontSize: 10, fontWeight: '800', color: '#C2410C' },
-  drillSets: { fontSize: 10, color: '#9A3412', fontWeight: '600' },
-  drillTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
-  drillCue: { fontSize: 12, color: '#1E293B', fontStyle: 'italic' },
+  drillHeading: { fontSize: 10, fontWeight: '800', color: '#FB923C' },
+  drillSets: { fontSize: 10, color: '#FDBA74', fontWeight: '600' },
+  drillTitle: { fontSize: 15, fontWeight: '700', color: '#F4F4F5' },
+  drillCue: { fontSize: 12, color: '#E4E4E7', fontStyle: 'italic' },
   ctaRow: { flexDirection: 'row', gap: 8, marginTop: 2 },
-  speakBtn: { flex: 1, flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#FED7AA', paddingVertical: 10, borderRadius: 9 },
-  speakText: { color: '#C2410C', fontSize: 12, fontWeight: '700' },
-  historyBtn: { flex: 1, flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#1C1917', paddingVertical: 10, borderRadius: 9 },
+  speakBtn: { flex: 1, flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#18181B', borderWidth: 1, borderColor: '#FDBA74', paddingVertical: 10, borderRadius: 9 },
+  speakText: { color: '#FB923C', fontSize: 12, fontWeight: '700' },
+  historyBtn: { flex: 1, flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#27272A', paddingVertical: 10, borderRadius: 9 },
   historyText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
-  auditToggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E7E2D8', borderRadius: 10, padding: 12 },
-  auditToggleText: { fontSize: 12, fontWeight: '700', color: '#334155' },
+  auditToggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#121214', borderWidth: 1, borderColor: '#27272A', borderRadius: 10, padding: 12 },
+  auditToggleText: { fontSize: 12, fontWeight: '700', color: '#D4D4D8' },
   auditList: { gap: 8 },
-  auditRow: { backgroundColor: '#FFFFFF', borderRadius: 10, padding: 11, borderWidth: 1, borderColor: '#E7E2D8', gap: 3 },
-  auditRowErr: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
+  auditRow: { backgroundColor: '#121214', borderRadius: 10, padding: 11, borderWidth: 1, borderColor: '#27272A', gap: 3 },
+  auditRowErr: { backgroundColor: '#220B0B', borderColor: '#991B1B' },
   auditTop: { flexDirection: 'row', justifyContent: 'space-between' },
-  auditName: { fontSize: 12, fontWeight: '700', color: '#0F172A' },
-  auditVal: { fontSize: 11, fontWeight: '700', color: '#C2410C' },
-  auditValErr: { color: '#B91C1C' },
-  auditAdvice: { fontSize: 11, color: '#475569' },
+  auditName: { fontSize: 12, fontWeight: '700', color: '#F4F4F5' },
+  auditVal: { fontSize: 11, fontWeight: '700', color: '#FB923C' },
+  auditValErr: { color: '#F87171' },
+  auditAdvice: { fontSize: 11, color: '#A1A1AA' },
 });
 

@@ -147,7 +147,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
           <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing={facing} mode="video" />
         ) : (
           <View style={styles.cameraPlaceholder}>
-            <Ionicons name="videocam-outline" size={44} color="#64748B" />
+            <Ionicons name="videocam-outline" size={44} color="#A1A1AA" />
             <Text style={styles.placeholderText}>Camera Preview Ready</Text>
             <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
               <Text style={styles.permBtnText}>Enable Camera Access</Text>
@@ -202,7 +202,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryBtn} onPress={handlePickVideo} disabled={loading}>
-          <Ionicons name="cloud-upload-outline" size={18} color="#C2410C" />
+          <Ionicons name="cloud-upload-outline" size={18} color="#FB923C" />
           <Text style={styles.secondaryBtnText}>Upload Video</Text>
         </TouchableOpacity>
       </View>
@@ -231,12 +231,12 @@ export default function CaptureScreen({ onAnalysisComplete }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F7F4EF' },
+  screen: { flex: 1, backgroundColor: '#09090B' },
   content: { padding: 14, gap: 12 },
-  headerCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#E7E2D8' },
-  title: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
-  subtitle: { fontSize: 12, color: '#475569', marginTop: 4, lineHeight: 17 },
-  cameraContainer: { height: 270, backgroundColor: '#14110F', borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#1E293B', justifyContent: 'center' },
+  headerCard: { backgroundColor: '#121214', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#27272A' },
+  title: { fontSize: 16, fontWeight: '700', color: '#F4F4F5' },
+  subtitle: { fontSize: 12, color: '#A1A1AA', marginTop: 4, lineHeight: 17 },
+  cameraContainer: { height: 270, backgroundColor: '#14110F', borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#E4E4E7', justifyContent: 'center' },
   cameraPlaceholder: { alignItems: 'center', justifyContent: 'center', gap: 8 },
   placeholderText: { color: '#94A3B8', fontSize: 13, fontWeight: '600' },
   permBtn: { backgroundColor: '#EA580C', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, marginTop: 4 },
@@ -246,19 +246,19 @@ const styles = StyleSheet.create({
   camPillText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
   countdownOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(9,13,22,0.82)', alignItems: 'center', justifyContent: 'center' },
   countdownText: { color: '#FB923C', fontSize: 56, fontWeight: '800' },
-  countdownSub: { color: '#CBD5E1', fontSize: 12, marginTop: 6 },
+  countdownSub: { color: '#27272A', fontSize: 12, marginTop: 6 },
   actionRow: { flexDirection: 'row', gap: 10 },
   primaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#DC2626', paddingVertical: 13, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   primaryBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 13 },
-  secondaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#FED7AA', paddingVertical: 13, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  secondaryBtnText: { color: '#C2410C', fontWeight: '700', fontSize: 13 },
-  loadingCard: { flexDirection: 'row', gap: 10, alignItems: 'center', backgroundColor: '#FFF7ED', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#FED7AA' },
-  loadingText: { fontSize: 12, color: '#9A3412', flex: 1, fontWeight: '500' },
-  sampleCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#E7E2D8', gap: 8 },
-  sampleHeading: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
-  sampleDesc: { fontSize: 12, color: '#64748B' },
+  secondaryBtn: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#121214', borderWidth: 1, borderColor: '#FDBA74', paddingVertical: 13, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  secondaryBtnText: { color: '#FB923C', fontWeight: '700', fontSize: 13 },
+  loadingCard: { flexDirection: 'row', gap: 10, alignItems: 'center', backgroundColor: '#1F1209', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#FDBA74' },
+  loadingText: { fontSize: 12, color: '#FDBA74', flex: 1, fontWeight: '500' },
+  sampleCard: { backgroundColor: '#121214', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#27272A', gap: 8 },
+  sampleHeading: { fontSize: 14, fontWeight: '700', color: '#F4F4F5' },
+  sampleDesc: { fontSize: 12, color: '#A1A1AA' },
   chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  chip: { backgroundColor: '#F1F5F9', borderWidth: 1, borderColor: '#CBD5E1', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 8 },
-  chipText: { fontSize: 12, fontWeight: '600', color: '#1E293B' },
+  chip: { backgroundColor: '#18181B', borderWidth: 1, borderColor: '#27272A', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 8 },
+  chipText: { fontSize: 12, fontWeight: '600', color: '#E4E4E7' },
 });
 

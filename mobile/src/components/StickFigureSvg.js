@@ -110,7 +110,7 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
   const legFault = colors.right_knee === '#FF3366';
 
   const armCol = elbowFault || wristFault ? '#EF4444' : '#10B981';
-  const trunkCol = trunkFault ? '#EF4444' : '#F8FAFC';
+  const trunkCol = trunkFault ? '#EF4444' : '#18181B';
   const legCol = legFault ? '#EF4444' : '#2DD4BF';
 
   // Ball position trajectory toward hoop at (284, 80)
@@ -152,7 +152,7 @@ export default function StickFigureSvg({ wireframes = [], frameIdx = 0, isFaulty
         <Line x1={elR[0]} y1={elR[1]} x2={wrR[0]} y2={wrR[1]} stroke={armCol} strokeWidth="5" strokeLinecap="round" />
 
         {/* Head & Basketball */}
-        <Circle cx={nose[0]} cy={nose[1]} r="9" fill="#0F172A" stroke="#FACC15" strokeWidth="2.2" />
+        <Circle cx={nose[0]} cy={nose[1]} r="9" fill="#F4F4F5" stroke="#FACC15" strokeWidth="2.2" />
         <Circle cx={ballX} cy={ballY} r="9" fill="#EA580C" stroke="#7C2D12" strokeWidth="1.5" />
 
         {/* Key Joint Pins */}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: '#E4E4E7',
   },
 });
 
