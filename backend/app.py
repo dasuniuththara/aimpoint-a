@@ -327,10 +327,14 @@ def get_individual_report(session_id: str):
         "report": report
     }
 
-# Serve the commercial frontend UI
+# Serve the commercial frontend UI and playable basketball sample videos
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+samples_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sample_videos")
+if os.path.exists(samples_dir):
+    app.mount("/samples", StaticFiles(directory=samples_dir), name="samples")
 
 @app.get("/")
 def serve_index():

@@ -988,18 +988,41 @@
       return (Math.acos(cosTheta) * 180.0) / Math.PI;
     }
 
-    // Load Reference Sample Shot Clip
-    function loadSampleVideo(sampleIdx) {
-      resetUploadedVideoMode();
-      const statusPill = document.getElementById('telemetry-status');
-      if (statusPill) {
-        statusPill.innerText = `Reference Clip #${sampleIdx + 1}`;
-        statusPill.className = "text-sky-400 font-semibold";
+    // Load & Analyze Real Sample Video File through Full Image Processing -> 3D->2D Model Pipeline
+    const SAMPLE_VIDEO_FILES = [
+      '01_ideal_basketball_shot.webm',
+      '02_low_elbow_fault.webm',
+      '03_short_follow_through.webm',
+      '04_imbalanced_base.webm',
+      '05_early_release.webm'
+    ];
+
+    async function loadSampleVideo(sampleIdx) {
+      for (let i = 0; i <= 4; i++) {
+        const btn = document.getElementById(`btn-bm-${i}`);
+        if (btn) {
+          btn.className = i === sampleIdx
+            ? "px-2.5 py-1 text-[11px] font-medium rounded bg-blue-600 text-white border border-blue-500 transition-colors"
+            : "px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors";
+        }
       }
-      const hudTitle = document.getElementById('hud-mode-title');
-      if (hudTitle) hudTitle.innerText = "ANGLES";
 
       if (isCameraOn) stopCamera();
+      const fname = SAMPLE_VIDEO_FILES[sampleIdx] || SAMPLE_VIDEO_FILES[0];
+
+      try {
+        const resp = await fetch(`/samples/${fname}`);
+        if (resp.ok) {
+          const blob = await resp.blob();
+          const videoFile = new File([blob], fname, { type: 'video/webm' });
+          await handleFileUpload({ target: { files: [videoFile] } });
+          return;
+        }
+      } catch (err) {
+        console.warn('Sample video fetch fallback to direct kinematics:', err);
+      }
+
+      resetUploadedVideoMode();
       runBenchmark(sampleIdx);
     }
 
