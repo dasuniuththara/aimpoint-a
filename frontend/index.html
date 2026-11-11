@@ -2017,38 +2017,41 @@
       updateViewportLayout();
     }
 
-    // Ensure MediaPipe WASM Pose model is warmed up before processing frames
+    // Warm up MediaPipe Pose with strict 2000ms timeout (prevents initialize() deadlock)
     async function ensureMediaPipeReady() {
       if (!mediaPipePose) setupMediaPipePose();
       if (!mediaPipePose) return false;
       if (!mediaPipeReadyPromise) {
-        mediaPipeReadyPromise = (async () => {
-          try {
-            if (typeof mediaPipePose.initialize === 'function') {
-              await mediaPipePose.initialize();
+        mediaPipeReadyPromise = Promise.race([
+          (async () => {
+            try {
+              if (typeof mediaPipePose.initialize === 'function') {
+                await mediaPipePose.initialize();
+              }
+              return true;
+            } catch (e) {
+              console.warn('MediaPipe initialize warning:', e);
+              return false;
             }
-            return true;
-          } catch (e) {
-            console.warn('MediaPipe initialize warning:', e);
-            return true;
-          }
-        })();
+          })(),
+          new Promise((resolve) => setTimeout(() => resolve(true), 2000))
+        ]);
       }
       return mediaPipeReadyPromise;
     }
 
     // Promise-wrapped Pose Extractor on an Image-Processed Offscreen Canvas
-    function extractPoseForCanvas(procCanvas, timeoutMs = 4000) {
+    function extractPoseForCanvas(procCanvas, timeoutMs = 1500) {
       return new Promise((resolve) => {
         if (!mediaPipePose) {
-          resolve(null);
+          resolve({ status: 'unavailable' });
           return;
         }
         let settled = false;
         const timer = setTimeout(() => {
           if (!settled) {
             settled = true;
-            resolve(null);
+            resolve({ status: 'timeout' });
           }
         }, timeoutMs);
 
@@ -2056,7 +2059,7 @@
           if (settled) return;
           settled = true;
           clearTimeout(timer);
-          resolve(results);
+          resolve({ status: 'ok', results });
         });
 
         try {
@@ -2066,7 +2069,7 @@
               if (!settled) {
                 settled = true;
                 clearTimeout(timer);
-                resolve(null);
+                resolve({ status: 'error' });
               }
             });
           }
@@ -2074,18 +2077,19 @@
           if (!settled) {
             settled = true;
             clearTimeout(timer);
-            resolve(null);
+            resolve({ status: 'error' });
           }
         }
       });
     }
 
-    // Bug-free HTML5 video seek (immediately resolves if already at target timestamp)
-    function seekVideoElement(videoEl, timeSec) {
+    // Fast HTML5 video seek with Infinity-duration WebM safety & 250ms keyframe fallback
+    function seekVideoElement(videoEl, timeSec, knownDuration = 2.0) {
       return new Promise((resolve) => {
-        const clamped = Math.max(0, Math.min(videoEl.duration || 0, timeSec));
-        if (Math.abs(videoEl.currentTime - clamped) < 0.02 && videoEl.readyState >= 2) {
-          requestAnimationFrame(() => resolve());
+        const dur = (videoEl.duration && isFinite(videoEl.duration)) ? videoEl.duration : knownDuration;
+        const clamped = Math.max(0, Math.min(dur, timeSec));
+        if (Math.abs(videoEl.currentTime - clamped) < 0.025 && videoEl.readyState >= 2) {
+          setTimeout(resolve, 10);
           return;
         }
         let done = false;
@@ -2093,11 +2097,15 @@
           if (done) return;
           done = true;
           videoEl.removeEventListener('seeked', finish);
-          requestAnimationFrame(() => resolve());
+          setTimeout(resolve, 12);
         };
         videoEl.addEventListener('seeked', finish);
-        setTimeout(finish, 750); // Safety timeout if keyframe index is sparse
-        videoEl.currentTime = clamped;
+        setTimeout(finish, 260);
+        try {
+          videoEl.currentTime = clamped;
+        } catch (e) {
+          finish();
+        }
       });
     }
 
@@ -2208,17 +2216,36 @@
         setTimeout(done, 4000);
       });
 
+      // Resolve Chrome MediaRecorder WebM Infinity duration reliably
+      if (!isFinite(vid.duration) || vid.duration <= 0) {
+        await new Promise((resolve) => {
+          const onTimeUpdate = () => {
+            if (isFinite(vid.duration) && vid.duration > 0) {
+              vid.removeEventListener('timeupdate', onTimeUpdate);
+              vid.currentTime = 0;
+              resolve();
+            }
+          };
+          vid.addEventListener('timeupdate', onTimeUpdate);
+          setTimeout(() => {
+            vid.removeEventListener('timeupdate', onTimeUpdate);
+            try { vid.currentTime = 0; } catch (e) {}
+            resolve();
+          }, 450);
+          try { vid.currentTime = 1e6; } catch (e) { resolve(); }
+        });
+      }
+
       uploadedVideoDuration = vid.duration && isFinite(vid.duration) ? vid.duration : 2.0;
       const vidW = vid.videoWidth || 640;
       const vidH = vid.videoHeight || 480;
 
-      // Initialize offscreen Image Processing Canvas (640x480)
       const procCanvas = document.createElement('canvas');
       procCanvas.width = 640;
       procCanvas.height = 480;
       const procCtx = procCanvas.getContext('2d', { willReadFrequently: true });
 
-      if (detailTxt) detailTxt.innerText = 'Loading MediaPipe 3D Pose Model & Image Processor...';
+      if (detailTxt) detailTxt.innerText = 'Preparing Image Processor & Pose Detector...';
       await ensureMediaPipeReady();
 
       const sampleCount = 30;
@@ -2228,8 +2255,9 @@
       let prevGray = null;
       let validCount = 0;
       let contrastEnhancedCount = 0;
+      let consecutiveTimeouts = 0;
+      let skipMediaPipe = !mediaPipePose;
 
-      // Compute aspect-fit draw rectangle inside procCanvas (640x480)
       const vRatio = vidW / vidH;
       const cRatio = 640 / 480;
       let drawX = 0, drawY = 0, drawW = 640, drawH = 480;
@@ -2243,7 +2271,7 @@
 
       for (let i = 0; i < sampleCount; i++) {
         const tSec = (i / (sampleCount - 1)) * Math.max(0.05, uploadedVideoDuration - 0.04);
-        await seekVideoElement(vid, tSec);
+        await seekVideoElement(vid, tSec, uploadedVideoDuration);
 
         // Stage 1: Image Processing Pass on Offscreen Canvas
         procCtx.fillStyle = '#000000';
@@ -2255,7 +2283,6 @@
         prevGray = pixStats.currGray;
         motionCurve.push(pixStats);
 
-        // Adaptive luminance boost for dim indoor courts before MediaPipe inference
         if (pixStats.avgLuma < 85) {
           contrastEnhancedCount++;
           procCtx.filter = 'brightness(1.22) contrast(1.18)';
@@ -2267,24 +2294,41 @@
         if (progBar) progBar.style.width = `${pct}%`;
         if (progPct) progPct.innerText = `${pct}%`;
         if (detailTxt) {
-          detailTxt.innerText = `Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Detecting 3D pose & converting to 2D model...`;
+          detailTxt.innerText = skipMediaPipe
+            ? `Image Processing Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Motion ROI & 3D→2D Projection...`
+            : `Frame ${i + 1}/${sampleCount} (${tSec.toFixed(2)}s) • Extracting Pose & 2D Model...`;
         }
 
-        // First call gets 15000ms timeout for WASM model download & compilation
-        const results = await extractPoseForCanvas(procCanvas, i === 0 ? 15000 : 3000);
-        if (results && results.poseLandmarks && results.poseLandmarks.length === 33) {
+        // Yield once so progress bar paints smoothly at every frame
+        await new Promise(r => setTimeout(r, 8));
+
+        let mpRes = null;
+        if (!skipMediaPipe) {
+          const out = await extractPoseForCanvas(procCanvas, i === 0 ? 4500 : 1200);
+          if (out.status === 'timeout' || out.status === 'error' || out.status === 'unavailable') {
+            consecutiveTimeouts++;
+            if (consecutiveTimeouts >= 2) {
+              console.warn('MediaPipe unresponsive; switching to fast Image-Processing Optical Motion ROI mode.');
+              skipMediaPipe = true;
+            }
+          } else {
+            consecutiveTimeouts = 0;
+            mpRes = out.results;
+          }
+        }
+
+        if (mpRes && mpRes.poseLandmarks && mpRes.poseLandmarks.length === 33) {
           validCount++;
-          // Convert procCanvas coords back to source video normalized coords [0..1, 0..1]
-          extractedOverlay2D.push(results.poseLandmarks.map(p => [
+          extractedOverlay2D.push(mpRes.poseLandmarks.map(p => [
             Math.max(0, Math.min(1, (p.x * 640 - drawX) / drawW)),
             Math.max(0, Math.min(1, (p.y * 480 - drawY) / drawH)),
             p.z || 0
           ]));
 
-          if (results.poseWorldLandmarks && results.poseWorldLandmarks.length === 33) {
-            extractedWorld3D.push(results.poseWorldLandmarks.map(p => [p.x, p.y, p.z]));
+          if (mpRes.poseWorldLandmarks && mpRes.poseWorldLandmarks.length === 33) {
+            extractedWorld3D.push(mpRes.poseWorldLandmarks.map(p => [p.x, p.y, p.z]));
           } else {
-            extractedWorld3D.push(results.poseLandmarks.map(p => [(p.x - 0.5) * 2, (p.y - 0.5) * 2, p.z || 0]));
+            extractedWorld3D.push(mpRes.poseLandmarks.map(p => [(p.x - 0.5) * 2, (p.y - 0.5) * 2, p.z || 0]));
           }
         } else {
           extractedOverlay2D.push(null);

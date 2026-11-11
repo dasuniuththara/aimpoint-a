@@ -230,8 +230,8 @@ class NumPyInferenceEngine:
         # Threshold 2: Imbalanced Base (trunk tilt > 48.66°)
         elif trunk_max > 48.66:
             logits[3] += 8.0
-        # Threshold 3: Early Release (wrist peaks before knee drive)
-        elif wrist_apex < knee_apex and (knee_apex - wrist_apex) >= 3:
+        # Threshold 3: Early Release (wrist peaks significantly before knee drive >= 8 frames / ~260ms)
+        elif wrist_apex < knee_apex and (knee_apex - wrist_apex) >= 8:
             logits[4] += 7.5
         # Threshold 4: Short Follow-Through (truncated extension < 155°)
         elif elbow_max < 155.0:
