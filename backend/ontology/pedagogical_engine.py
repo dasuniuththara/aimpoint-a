@@ -165,5 +165,115 @@ class PedagogicalEngine:
             measured_metric=measured
         )
 
+    def audit_all_checkpoints(self, kinematics: Dict[str, Any], release_angle: float) -> List[Dict[str, str]]:
+        """
+        Objective 1 Comprehensive Checkpoint Audit:
+        Evaluates all 5 critical shooting checkpoints (elbow alignment, knee flexion,
+        release angle, base stability, and follow-through mechanics) with per-checkpoint advice.
+        """
+        elbow_arr = np.array(kinematics.get("elbow_angles", [88.5]), dtype=float)
+        knee_arr = np.array(kinematics.get("knee_angles", [115.0]), dtype=float)
+        trunk_arr = np.array(kinematics.get("trunk_tilt", [24.0]), dtype=float)
+        wrist_vel = np.array(kinematics.get("wrist_y_vel", [0.0]), dtype=float)
+
+        elbow_min = float(np.min(elbow_arr))
+        elbow_max = float(np.max(elbow_arr))
+        knee_min = float(np.min(knee_arr))
+        trunk_max = float(np.max(trunk_arr))
+
+        audits: List[Dict[str, str]] = []
+
+        # 1. Elbow Set-Point Alignment
+        if elbow_min < self.BENCHMARKS["low_elbow_threshold"]:
+            audits.append({
+                "checkpoint": "Elbow Alignment",
+                "measured": f"{elbow_min:.1f}°",
+                "target": "85°–95° (≥43.3°)",
+                "status": "FAULT",
+                "advice": "Raise shooting elbow to eyebrow height before extending upward to avoid flat shots."
+            })
+        else:
+            audits.append({
+                "checkpoint": "Elbow Alignment",
+                "measured": f"{elbow_min:.1f}°",
+                "target": "85°–95°",
+                "status": "PASS",
+                "advice": "Good elbow stack directly under the ball during loading."
+            })
+
+        # 2. Knee Flexion & Leg Drive
+        if knee_min > 158.0 or knee_min < 70.0:
+            audits.append({
+                "checkpoint": "Knee Flexion",
+                "measured": f"{knee_min:.1f}°",
+                "target": "100°–145° dip",
+                "status": "FAULT",
+                "advice": "Bend knees smoothly into an athletic dip (~110°–130°) to generate lower-body upward power."
+            })
+        else:
+            audits.append({
+                "checkpoint": "Knee Flexion",
+                "measured": f"{knee_min:.1f}°",
+                "target": "100°–145° dip",
+                "status": "PASS",
+                "advice": "Balanced knee load transferring momentum smoothly upward."
+            })
+
+        # 3. Release Trajectory Elevation
+        if release_angle < 38.0 or release_angle > 68.0:
+            audits.append({
+                "checkpoint": "Release Angle",
+                "measured": f"{release_angle:.1f}°",
+                "target": "45°–58° (52° ideal)",
+                "status": "FAULT",
+                "advice": "Aim forearm trajectory higher at release (around 50°–55°) to improve basket entry arc."
+            })
+        else:
+            audits.append({
+                "checkpoint": "Release Angle",
+                "measured": f"{release_angle:.1f}°",
+                "target": "45°–58°",
+                "status": "PASS",
+                "advice": "Release angle gives an effective shooting arc toward the rim."
+            })
+
+        # 4. Base Stability / Trunk Tilt
+        if trunk_max > self.BENCHMARKS["imbalanced_base_threshold"]:
+            audits.append({
+                "checkpoint": "Base Stability",
+                "measured": f"{trunk_max:.1f}° tilt",
+                "target": "<48.7° tilt",
+                "status": "FAULT",
+                "advice": "Keep torso upright and land on the same floor spot without leaning sideways or drifting."
+            })
+        else:
+            audits.append({
+                "checkpoint": "Base Stability",
+                "measured": f"{trunk_max:.1f}° tilt",
+                "target": "<48.7° tilt",
+                "status": "PASS",
+                "advice": "Stable upright core maintaining straight vertical alignment."
+            })
+
+        # 5. Follow-Through Extension Mechanics
+        if elbow_max < 155.0:
+            audits.append({
+                "checkpoint": "Follow-Through",
+                "measured": f"{elbow_max:.1f}° ext",
+                "target": "≥155° full ext",
+                "status": "FAULT",
+                "advice": "Fully lock out your shooting elbow and hold the downward wrist snap until the ball lands."
+            })
+        else:
+            audits.append({
+                "checkpoint": "Follow-Through",
+                "measured": f"{elbow_max:.1f}° ext",
+                "target": "≥155° full ext",
+                "status": "PASS",
+                "advice": "Full elbow extension and clean wrist snap follow-through."
+            })
+
+        return audits
+
 # Global singleton instance for high-throughput evaluation
 pedagogical_engine = PedagogicalEngine()

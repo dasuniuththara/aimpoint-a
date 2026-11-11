@@ -176,6 +176,7 @@ def analyze_shot(
     release_frame = next((f for f in biomechanical_frames if f["id"] == "release"), None)
     rel_raw = int(release_frame["raw_frame"]) if release_frame else int(T * 0.5)
     release_angle = float(np.max(kinematics["release_angles"][rel_raw:])) if rel_raw < T else float(kinematics["release_angles"][-1])
+    checkpoint_audits = pedagogical_engine.audit_all_checkpoints(kinematics, release_angle)
 
     # 5. Commit to Local SQLite Persistence Layer (Tier 5)
     session_id, card_id = db_service.insert_session(
@@ -265,6 +266,7 @@ def analyze_shot(
             "min_knee_angle": round(float(np.min(kinematics["knee_angles"])), 1)
         },
         "biomechanical_frames": biomechanical_frames,
+        "checkpoint_audits": checkpoint_audits,
         "probabilities": {FAULT_CLASSES[i]: round(float(probabilities[i]) * 100, 1) for i in range(5)},
         "wireframes": wireframes,
         "velocity_curve": velocity_curve,
