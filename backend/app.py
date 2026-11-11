@@ -336,6 +336,35 @@ samples_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 if os.path.exists(samples_dir):
     app.mount("/samples", StaticFiles(directory=samples_dir), name="samples")
 
+@app.get("/api/samples")
+def list_sample_videos():
+    """Lists all available pre-rendered basketball sample videos in sample_videos/."""
+    if not os.path.exists(samples_dir):
+        return {"total": 0, "samples": []}
+    files = sorted(
+        f for f in os.listdir(samples_dir)
+        if f.lower().endswith((".webm", ".mp4", ".mov"))
+    )
+    items = []
+    for fname in files:
+        lower = fname.lower()
+        if "low_elbow" in lower:
+            fault_class = "Low Elbow Set Point"
+        elif "short_follow" in lower:
+            fault_class = "Short Follow-Through"
+        elif "imbalanced" in lower:
+            fault_class = "Imbalanced Base"
+        elif "early_release" in lower:
+            fault_class = "Early Release"
+        else:
+            fault_class = "Ideal Form"
+        items.append({
+            "filename": fname,
+            "fault_class": fault_class,
+            "url": f"/samples/{fname}",
+        })
+    return {"total": len(items), "samples": items}
+
 @app.get("/")
 def serve_index():
     index_file = os.path.join(frontend_dir, "index.html")

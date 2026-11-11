@@ -253,6 +253,10 @@
             class="px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors">
             Early Release
           </button>
+          <select id="sampleLibrarySelect" onchange="loadNamedSampleVideo(this.value)"
+            class="bg-[#1C212B] text-[11px] font-mono text-slate-200 border border-[#303845] rounded px-2 py-1 ml-1 focus:outline-none focus:border-blue-500">
+            <option value="">Clip Library (Loading...)</option>
+          </select>
         </div>
       </div>
 
@@ -993,11 +997,11 @@
 
     // Load & Analyze Real Sample Video File through Full Image Processing -> 3D->2D Model Pipeline
     const SAMPLE_VIDEO_FILES = [
-      '01_ideal_basketball_shot.webm',
-      '02_low_elbow_fault.webm',
-      '03_short_follow_through.webm',
-      '04_imbalanced_base.webm',
-      '05_early_release.webm'
+      '01_3d_ideal_oblique_right.webm',
+      '03_3d_low_elbow_oblique.webm',
+      '05_3d_short_follow_oblique.webm',
+      '07_3d_imbalanced_base_oblique.webm',
+      '09_3d_early_release_oblique.webm'
     ];
 
     async function loadSampleVideo(sampleIdx) {
@@ -1027,6 +1031,57 @@
 
       resetUploadedVideoMode();
       runBenchmark(sampleIdx);
+    }
+
+    async function populateSampleLibrary() {
+      const sel = document.getElementById('sampleLibrarySelect');
+      if (!sel) return;
+      try {
+        const res = await fetch('/api/samples');
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = data.samples || [];
+        sel.innerHTML = `<option value="">All Sample Videos (${list.length})</option>`;
+        list.forEach((s, idx) => {
+          const opt = document.createElement('option');
+          opt.value = s.filename;
+          opt.textContent = `${String(idx + 1).padStart(3, '0')} · ${s.fault_class} (${s.filename})`;
+          sel.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn('Could not load sample library:', e);
+      }
+    }
+
+    async function loadNamedSampleVideo(fname) {
+      if (!fname) return;
+      if (isCameraOn) stopCamera();
+      const lower = fname.toLowerCase();
+      let highlightIdx = 0;
+      if (lower.includes('low_elbow')) highlightIdx = 1;
+      else if (lower.includes('short_follow')) highlightIdx = 2;
+      else if (lower.includes('imbalanced')) highlightIdx = 3;
+      else if (lower.includes('early_release')) highlightIdx = 4;
+
+      for (let i = 0; i <= 4; i++) {
+        const btn = document.getElementById(`btn-bm-${i}`);
+        if (btn) {
+          btn.className = i === highlightIdx
+            ? "px-2.5 py-1 text-[11px] font-medium rounded bg-blue-600 text-white border border-blue-500 transition-colors"
+            : "px-2.5 py-1 text-[11px] font-medium rounded bg-[#212832] hover:bg-[#2A3240] text-slate-300 border border-[#303845] transition-colors";
+        }
+      }
+
+      try {
+        const resp = await fetch(`/samples/${fname}`);
+        if (resp.ok) {
+          const blob = await resp.blob();
+          const videoFile = new File([blob], fname, { type: 'video/webm' });
+          await handleFileUpload({ target: { files: [videoFile] } });
+        }
+      } catch (err) {
+        console.warn('Named sample load error:', err);
+      }
     }
 
     let activeTab = 'analyzer';
@@ -1069,6 +1124,7 @@
       loadCoachAnalytics();
       loadDrills();
       loadReportsList();
+      populateSampleLibrary();
       setupMediaPipePose();
 
       // Setup Drag & Drop Video Ingestion
