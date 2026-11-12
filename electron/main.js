@@ -123,7 +123,11 @@ function createMainWindow() {
     }
   });
 
-  mainWindow.loadURL(SERVER_URL);
+  // Load with cache-busting query + no-cache headers so UI updates always appear immediately
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.loadURL(`${SERVER_URL}/?desktop=${Date.now()}`, {
+    extraHeaders: 'pragma: no-cache\ncache-control: no-cache\n'
+  });
 
   mainWindow.once('ready-to-show', () => {
     if (splashWindow && !splashWindow.isDestroyed()) {
@@ -164,6 +168,10 @@ function isServerHealthy() {
 
 // Application Lifecycle
 app.whenReady().then(async () => {
+  try {
+    await session.defaultSession.clearCache();
+  } catch (e) {}
+
   createSplashWindow();
   const alreadyUp = await isServerHealthy();
   if (alreadyUp) {

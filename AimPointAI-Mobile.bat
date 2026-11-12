@@ -7,9 +7,9 @@ echo    AimPoint Motion - Cross-Platform Mobile App (Expo / React Native)
 echo ======================================================================
 echo.
 echo [1/2] Checking FastAPI Backend on Port 8080...
-netstat -ano | findstr :8080 >nul
+netstat -ano | findstr ":8080 " | findstr "LISTENING" >nul
 if %errorlevel% neq 0 (
-    start /b python start_server.py
+    start "" /b python start_server.py
     timeout /t 2 /nobreak >nul
 )
 

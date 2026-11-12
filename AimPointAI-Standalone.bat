@@ -2,14 +2,14 @@
 title AimPointAI Standalone Desktop App
 cd /d "%~dp0"
 
-REM 1. Ensure Python AI backend is active on port 8080
-netstat -ano | findstr :8080 >nul
-if %errorlevel% neq 0 (
-    start /b python start_server.py
-    timeout /t 2 /nobreak >nul
+echo [1/2] Starting fresh FastAPI Biomechanics Backend on port 8080...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080 " ^| findstr "LISTENING"') do (
+    taskkill /PID %%a /F >nul 2>&1
 )
 
-REM 2. Launch Standalone Native Window (Frameless Desktop App Mode)
-start msedge --app=http://localhost:8080 --window-size=1440,920 --app-id=AimPointAI
-exit
+start "" /b python start_server.py
+timeout /t 2 /nobreak >nul
 
+echo [2/2] Launching Standalone Native Desktop Window (Fresh Cache)...
+start msedge --app=http://127.0.0.1:8080/?standalone=1 --window-size=1440,920 --disk-cache-size=1
+exit

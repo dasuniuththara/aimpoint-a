@@ -5,7 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager . AimPointAI --platform=win32 --arch=x64 --out=dist --overwrite --ignore=\"^/(scratch|\\.venv|venv|dist|mobile/node_modules|mobile/\\.expo)\"",
+    "package": "electron-packager . AimPointAI --platform=win32 --arch=x64 --out=dist --overwrite --ignore=\"^/(scratch|\\.git|\\.venv|venv|dist|mobile/node_modules|mobile/\\.expo)\"",
     "dist": "electron-builder --win"
   },
   "keywords": [
