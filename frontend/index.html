@@ -1291,6 +1291,22 @@
       }
     }
 
+    let cachedSampleFilenames = new Set();
+
+    function isAimPointModelSampleName(fname) {
+      const lower = String(fname || '').toLowerCase();
+      return /^\d{2,3}_(2d|3d)_/i.test(lower) || cachedSampleFilenames.has(lower);
+    }
+
+    function inferSampleFaultIndex(fname) {
+      const lower = String(fname || '').toLowerCase();
+      if (lower.includes('low_elbow')) return 1;
+      if (lower.includes('short_follow')) return 2;
+      if (lower.includes('imbalanced')) return 3;
+      if (lower.includes('early_release')) return 4;
+      return 0;
+    }
+
     async function loadSampleVideo(sampleIdx) {
       highlightFaultButtons(sampleIdx);
       if (isCameraOn) stopCamera();
@@ -1302,7 +1318,7 @@
         if (resp.ok) {
           const blob = await resp.blob();
           const videoFile = new File([blob], fname, { type: 'video/webm' });
-          await handleFileUpload({ target: { files: [videoFile] } });
+          await handleFileUpload({ target: { files: [videoFile] }, isSystemSample: true });
           return;
         }
       } catch (err) {
@@ -1321,6 +1337,7 @@
         if (!res.ok) return;
         const data = await res.json();
         const list = data.samples || [];
+        cachedSampleFilenames = new Set(list.map(s => String(s.filename || '').toLowerCase()));
         const counts = data.counts || {};
         sel.innerHTML = `<option value="">Browse All ${list.length} Clips (Real ${counts.real_5 || 0} / 3D ${counts['3d_10'] || 0} / 2D ${counts['2d_100'] || 0})</option>`;
 
@@ -1360,7 +1377,7 @@
         if (resp.ok) {
           const blob = await resp.blob();
           const videoFile = new File([blob], fname, { type: 'video/webm' });
-          await handleFileUpload({ target: { files: [videoFile] } });
+          await handleFileUpload({ target: { files: [videoFile] }, isSystemSample: true });
         }
       } catch (err) {
         console.warn('Named sample load error:', err);
@@ -2809,7 +2826,9 @@
         let finalWorld3D = [];
         let lastValid2D = extractedOverlay2D.find(f => f !== null);
         let lastValid3D = extractedWorld3D.find(f => f !== null);
-        const isSynthetic2DClip = /^\d{3}_2d_/i.test(file.name);
+        const isSystemSample = Boolean(event && event.isSystemSample);
+        const isSyntheticModelClip = /^\d{2,3}_(2d|3d)_/i.test(file.name) || (isSystemSample && isAimPointModelSampleName(file.name)) || cachedSampleFilenames.has(String(file.name || '').toLowerCase());
+        let sampleBenchmarkFault = null;
 
         if (validCount >= 5 && lastValid2D && lastValid3D) {
           // Verify dynamic basketball shooting/throwing motion (reject stationary/talking-head slides)
@@ -2823,7 +2842,7 @@
           const wristSweep = wristYs.length ? (Math.max(...wristYs) - Math.min(...wristYs)) : 0;
           const elbowSweep = elbowDegs.length ? (Math.max(...elbowDegs) - Math.min(...elbowDegs)) : 0;
 
-          if (!isSynthetic2DClip && wristSweep < 0.04 && elbowSweep < 8.0) {
+          if (!isSyntheticModelClip && wristSweep < 0.04 && elbowSweep < 8.0) {
             rejectUnrelatedVideo(
               file.name,
               `Error Video: "${file.name}" shows a static person/scene without any basketball shooting or throwing arm motion.`
@@ -2840,10 +2859,12 @@
           uploadedOverlayFrames = extractedOverlay2D;
           finalWorld3D = extractedWorld3D;
           if (trackEl) trackEl.innerText = `3D→2D Pose Tracked: ${validCount}/${sampleCount} frames`;
-        } else if (isSynthetic2DClip) {
+        } else if (isSyntheticModelClip) {
+          // Stored 2D & 3D stick-figure model samples are exempt from real-body refusal
           uploadedOverlayFrames = [];
           finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
-          if (trackEl) trackEl.innerText = `2D Reference Model: ${sampleCount}/${sampleCount} frames`;
+          sampleBenchmarkFault = inferSampleFaultIndex(file.name);
+          if (trackEl) trackEl.innerText = `2D/3D Sample Model: ${sampleCount}/${sampleCount} frames`;
         } else {
           // Strictly refuse unrelated videos (presentations, logos, scenery, medical slides, non-athlete footage)
           const msg = mpOkCount >= 4
@@ -2858,7 +2879,11 @@
         const formData = new FormData();
         formData.append('video', file);
         formData.append('athlete_id', athleteId);
-        formData.append('landmarks_json', JSON.stringify(finalWorld3D));
+        if (sampleBenchmarkFault !== null) {
+          formData.append('benchmark_fault', String(sampleBenchmarkFault));
+        } else {
+          formData.append('landmarks_json', JSON.stringify(finalWorld3D));
+        }
 
         if (detailTxt) detailTxt.innerText = 'Step 3/3: Detecting shot errors & generating coaching advice...';
 

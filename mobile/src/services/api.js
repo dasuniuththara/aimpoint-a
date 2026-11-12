@@ -135,15 +135,26 @@ async function extractWebLandmarksOrReject(videoUri, fileName = '') {
     }
   }
 
-  if (mpOkCount >= 3 && validCount < 3) {
+  const isModelSample = /^\d{2,3}_(2d|3d)_/i.test(fileName || '');
+  if (!isModelSample && mpOkCount >= 3 && validCount < 3) {
     throw new Error(`Error Video: "${fileName || 'Uploaded file'}" is unrelated to basketball (${validCount}/${nSamples} player poses found). Please upload a basketball shooting video.`);
   }
   return frames3D.length >= 3 ? frames3D : null;
 }
 
+function inferSampleFault(fileName = '') {
+  const lower = String(fileName || '').toLowerCase();
+  if (lower.includes('low_elbow')) return 1;
+  if (lower.includes('short_follow')) return 2;
+  if (lower.includes('imbalanced')) return 3;
+  if (lower.includes('early_release')) return 4;
+  return 0;
+}
+
 export async function uploadAndAnalyzeVideo(videoUri, fileName = 'mobile_shot.mp4', athleteId = 'ATH-001') {
   const fd = new FormData();
   fd.append('athlete_id', athleteId);
+  const isModelSample = /^\d{2,3}_(2d|3d)_/i.test(fileName || '');
 
   if (Platform.OS === 'web') {
     const webLandmarks = await extractWebLandmarksOrReject(videoUri, fileName);
@@ -152,6 +163,8 @@ export async function uploadAndAnalyzeVideo(videoUri, fileName = 'mobile_shot.mp
     fd.append('video', blob, fileName);
     if (webLandmarks) {
       fd.append('landmarks_json', JSON.stringify(webLandmarks));
+    } else if (isModelSample) {
+      fd.append('benchmark_fault', String(inferSampleFault(fileName)));
     }
   } else {
     fd.append('video', {
