@@ -16,4 +16,4 @@ if %errorlevel% neq 0 (
 echo [2/2] Starting Expo Metro Server in mobile\ ...
 cd mobile
 set EXPO_NO_TELEMETRY=1
-npx expo start
+npx expo start -c
