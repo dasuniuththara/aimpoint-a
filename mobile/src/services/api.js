@@ -178,9 +178,33 @@ export async function fetchSamples() {
   return res.json();
 }
 
-export async function fetchReportsList() {
-  const res = await fetch(`${apiBaseUrl}/api/reports/list`);
+export async function fetchReportsList(athleteId = 'ALL') {
+  const query = athleteId && athleteId !== 'ALL' ? `?athlete_id=${encodeURIComponent(athleteId)}` : '';
+  const res = await fetch(`${apiBaseUrl}/api/reports/list${query}`);
   if (!res.ok) throw new Error(`Reports fetch failed (${res.status})`);
+  return res.json();
+}
+
+export async function fetchAthletes() {
+  const res = await fetch(`${apiBaseUrl}/api/athletes`);
+  if (!res.ok) throw new Error(`Athletes fetch failed (${res.status})`);
+  return res.json();
+}
+
+export async function createAthlete(payload) {
+  const res = await fetch(`${apiBaseUrl}/api/athletes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || `Could not create sportsman (${res.status})`);
+  return data;
+}
+
+export async function fetchAthleteAnalytics(athleteId) {
+  const res = await fetch(`${apiBaseUrl}/api/athletes/${encodeURIComponent(athleteId)}/analytics`);
+  if (!res.ok) throw new Error(`Sportsman analytics failed (${res.status})`);
   return res.json();
 }
 

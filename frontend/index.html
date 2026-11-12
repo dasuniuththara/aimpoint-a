@@ -243,16 +243,19 @@
       <!-- Clean Pipeline Action Bar + Categorized Clip Library -->
       <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2.5">
-          <!-- Athlete Selector -->
-          <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
-            <span class="text-[10px] font-mono font-semibold text-zinc-400 uppercase">Player:</span>
-            <select id="athleteSelect" class="bg-transparent text-xs font-semibold text-zinc-100 outline-none cursor-pointer">
-              <option class="bg-[#16171C] text-white" value="ATH-001">K. Perera (Point Guard)</option>
-              <option class="bg-[#16171C] text-white" value="ATH-002">D. Silva (Shooting Guard)</option>
-              <option class="bg-[#16171C] text-white" value="ATH-003">M. Fernando (Small Forward)</option>
-              <option class="bg-[#16171C] text-white" value="ATH-004">T. Kirindegama (Guard)</option>
-              <option class="bg-[#16171C] text-white" value="ATH-005">S. Alwis (Power Forward)</option>
-            </select>
+          <!-- Athlete Selector + Add Sportsman Trigger -->
+          <div class="flex items-center space-x-1.5">
+            <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
+              <span class="text-[10px] font-mono font-semibold text-amber-400 uppercase">Sportsman:</span>
+              <select id="athleteSelect" onchange="onStudioAthleteChange(this.value)" class="bg-transparent text-xs font-semibold text-zinc-100 outline-none cursor-pointer max-w-[190px]">
+                <option class="bg-[#16171C] text-white" value="ATH-001">#01 K. Perera (Point Guard)</option>
+              </select>
+            </div>
+            <button type="button" onclick="openAddSportsmanModal()" id="btnOpenAddSportsman" title="Register New Sportsman"
+              class="px-2.5 py-1.5 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-400 border border-amber-500/40 text-xs font-semibold flex items-center space-x-1 transition-colors">
+              <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+              <span>Add</span>
+            </button>
           </div>
 
           <!-- Primary Video Upload -->
@@ -730,6 +733,67 @@
     <!-- ============================================================== -->
     <div id="view-dashboard" class="space-y-6 hidden">
 
+      <!-- Sportsman Analytics Filter & Roster Management Bar -->
+      <div class="bg-[#101114] border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">Squad &amp; Individual Sportsman Analytics</h2>
+            <p class="text-[11px] text-zinc-400">Select a sportsman to inspect their shot videos, fault breakdown, and progression.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
+            <span class="text-[10px] font-mono uppercase text-zinc-400">Filter Analytics:</span>
+            <select id="dashboardAthleteFilter" onchange="loadCoachAnalytics(this.value)" class="bg-transparent text-xs font-semibold text-amber-300 outline-none cursor-pointer">
+              <option class="bg-[#16171C] text-white" value="ALL">All Sportsmen (Team Squad)</option>
+            </select>
+          </div>
+          <button type="button" onclick="openAddSportsmanModal()"
+            class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center space-x-1.5 transition-colors">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+            <span>Add Sportsman</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Selected Individual Sportsman Summary Card (Shown when filtering by a player) -->
+      <div id="selectedAthleteBanner" class="hidden bg-[#101114] border border-amber-500/40 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex items-center space-x-3.5">
+          <div id="selAthJersey" class="w-12 h-12 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-base flex items-center justify-center shrink-0">#01</div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="selAthName" class="text-base font-bold text-white">K. Perera</h3>
+              <span id="selAthIdBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#16171C] text-amber-300 border border-white/10">ATH-001</span>
+            </div>
+            <p id="selAthMeta" class="text-xs text-zinc-400 mt-0.5">Point Guard • KDU Varsity • Right-Handed • 180 cm • Age 21</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="px-3 py-1.5 rounded-lg bg-[#16171C] border border-white/10 text-center">
+            <span class="text-[10px] font-mono uppercase text-zinc-400 block">Consistency</span>
+            <span id="selAthConsistency" class="text-sm font-bold font-mono text-emerald-400">84.5%</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-[#16171C] border border-white/10 text-center">
+            <span class="text-[10px] font-mono uppercase text-zinc-400 block">Avg Release</span>
+            <span id="selAthRelease" class="text-sm font-bold font-mono text-amber-400">51.4°</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-[#16171C] border border-white/10 text-center">
+            <span class="text-[10px] font-mono uppercase text-zinc-400 block">Ideal Rate</span>
+            <span id="selAthIdealRate" class="text-sm font-bold font-mono text-white">0%</span>
+          </div>
+          <button type="button" onclick="uploadForSelectedAthlete()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center space-x-1.5 transition-colors">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>Upload Video Under Player</span>
+          </button>
+          <button type="button" onclick="loadCoachAnalytics('ALL')" class="px-2.5 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-white/10 text-xs font-semibold">
+            View All
+          </button>
+        </div>
+      </div>
+
       <!-- Top Commercial KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -854,12 +918,14 @@
             <thead class="bg-navy-900/80 text-slate-400 font-mono text-[10px] uppercase">
               <tr>
                 <th class="px-4 py-3 rounded-l-xl">Session ID</th>
-                <th class="px-4 py-3">Athlete</th>
+                <th class="px-4 py-3">Sportsman</th>
+                <th class="px-4 py-3">Video Clip</th>
                 <th class="px-4 py-3">Diagnosis</th>
                 <th class="px-4 py-3">Severity</th>
                 <th class="px-4 py-3">Prescribed Drill</th>
                 <th class="px-4 py-3">Release Angle</th>
-                <th class="px-4 py-3 rounded-r-xl">Model Confidence</th>
+                <th class="px-4 py-3">Confidence</th>
+                <th class="px-4 py-3 rounded-r-xl">Report</th>
               </tr>
             </thead>
             <tbody id="recentSessionsBody" class="divide-y divide-white/5">
@@ -1262,11 +1328,12 @@
       ['right_knee', 'right_ankle']
     ];
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       lucide.createIcons();
       initVelocityChart();
+      await loadAthletesList();
       runBenchmark(0); // Load Ideal Form initial state
-      loadCoachAnalytics();
+      loadCoachAnalytics('ALL');
       loadDrills();
       loadReportsList();
       populateSampleLibrary();
@@ -2718,6 +2785,8 @@
         }
         if (data.status === 'success') {
           updateUIWithResults(data);
+          loadCoachAnalytics(document.getElementById('dashboardAthleteFilter')?.value || 'ALL');
+          loadReportsList();
           switchTab('analyzer');
         }
       } catch (err) {
@@ -3799,14 +3868,167 @@
       }
     }
 
-    function filterReportsByAthlete(athleteName) {
-      if (athleteName === 'ALL') {
+    let cachedAthletesList = [];
+    let currentDashboardAthleteId = 'ALL';
+
+    async function loadAthletesList(selectAthleteId = null) {
+      try {
+        const res = await fetch('/api/athletes');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status !== 'success' || !Array.isArray(data.athletes)) return;
+
+        cachedAthletesList = data.athletes;
+
+        const studioSel = document.getElementById('athleteSelect');
+        if (studioSel) {
+          const prevStudio = selectAthleteId || studioSel.value;
+          studioSel.innerHTML = '';
+          cachedAthletesList.forEach(a => {
+            const opt = document.createElement('option');
+            opt.className = 'bg-[#16171C] text-white';
+            opt.value = a.athlete_id;
+            const jNum = a.jersey_number ? `#${a.jersey_number} ` : '';
+            opt.textContent = `${jNum}${a.name} (${a.position || 'Guard'})`;
+            studioSel.appendChild(opt);
+          });
+          if (prevStudio && cachedAthletesList.some(a => a.athlete_id === prevStudio)) {
+            studioSel.value = prevStudio;
+          }
+        }
+
+        const dashFilter = document.getElementById('dashboardAthleteFilter');
+        if (dashFilter) {
+          const prevDash = dashFilter.value || 'ALL';
+          dashFilter.innerHTML = '<option class="bg-[#16171C] text-white" value="ALL">All Sportsmen (Team Squad)</option>';
+          cachedAthletesList.forEach(a => {
+            const opt = document.createElement('option');
+            opt.className = 'bg-[#16171C] text-white';
+            opt.value = a.athlete_id;
+            const jNum = a.jersey_number ? `#${a.jersey_number} ` : '';
+            opt.textContent = `${jNum}${a.name} — ${a.sessions_count || 0} shots (${a.position || 'Guard'})`;
+            dashFilter.appendChild(opt);
+          });
+          if (prevDash && (prevDash === 'ALL' || cachedAthletesList.some(a => a.athlete_id === prevDash))) {
+            dashFilter.value = prevDash;
+          }
+        }
+
+        const repFilter = document.getElementById('reportAthleteFilter');
+        if (repFilter) {
+          const prevRep = repFilter.value || 'ALL';
+          repFilter.innerHTML = '<option value="ALL">All Sportsmen</option>';
+          cachedAthletesList.forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.athlete_id;
+            opt.textContent = `${a.jersey_number ? '#' + a.jersey_number + ' ' : ''}${a.name}`;
+            repFilter.appendChild(opt);
+          });
+          if (prevRep && (prevRep === 'ALL' || cachedAthletesList.some(a => a.athlete_id === prevRep))) {
+            repFilter.value = prevRep;
+          }
+        }
+      } catch (err) {
+        console.warn('loadAthletesList error:', err);
+      }
+    }
+
+    function onStudioAthleteChange(athleteId) {
+      const sel = cachedAthletesList.find(a => a.athlete_id === athleteId);
+      if (sel) {
+        const nameEl = document.getElementById('cardAthleteSub');
+        if (nameEl) nameEl.innerText = `Sportsman: #${sel.jersey_number || '00'} ${sel.name}`;
+      }
+    }
+
+    function openAddSportsmanModal() {
+      const m = document.getElementById('addSportsmanModal');
+      const err = document.getElementById('addSportsmanError');
+      if (err) err.classList.add('hidden');
+      if (m) m.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(() => document.getElementById('inpAthName')?.focus(), 50);
+    }
+
+    function closeAddSportsmanModal() {
+      const m = document.getElementById('addSportsmanModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function submitAddSportsman(e) {
+      if (e) e.preventDefault();
+      const errEl = document.getElementById('addSportsmanError');
+      const btnEl = document.getElementById('btnSaveSportsman');
+      const name = (document.getElementById('inpAthName')?.value || '').trim();
+      const position = document.getElementById('inpAthPosition')?.value || 'Guard';
+      const jersey_number = (document.getElementById('inpAthJersey')?.value || '00').trim();
+      const team = (document.getElementById('inpAthTeam')?.value || 'KDU Varsity Basketball').trim();
+      const height_cm = parseInt(document.getElementById('inpAthHeight')?.value || '185', 10) || 185;
+      const age = parseInt(document.getElementById('inpAthAge')?.value || '21', 10) || 21;
+      const shooting_hand = document.getElementById('inpAthHand')?.value || 'Right';
+
+      if (!name) {
+        if (errEl) {
+          errEl.innerText = 'Please enter the sportsman name.';
+          errEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (btnEl) btnEl.disabled = true;
+      try {
+        const res = await fetch('/api/athletes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, position, jersey_number, team, height_cm, age, shooting_hand })
+        });
+        const data = await res.json();
+        if (!res.ok || data.status !== 'success') {
+          throw new Error(data.detail || 'Could not save sportsman profile.');
+        }
+
+        const created = data.athlete;
+        document.getElementById('addSportsmanForm')?.reset();
+        closeAddSportsmanModal();
+        await loadAthletesList(created.athlete_id);
+        onStudioAthleteChange(created.athlete_id);
+        await loadCoachAnalytics(currentDashboardAthleteId || 'ALL');
+      } catch (err) {
+        if (errEl) {
+          errEl.innerText = err.message;
+          errEl.classList.remove('hidden');
+        }
+      } finally {
+        if (btnEl) btnEl.disabled = false;
+      }
+    }
+
+    function filterDashboardByAthlete(athleteId) {
+      switchTab('dashboard');
+      loadCoachAnalytics(athleteId);
+    }
+
+    function uploadForSelectedAthlete() {
+      if (currentDashboardAthleteId && currentDashboardAthleteId !== 'ALL') {
+        const studioSel = document.getElementById('athleteSelect');
+        if (studioSel) {
+          studioSel.value = currentDashboardAthleteId;
+          onStudioAthleteChange(currentDashboardAthleteId);
+        }
+      }
+      switchTab('analyzer');
+    }
+
+    function filterReportsByAthlete(athleteIdOrName) {
+      if (athleteIdOrName === 'ALL') {
         populateReportSelect(cachedReportsList);
-        loadSpecificReport(cachedReportsList[0].session_id);
+        if (cachedReportsList.length > 0) loadSpecificReport(cachedReportsList[0].session_id);
       } else {
-        const filtered = cachedReportsList.filter(r => (r.athlete_name || '').includes(athleteName));
+        const filtered = cachedReportsList.filter(
+          r => r.athlete_id === athleteIdOrName || (r.athlete_name || '').includes(athleteIdOrName)
+        );
+        populateReportSelect(filtered);
         if (filtered.length > 0) {
-          populateReportSelect(filtered);
           loadSpecificReport(filtered[0].session_id);
         }
       }
@@ -3845,22 +4067,59 @@
       runBenchmark(fIdx);
     }
 
-    async function loadCoachAnalytics() {
+    async function loadCoachAnalytics(athleteId = null) {
       try {
-        const res = await fetch('/api/coach/analytics');
+        const targetId = athleteId !== null ? athleteId : currentDashboardAthleteId || 'ALL';
+        currentDashboardAthleteId = targetId;
+
+        const dashFilter = document.getElementById('dashboardAthleteFilter');
+        if (dashFilter) dashFilter.value = targetId;
+
+        const query = (targetId && targetId !== 'ALL') ? `?athlete_id=${encodeURIComponent(targetId)}` : '';
+        const res = await fetch(`/api/coach/analytics${query}`);
         const data = await res.json();
         if (data.status === 'success') {
           const m = data.metrics;
           document.getElementById('statTotalSessions').innerText = m.totalSessions;
           document.getElementById('statTopFault').innerText = m.topFault;
 
+          const banner = document.getElementById('selectedAthleteBanner');
+          if (targetId && targetId !== 'ALL' && data.selectedAthlete) {
+            const sa = data.selectedAthlete;
+            let extraMetrics = null;
+            try {
+              const athRes = await fetch(`/api/athletes/${encodeURIComponent(targetId)}/analytics`);
+              if (athRes.ok) extraMetrics = await athRes.json();
+            } catch (e) {}
+
+            if (banner) {
+              banner.classList.remove('hidden');
+              document.getElementById('selAthJersey').innerText = `#${sa.jersey_number || '00'}`;
+              document.getElementById('selAthName').innerText = sa.name;
+              document.getElementById('selAthIdBadge').innerText = sa.athlete_id;
+              document.getElementById('selAthMeta').innerText =
+                `${sa.position || 'Guard'} • ${sa.team || 'KDU Varsity'} • ${sa.shooting_hand || 'Right'}-Handed • ${sa.height_cm || 185} cm • Age ${sa.age || 21}`;
+              document.getElementById('selAthConsistency').innerText = `${sa.consistency_score ?? 100}%`;
+              if (extraMetrics && extraMetrics.metrics) {
+                document.getElementById('selAthRelease').innerText = `${extraMetrics.metrics.averageReleaseAngle || 0}°`;
+                document.getElementById('selAthIdealRate').innerText = `${extraMetrics.metrics.idealRatePct || 0}%`;
+              }
+            }
+          } else if (banner) {
+            banner.classList.add('hidden');
+          }
+
           const tbody = document.getElementById('athleteTableBody');
           tbody.innerHTML = '';
           data.athletes.forEach(a => {
+            const isSel = targetId === a.athlete_id;
             const tr = document.createElement('tr');
-            tr.className = 'hover:bg-white/5 transition-colors';
+            tr.className = `${isSel ? 'bg-amber-500/10' : 'hover:bg-white/5'} transition-colors`;
             tr.innerHTML = `
-              <td class="px-4 py-3 font-semibold text-white">${a.name} <span class="text-zinc-400 font-normal">(${a.athlete_id})</span></td>
+              <td class="px-4 py-3 font-semibold text-white">
+                <span class="inline-block px-1.5 py-0.5 rounded bg-[#16171C] text-amber-400 font-mono text-[10px] mr-1.5">#${a.jersey_number || '00'}</span>
+                ${a.name} <span class="text-zinc-400 font-normal">(${a.athlete_id})</span>
+              </td>
               <td class="px-4 py-3 text-slate-400 font-mono">${a.position}</td>
               <td class="px-4 py-3">
                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${a.primary_fault === 'Ideal Form' ? 'bg-kinetic-emerald/15 text-kinetic-emerald' : 'bg-kinetic-crimson/15 text-kinetic-coral'}">
@@ -3869,9 +4128,12 @@
               </td>
               <td class="px-4 py-3 font-mono font-bold text-kinetic-teal">${a.consistency_score}%</td>
               <td class="px-4 py-3 font-mono">${a.sessions_count}</td>
-              <td class="px-4 py-3">
-                <button onclick="analyzeAthlete('${a.athlete_id}', '${a.primary_fault}')" class="px-3 py-1 text-[11px] font-semibold rounded-lg bg-navy-800 hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-white/10 text-slate-200">
-                  Analyze
+              <td class="px-4 py-3 flex items-center space-x-1.5">
+                <button onclick="filterDashboardByAthlete('${a.athlete_id}')" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black transition-all border border-amber-500/30">
+                  Analytics
+                </button>
+                <button onclick="analyzeAthlete('${a.athlete_id}', '${a.primary_fault}')" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-navy-800 hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-white/10 text-slate-200">
+                  Shoot
                 </button>
               </td>
             `;
@@ -3880,25 +4142,30 @@
 
           const sbody = document.getElementById('recentSessionsBody');
           sbody.innerHTML = '';
-          data.recentSessions.forEach(s => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-white/5 transition-colors';
-            tr.innerHTML = `
-              <td class="px-4 py-3 font-mono text-slate-400">${s.session_id}</td>
-              <td class="px-4 py-3 text-white font-medium">${s.athlete_name || s.athlete_id}</td>
-              <td class="px-4 py-3 text-kinetic-amber font-semibold">${s.fault_classification}</td>
-              <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-navy-950 text-slate-300 text-[10px] border border-white/5">${s.severity_tier}</span></td>
-              <td class="px-4 py-3 text-slate-300">${s.prescribed_drill}</td>
-              <td class="px-4 py-3 font-mono text-white font-bold">${s.release_angle_deg}°</td>
-              <td class="px-4 py-3 font-mono text-kinetic-teal font-bold">${(s.confidence_score > 1 ? s.confidence_score : s.confidence_score * 100).toFixed(1)}%</td>
-              <td class="px-4 py-3">
-                <button onclick="viewShotReport('${s.session_id}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-kinetic-teal/20 text-kinetic-teal hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-kinetic-teal/30 flex items-center space-x-1">
-                  <span>View Report</span>
-                </button>
-              </td>
-            `;
-            sbody.appendChild(tr);
-          });
+          if (data.recentSessions.length === 0) {
+            sbody.innerHTML = '<tr><td colspan="9" class="px-4 py-6 text-center text-zinc-400">No videos recorded for this sportsman yet. Upload a clip under their name in Studio!</td></tr>';
+          } else {
+            data.recentSessions.forEach(s => {
+              const tr = document.createElement('tr');
+              tr.className = 'hover:bg-white/5 transition-colors';
+              tr.innerHTML = `
+                <td class="px-4 py-3 font-mono text-slate-400">${s.session_id}</td>
+                <td class="px-4 py-3 text-white font-medium">${s.athlete_name || s.athlete_id}</td>
+                <td class="px-4 py-3 text-zinc-300 font-mono text-[11px] max-w-[160px] truncate" title="${s.video_name || 'shot_capture.mp4'}">${s.video_name || 'shot_capture.mp4'}</td>
+                <td class="px-4 py-3 text-kinetic-amber font-semibold">${s.fault_classification}</td>
+                <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-navy-950 text-slate-300 text-[10px] border border-white/5">${s.severity_tier}</span></td>
+                <td class="px-4 py-3 text-slate-300">${s.prescribed_drill}</td>
+                <td class="px-4 py-3 font-mono text-white font-bold">${s.release_angle_deg}°</td>
+                <td class="px-4 py-3 font-mono text-kinetic-teal font-bold">${(s.confidence_score > 1 ? s.confidence_score : s.confidence_score * 100).toFixed(1)}%</td>
+                <td class="px-4 py-3">
+                  <button onclick="viewShotReport('${s.session_id}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-kinetic-teal/20 text-kinetic-teal hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-kinetic-teal/30 flex items-center space-x-1">
+                    <span>View Report</span>
+                  </button>
+                </td>
+              `;
+              sbody.appendChild(tr);
+            });
+          }
 
           initFaultDoughnut(data.faultDistribution);
         }
@@ -4044,6 +4311,91 @@
           <span>Use Virtual Camera</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Add Sportsman Modal -->
+  <div id="addSportsmanModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#101114] border border-amber-500/40 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Add Sportsman Profile</h3>
+            <p class="text-[11px] text-zinc-400">Save athlete details to record videos &amp; analytics</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddSportsmanModal()" class="text-zinc-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="addSportsmanError" class="hidden p-2.5 rounded-lg bg-red-950/60 border border-red-500/50 text-xs text-red-200"></div>
+
+      <form id="addSportsmanForm" onsubmit="submitAddSportsman(event)" class="space-y-3">
+        <div>
+          <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Full Name *</label>
+          <input id="inpAthName" type="text" required placeholder="e.g. N. Jayasuriya"
+            class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white focus:border-amber-500 outline-none" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Position</label>
+            <select id="inpAthPosition" class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
+              <option value="Point Guard">Point Guard</option>
+              <option value="Shooting Guard">Shooting Guard</option>
+              <option value="Small Forward">Small Forward</option>
+              <option value="Power Forward">Power Forward</option>
+              <option value="Center">Center</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Jersey #</label>
+            <input id="inpAthJersey" type="text" maxlength="4" value="14" placeholder="14"
+              class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white focus:border-amber-500 outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Age</label>
+            <input id="inpAthAge" type="number" min="10" max="60" value="21"
+              class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none" />
+          </div>
+          <div>
+            <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Height (cm)</label>
+            <input id="inpAthHeight" type="number" min="120" max="240" value="185"
+              class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none" />
+          </div>
+          <div>
+            <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Hand</label>
+            <select id="inpAthHand" class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
+              <option value="Right">Right</option>
+              <option value="Left">Left</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Team / Academy</label>
+          <input id="inpAthTeam" type="text" value="KDU Varsity Basketball"
+            class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none" />
+        </div>
+
+        <div class="flex items-center justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeAddSportsmanModal()"
+            class="px-3.5 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-300 text-xs font-semibold border border-white/10">
+            Cancel
+          </button>
+          <button type="submit" id="btnSaveSportsman"
+            class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold">
+            Save Sportsman
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </body>

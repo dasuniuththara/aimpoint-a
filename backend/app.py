@@ -72,10 +72,14 @@ class ShotAnalysisRequest(BaseModel):
     simulation_fault_type: Optional[int] = None # None = auto-detect, 0-4 = benchmark simulate
 
 class AthleteCreateRequest(BaseModel):
-    athlete_id: str
+    athlete_id: Optional[str] = None
     name: str
     position: str = "Guard"
-    team: str = "Varsity Basketball"
+    team: str = "KDU Varsity Basketball"
+    jersey_number: str = "00"
+    height_cm: int = 185
+    age: int = 21
+    shooting_hand: str = "Right"
 
 # -------------------------------------------------------------
 # API Endpoints
@@ -273,9 +277,13 @@ def analyze_shot(
         "trunk_tilt": [round(float(v), 1) for v in kinematics["trunk_tilt"]]
     }
 
+    ath_row = db_service.get_athlete(athlete_id)
     return {
         "status": "success",
         "session_id": session_id,
+        "athlete_id": athlete_id,
+        "athlete_name": ath_row["name"] if ath_row else athlete_id,
+        "video_name": video_filename,
         "coaching_card": {
             "card_id": card_id,
             "primary_fault": coaching_card.fault_name,
@@ -310,15 +318,16 @@ def analyze_shot(
     }
 
 @app.get("/api/coach/analytics")
-def get_coach_analytics():
+def get_coach_analytics(athlete_id: Optional[str] = None):
     """
-    Web Companion Coach Analytics API Endpoint
+    Web Companion Coach Analytics API Endpoint (supports team-wide or per-sportsman filter)
     Thesis Section 4.8.3 (app.py) & Figure 4.14 / 4.15
     """
-    data = db_service.get_coach_analytics()
+    data = db_service.get_coach_analytics(athlete_id=athlete_id)
     return {
         "status": "success",
         "metrics": data["metrics"],
+        "selectedAthlete": data.get("selectedAthlete"),
         "faultDistribution": data["faultDistribution"],
         "athletes": data["athletes"],
         "recentSessions": data["recentSessions"]
@@ -327,6 +336,32 @@ def get_coach_analytics():
 @app.get("/api/athletes")
 def list_athletes():
     return {"status": "success", "athletes": db_service.get_all_athletes()}
+
+@app.post("/api/athletes")
+def create_athlete(req: AthleteCreateRequest):
+    """Register a new sportsman profile in SQLite for tagged shot uploads and analytics."""
+    try:
+        athlete = db_service.create_athlete(
+            name=req.name,
+            position=req.position,
+            team=req.team,
+            jersey_number=req.jersey_number,
+            height_cm=req.height_cm,
+            age=req.age,
+            shooting_hand=req.shooting_hand,
+            athlete_id=req.athlete_id,
+        )
+        return {"status": "success", "athlete": athlete}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+
+@app.get("/api/athletes/{athlete_id}/analytics")
+def get_athlete_analytics_endpoint(athlete_id: str):
+    """Per-sportsman cumulative biomechanics analytics, fault distribution, and uploaded videos."""
+    data = db_service.get_athlete_analytics(athlete_id)
+    if not data:
+        raise HTTPException(status_code=404, detail=f"Sportsman '{athlete_id}' not found")
+    return {"status": "success", **data}
 
 @app.get("/api/drills")
 def list_drills():
@@ -344,11 +379,11 @@ def list_drills():
     }
 
 @app.get("/api/reports/list")
-def list_recent_reports():
-    """Lists recent shot reports for one-by-one inspection."""
+def list_recent_reports(athlete_id: Optional[str] = None):
+    """Lists recent shot reports for one-by-one inspection (optionally filtered by athlete_id)."""
     return {
         "status": "success",
-        "reports": db_service.get_recent_reports_list()
+        "reports": db_service.get_recent_reports_list(athlete_id=athlete_id)
     }
 
 @app.get("/api/report/{session_id}")

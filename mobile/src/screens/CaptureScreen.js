@@ -1,20 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Animated, Platform
+  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Animated, Platform, Modal, TextInput
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Speech from 'expo-speech';
 import Svg, { Rect, Line, Circle, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
-import { runBenchmarkShot, uploadAndAnalyzeVideo } from '../services/api';
+import { runBenchmarkShot, uploadAndAnalyzeVideo, fetchAthletes, createAthlete } from '../services/api';
 
-const PLAYERS = [
-  { id: 'ATH-001', jersey: '01', name: 'K. Perera' },
-  { id: 'ATH-002', jersey: '07', name: 'D. Silva' },
-  { id: 'ATH-003', jersey: '11', name: 'M. Fernando' },
-  { id: 'ATH-004', jersey: '23', name: 'Kirindegama' },
+const DEFAULT_PLAYERS = [
+  { athlete_id: 'ATH-001', jersey_number: '01', name: 'K. Perera', position: 'Point Guard' },
+  { athlete_id: 'ATH-002', jersey_number: '07', name: 'D. Silva', position: 'Shooting Guard' },
+  { athlete_id: 'ATH-003', jersey_number: '11', name: 'M. Fernando', position: 'Small Forward' },
+  { athlete_id: 'ATH-004', jersey_number: '23', name: 'T. Kirindegama', position: 'Guard' },
 ];
+
+const POSITIONS = ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center'];
 
 const FAULT_CHIPS = [
   { id: 0, label: 'Ideal Form' },
@@ -31,7 +33,14 @@ export default function CaptureScreen({ onAnalysisComplete }) {
   const [countdown, setCountdown] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorBanner, setErrorBanner] = useState(null);
+  const [players, setPlayers] = useState(DEFAULT_PLAYERS);
   const [athleteId, setAthleteId] = useState('ATH-001');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newJersey, setNewJersey] = useState('14');
+  const [newPosition, setNewPosition] = useState('Point Guard');
+  const [newTeam, setNewTeam] = useState('KDU Varsity');
+  const [savingPlayer, setSavingPlayer] = useState(false);
   const [facing, setFacing] = useState('back');
   const cameraRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -40,6 +49,48 @@ export default function CaptureScreen({ onAnalysisComplete }) {
     setErrorBanner(`${title}: ${msg}`);
     if (Platform.OS !== 'web') {
       Alert.alert(title, msg);
+    }
+  };
+
+  const loadPlayers = async (selectId = null) => {
+    try {
+      const data = await fetchAthletes();
+      if (data.status === 'success' && Array.isArray(data.athletes) && data.athletes.length > 0) {
+        setPlayers(data.athletes);
+        if (selectId) setAthleteId(selectId);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    loadPlayers();
+  }, []);
+
+  const handleSaveNewPlayer = async () => {
+    const clean = newName.trim();
+    if (!clean) {
+      notify('Validation', 'Please enter the sportsman full name.');
+      return;
+    }
+    setSavingPlayer(true);
+    try {
+      const res = await createAthlete({
+        name: clean,
+        jersey_number: newJersey.trim() || '00',
+        position: newPosition,
+        team: newTeam.trim() || 'KDU Varsity Basketball',
+      });
+      if (res.status === 'success' && res.athlete) {
+        setShowAddModal(false);
+        setNewName('');
+        setNewJersey('00');
+        setErrorBanner(null);
+        await loadPlayers(res.athlete.athlete_id);
+      }
+    } catch (err) {
+      notify('Save Player Failed', err.message);
+    } finally {
+      setSavingPlayer(false);
     }
   };
 
@@ -162,24 +213,38 @@ export default function CaptureScreen({ onAnalysisComplete }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {/* Active Jersey Selector Bar */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.playerStrip}>
-        {PLAYERS.map((p) => {
-          const active = athleteId === p.id;
-          return (
-            <TouchableOpacity
-              key={p.id}
-              style={[styles.playerPill, active && styles.playerPillActive]}
-              onPress={() => setAthleteId(p.id)}
-            >
-              <View style={[styles.jerseyBadge, active && styles.jerseyBadgeActive]}>
-                <Text style={[styles.jerseyNum, active && styles.jerseyNumActive]}>#{p.jersey}</Text>
-              </View>
-              <Text style={[styles.playerName, active && styles.playerNameActive]}>{p.name}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      {/* Active Jersey Selector Bar + Add Player Trigger */}
+      <View style={{ gap: 6 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.playerStrip}>
+          {players.map((p) => {
+            const active = athleteId === p.athlete_id;
+            return (
+              <TouchableOpacity
+                key={p.athlete_id}
+                style={[styles.playerPill, active && styles.playerPillActive]}
+                onPress={() => setAthleteId(p.athlete_id)}
+              >
+                <View style={[styles.jerseyBadge, active && styles.jerseyBadgeActive]}>
+                  <Text style={[styles.jerseyNum, active && styles.jerseyNumActive]}>#{p.jersey_number || '00'}</Text>
+                </View>
+                <Text style={[styles.playerName, active && styles.playerNameActive]}>{p.name}</Text>
+              </TouchableOpacity>
+            );
+          })}
+          <TouchableOpacity style={styles.addPlayerPill} onPress={() => setShowAddModal(true)}>
+            <Ionicons name="person-add-outline" size={14} color="#FBBF24" />
+            <Text style={styles.addPlayerTxt}>Add Sportsman</Text>
+          </TouchableOpacity>
+        </ScrollView>
+        {(() => {
+          const activeObj = players.find((x) => x.athlete_id === athleteId);
+          return activeObj ? (
+            <Text style={styles.activePlayerCaption}>
+              Active Sportsman: #{activeObj.jersey_number || '00'} {activeObj.name} ({activeObj.position || 'Guard'}) — videos saved under this profile
+            </Text>
+          ) : null;
+        })()}
+      </View>
 
       {/* Camera Viewfinder with Broadcast Viewfinder Corner Brackets */}
       <View style={styles.cameraContainer}>
@@ -283,6 +348,81 @@ export default function CaptureScreen({ onAnalysisComplete }) {
           ))}
         </View>
       </View>
+
+      {/* Add Sportsman Profile Modal */}
+      <Modal visible={showAddModal} transparent animationType="fade" onRequestClose={() => setShowAddModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHead}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Ionicons name="person-add" size={18} color="#FBBF24" />
+                <Text style={styles.modalTitle}>Add New Sportsman</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowAddModal(false)}>
+                <Ionicons name="close" size={20} color="#A1A1AA" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.inputLbl}>Full Name *</Text>
+            <TextInput
+              style={styles.inputBox}
+              placeholder="e.g. N. Jayasuriya"
+              placeholderTextColor="#71717A"
+              value={newName}
+              onChangeText={setNewName}
+            />
+
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.inputLbl}>Jersey #</Text>
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="14"
+                  placeholderTextColor="#71717A"
+                  value={newJersey}
+                  onChangeText={setNewJersey}
+                  maxLength={4}
+                />
+              </View>
+              <View style={{ flex: 2 }}>
+                <Text style={styles.inputLbl}>Team / Academy</Text>
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="KDU Varsity"
+                  placeholderTextColor="#71717A"
+                  value={newTeam}
+                  onChangeText={setNewTeam}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.inputLbl}>Position</Text>
+            <View style={styles.posRow}>
+              {POSITIONS.map((pos) => {
+                const act = newPosition === pos;
+                return (
+                  <TouchableOpacity
+                    key={pos}
+                    style={[styles.posChip, act && styles.posChipActive]}
+                    onPress={() => setNewPosition(pos)}
+                  >
+                    <Text style={[styles.posTxt, act && styles.posTxtActive]}>{pos}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setShowAddModal(false)}>
+                <Text style={styles.modalCancelTxt}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalSaveBtn} onPress={handleSaveNewPlayer} disabled={savingPlayer}>
+                {savingPlayer ? <ActivityIndicator size="small" color="#060608" /> : <Text style={styles.modalSaveTxt}>Save Player</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -293,12 +433,31 @@ const styles = StyleSheet.create({
   playerStrip: { gap: 8, paddingVertical: 2 },
   playerPill: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#101114', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingRight: 12, paddingLeft: 5, paddingVertical: 5, borderRadius: 20 },
   playerPillActive: { borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.12)' },
+  addPlayerPill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(245,158,11,0.14)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.5)', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20 },
+  addPlayerTxt: { fontSize: 12, fontWeight: '700', color: '#FBBF24' },
+  activePlayerCaption: { fontSize: 11, color: '#A1A1AA', fontWeight: '500', paddingHorizontal: 2 },
   jerseyBadge: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#1C1D22', alignItems: 'center', justifyContent: 'center' },
   jerseyBadgeActive: { backgroundColor: '#F59E0B' },
   jerseyNum: { fontSize: 10, fontWeight: '800', color: '#A1A1AA' },
   jerseyNumActive: { color: '#060608' },
   playerName: { fontSize: 12, fontWeight: '600', color: '#A1A1AA' },
   playerNameActive: { color: '#FDE68A' },
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.78)', justifyContent: 'center', alignItems: 'center', padding: 18 },
+  modalCard: { width: '100%', maxWidth: 420, backgroundColor: '#101114', borderRadius: 16, padding: 18, borderWidth: 1, borderColor: 'rgba(245,158,11,0.45)', gap: 8 },
+  modalHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' },
+  modalTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
+  inputLbl: { fontSize: 11, fontWeight: '700', color: '#A1A1AA', marginTop: 4 },
+  inputBox: { backgroundColor: '#16171C', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 9, paddingHorizontal: 11, paddingVertical: 8.5, color: '#FFFFFF', fontSize: 13 },
+  posRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 },
+  posChip: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8, backgroundColor: '#16171C', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  posChipActive: { backgroundColor: 'rgba(245,158,11,0.2)', borderColor: '#F59E0B' },
+  posTxt: { fontSize: 11, fontWeight: '600', color: '#A1A1AA' },
+  posTxtActive: { color: '#FBBF24' },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 10 },
+  modalCancelBtn: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 9, backgroundColor: '#16171C', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  modalCancelTxt: { color: '#D4D4D8', fontSize: 12.5, fontWeight: '600' },
+  modalSaveBtn: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 9, backgroundColor: '#F59E0B', minWidth: 100, alignItems: 'center' },
+  modalSaveTxt: { color: '#060608', fontSize: 12.5, fontWeight: '800' },
   cameraContainer: { height: 278, backgroundColor: '#090A0D', borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', justifyContent: 'center' },
   cameraPlaceholder: { alignItems: 'center', justifyContent: 'center', gap: 7 },
   camIconGlow: { width: 58, height: 58, borderRadius: 29, backgroundColor: 'rgba(245,158,11,0.14)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.35)', alignItems: 'center', justifyContent: 'center', marginBottom: 2 },
