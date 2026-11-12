@@ -1,10 +1,24 @@
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 
-// Default FastAPI backend host:
-// - Android Emulator uses 10.0.2.2 to reach host localhost:8080
-// - iOS Simulator / Web uses localhost:8080
-// - Physical phones can set their PC LAN IP (e.g. http://192.168.1.20:8080) in Settings tab
-let apiBaseUrl = Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+function detectDefaultApiUrl() {
+  if (Platform.OS === 'web') {
+    const webHost = typeof window !== 'undefined' && window.location ? window.location.hostname : 'localhost';
+    return `http://${webHost || 'localhost'}:8080`;
+  }
+  try {
+    const scriptURL = NativeModules?.SourceCode?.scriptURL || '';
+    const match = scriptURL.match(/^https?:\/\/([^:/]+)/i);
+    if (match && match[1]) {
+      const host = match[1];
+      if (host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:8080`;
+      }
+    }
+  } catch (e) {}
+  return Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+}
+
+let apiBaseUrl = detectDefaultApiUrl();
 
 export function getApiBaseUrl() {
   return apiBaseUrl;
