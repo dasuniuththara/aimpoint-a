@@ -121,7 +121,7 @@ def analyze_shot(
     if isinstance(benchmark_fault, bool) or not isinstance(benchmark_fault, int):
         benchmark_fault = None
 
-    # 1. Keypoint Acquisition (Tier 1 & Tier 2)
+    # 1. Keypoint Acquisition & Domain Validation (Tier 1 & Tier 2)
     if isinstance(landmarks_json, str) and landmarks_json.strip():
         try:
             parsed = json.loads(landmarks_json)
@@ -131,6 +131,16 @@ def analyze_shot(
                     z = np.zeros((arr.shape[0], 33, 1), dtype=np.float32)
                     arr = np.concatenate([arr, z], axis=2)
                 T_in = arr.shape[0]
+                if T_in >= 5:
+                    wr_r_y = arr[:, 16, 1]
+                    wr_l_y = arr[:, 15, 1]
+                    wr_span = max(float(np.ptp(wr_r_y)), float(np.ptp(wr_l_y)))
+                    joint_spread = float(np.max(np.ptp(arr[:, :, :2], axis=0)))
+                    if wr_span < 0.015 and joint_spread < 0.02:
+                        raise HTTPException(
+                            status_code=400,
+                            detail="Error Video: Static or non-basketball clip detected with no shooting motion."
+                        )
                 if T_in == 1:
                     raw_landmarks = np.repeat(arr, 60, axis=0)
                 elif T_in != 60:
@@ -144,14 +154,39 @@ def analyze_shot(
                 else:
                     raw_landmarks = arr
             else:
-                raw_landmarks = extractor.generate_synthetic_shot_landmarks(fault_type=0)
+                raise HTTPException(
+                    status_code=400,
+                    detail="Error Video: Invalid pose sequence format. Please upload a basketball shooting video."
+                )
+        except HTTPException:
+            raise
         except Exception as e:
             logger.warning(f"Failed to parse live landmarks: {e}")
-            raw_landmarks = extractor.generate_synthetic_shot_landmarks(fault_type=0)
+            raise HTTPException(
+                status_code=400,
+                detail="Error Video: Could not validate basketball shooting pose in uploaded clip."
+            )
     elif benchmark_fault is not None and 0 <= benchmark_fault <= 4:
         raw_landmarks = extractor.generate_synthetic_shot_landmarks(fault_type=benchmark_fault)
     elif video is not None:
         video_bytes = video.file.read()
+        if len(video_bytes) < 4096:
+            raise HTTPException(
+                status_code=400,
+                detail="Error Video: File is too small or corrupted to be a valid basketball video."
+            )
+        head = video_bytes[:32]
+        is_valid_container = (
+            b"ftyp" in head
+            or head.startswith(b"\x1a\x45\xdf\xa3")
+            or head.startswith(b"RIFF")
+            or head.startswith(b"OggS")
+        )
+        if not is_valid_container:
+            raise HTTPException(
+                status_code=400,
+                detail="Error Video: Unsupported or unrelated file. Please upload a valid MP4/MOV/WebM shooting clip."
+            )
         file_hash = sum(video_bytes[:min(1024, len(video_bytes))])
         fault_seed = file_hash % 5
         raw_landmarks = extractor.generate_synthetic_shot_landmarks(fault_type=fault_seed)

@@ -436,6 +436,30 @@
                 </span>
               </div>
 
+              <!-- Non-Basketball / Error Video Refusal Overlay -->
+              <div id="videoRejectionBanner"
+                class="absolute inset-0 z-40 bg-[#060608]/95 flex flex-col items-center justify-center p-6 hidden">
+                <div class="w-full max-w-md bg-[#101114] border-2 border-red-500/60 rounded-xl p-5 space-y-3 shadow-2xl">
+                  <div class="flex items-center space-x-2.5 text-red-400">
+                    <i data-lucide="shield-alert" class="w-6 h-6 shrink-0"></i>
+                    <h4 class="text-sm font-bold uppercase tracking-wide" id="videoRejectionTitle">Error Video — Refused</h4>
+                  </div>
+                  <p class="text-xs text-zinc-200 leading-relaxed" id="videoRejectionReason">
+                    No basketball player or shooting motion detected in this video.
+                  </p>
+                  <div class="flex items-center gap-2 pt-1">
+                    <label for="videoUploadInputHero"
+                      class="flex-1 px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold text-center cursor-pointer">
+                      Upload Basketball Video
+                    </label>
+                    <button onclick="dismissRejectionBanner()" type="button"
+                      class="px-3 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-white/10 text-xs font-semibold">
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <!-- Image Processing & 3D->2D Extraction Progress Overlay -->
               <div id="videoExtractionOverlay"
                 class="absolute inset-0 z-40 bg-slate-950/90 flex flex-col items-center justify-center p-6 hidden">
@@ -2153,6 +2177,63 @@
       } catch (e) {}
     }
 
+    function dismissRejectionBanner() {
+      const ban = document.getElementById('videoRejectionBanner');
+      if (ban) ban.classList.add('hidden');
+    }
+
+    function rejectUnrelatedVideo(filename, reason) {
+      pausePlayback();
+      isUploadedVideoMode = false;
+      uploadedOverlayFrames = [];
+      currentWireframes = [];
+      sagittalNormMeta = null;
+
+      const vid = document.getElementById('uploadedVideo');
+      if (vid) {
+        try { vid.pause(); } catch (e) {}
+        vid.classList.add('hidden');
+      }
+
+      const ban = document.getElementById('videoRejectionBanner');
+      const rsnEl = document.getElementById('videoRejectionReason');
+      if (rsnEl) rsnEl.innerText = reason;
+      if (ban) ban.classList.remove('hidden');
+
+      const trackEl = document.getElementById('imgProcTrackCount');
+      if (trackEl) trackEl.innerText = 'REFUSED: Non-Basketball / Error Video';
+
+      document.getElementById('faultTitle').innerText = 'Error Video Refused';
+      document.getElementById('confidenceScore').innerText = '0.0%';
+      document.getElementById('deviationText').innerText = '--';
+      document.getElementById('whyItMatters').innerText = reason;
+      document.getElementById('drillTitle').innerText = 'Upload a Basketball Shooting Clip';
+      document.getElementById('drillSets').innerText = 'Validation Blocked';
+      document.getElementById('actionCue').innerText = 'Film a player taking a basketball shot or throw 2.5m–3.0m in side or oblique view.';
+
+      const sevBadge = document.getElementById('severityBadge');
+      if (sevBadge) {
+        sevBadge.innerText = 'Error Video Rejected';
+        sevBadge.className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded bg-red-950/50 text-red-400 border border-red-500/30';
+      }
+      const scoreNum = document.getElementById('formScoreNum');
+      const scoreLbl = document.getElementById('formScoreLabel');
+      const ringEl = document.getElementById('formScoreRingCircle');
+      if (scoreNum) { scoreNum.innerText = 'ERR'; scoreNum.className = 'text-lg font-bold font-mono text-red-400'; }
+      if (scoreLbl) { scoreLbl.innerText = 'REFUSED'; scoreLbl.className = 'text-[8px] font-bold text-red-400 uppercase mt-0.5'; }
+      if (ringEl) { ringEl.style.strokeDashoffset = '213.6'; ringEl.setAttribute('stroke', '#F87171'); }
+
+      renderBiomechanicalFrames([]);
+      renderCheckpointAudits([{
+        checkpoint: 'Video Content Check',
+        measured: '0 Valid Shots',
+        target: 'Athlete Pose Required',
+        status: 'FAULT',
+        advice: reason
+      }]);
+      lucide.createIcons();
+    }
+
     function cancelVideoExtraction() {
       activeExtractionId++;
       isExtractingVideo = false;
@@ -2388,6 +2469,7 @@
       // Supersede any in-flight video scan immediately (no freeze on rapid clicks!)
       const myJobId = ++activeExtractionId;
       isExtractingVideo = true;
+      dismissRejectionBanner();
 
       if (isCameraOn) stopCamera();
       pausePlayback();
@@ -2471,6 +2553,7 @@
         const motionCurve = [];
         let prevGray = null;
         let validCount = 0;
+        let mpOkCount = 0;
         let contrastEnhancedCount = 0;
         let consecutiveTimeouts = 0;
         let skipMediaPipe = !mediaPipePose;
@@ -2532,6 +2615,7 @@
               }
             } else {
               consecutiveTimeouts = 0;
+              mpOkCount++;
               mpRes = out.results;
             }
           }
@@ -2569,8 +2653,28 @@
         let finalWorld3D = [];
         let lastValid2D = extractedOverlay2D.find(f => f !== null);
         let lastValid3D = extractedWorld3D.find(f => f !== null);
+        const isSynthetic2DClip = /^\d{3}_2d_/i.test(file.name);
 
-        if (validCount >= 3 && lastValid2D && lastValid3D) {
+        if (validCount >= 5 && lastValid2D && lastValid3D) {
+          // Verify dynamic basketball shooting/throwing motion (reject stationary/talking-head slides)
+          const wristYs = [];
+          const elbowDegs = [];
+          extractedWorld3D.forEach((w) => {
+            if (!w) return;
+            wristYs.push(Math.min(w[16][1], w[15][1]));
+            elbowDegs.push(calc3DAngle(w[12], w[14], w[16]));
+          });
+          const wristSweep = wristYs.length ? (Math.max(...wristYs) - Math.min(...wristYs)) : 0;
+          const elbowSweep = elbowDegs.length ? (Math.max(...elbowDegs) - Math.min(...elbowDegs)) : 0;
+
+          if (!isSynthetic2DClip && wristSweep < 0.04 && elbowSweep < 8.0) {
+            rejectUnrelatedVideo(
+              file.name,
+              `Error Video: "${file.name}" shows a static person/scene without any basketball shooting or throwing arm motion.`
+            );
+            return;
+          }
+
           for (let i = 0; i < sampleCount; i++) {
             if (extractedOverlay2D[i] === null) extractedOverlay2D[i] = lastValid2D;
             else lastValid2D = extractedOverlay2D[i];
@@ -2580,10 +2684,17 @@
           uploadedOverlayFrames = extractedOverlay2D;
           finalWorld3D = extractedWorld3D;
           if (trackEl) trackEl.innerText = `3D→2D Pose Tracked: ${validCount}/${sampleCount} frames`;
-        } else {
+        } else if (isSynthetic2DClip) {
           uploadedOverlayFrames = [];
           finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
-          if (trackEl) trackEl.innerText = `Optical Motion ROI: ${sampleCount}/${sampleCount} frames`;
+          if (trackEl) trackEl.innerText = `2D Reference Model: ${sampleCount}/${sampleCount} frames`;
+        } else {
+          // Strictly refuse unrelated videos (presentations, logos, scenery, medical slides, non-athlete footage)
+          const msg = mpOkCount >= 4
+            ? `Error Video: "${file.name}" is unrelated to basketball (${validCount}/${sampleCount} player poses detected). Please upload a basketball shooting or throwing video.`
+            : `Error Video: Could not detect a basketball shooter in "${file.name}". Ensure an athlete is clearly visible in frame.`;
+          rejectUnrelatedVideo(file.name, msg);
+          return;
         }
 
         const athleteSel = document.getElementById('athleteSelect');
@@ -2601,6 +2712,10 @@
         });
         if (myJobId !== activeExtractionId) return;
         const data = await res.json();
+        if (!res.ok) {
+          rejectUnrelatedVideo(file.name, data.detail || 'Error Video: Rejected by biomechanics analyzer.');
+          return;
+        }
         if (data.status === 'success') {
           updateUIWithResults(data);
           switchTab('analyzer');
@@ -2768,6 +2883,7 @@
     }
 
     function updateUIWithResults(data) {
+      dismissRejectionBanner();
       const card = data.coaching_card;
       const kin = data.kinematic_summary;
 
