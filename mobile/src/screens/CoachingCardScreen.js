@@ -189,7 +189,7 @@ export default function CoachingCardScreen({ analysis, onOpenHistory }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#060608' },
-  content: { padding: 14, gap: 12 },
+  content: { padding: 14, gap: 12, maxWidth: 540, width: '100%', alignSelf: 'center' },
   emptyWrap: { flex: 1, backgroundColor: '#060608', alignItems: 'center', justifyContent: 'center', padding: 28 },
   emptyIconBox: { width: 68, height: 68, borderRadius: 34, backgroundColor: 'rgba(245,158,11,0.12)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.35)', alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { fontSize: 17, fontWeight: '700', color: '#F4F4F5', marginTop: 12 },

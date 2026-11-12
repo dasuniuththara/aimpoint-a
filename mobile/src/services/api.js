@@ -39,11 +39,18 @@ export async function runBenchmarkShot(faultType = 0, athleteId = 'ATH-001') {
 export async function uploadAndAnalyzeVideo(videoUri, fileName = 'mobile_shot.mp4', athleteId = 'ATH-001') {
   const fd = new FormData();
   fd.append('athlete_id', athleteId);
-  fd.append('video', {
-    uri: videoUri,
-    name: fileName,
-    type: fileName.endsWith('.webm') ? 'video/webm' : 'video/mp4',
-  });
+
+  if (Platform.OS === 'web') {
+    const resp = await fetch(videoUri);
+    const blob = await resp.blob();
+    fd.append('video', blob, fileName);
+  } else {
+    fd.append('video', {
+      uri: videoUri,
+      name: fileName,
+      type: fileName.endsWith('.webm') ? 'video/webm' : 'video/mp4',
+    });
+  }
 
   const res = await fetch(`${apiBaseUrl}/api/analyze-shot`, {
     method: 'POST',

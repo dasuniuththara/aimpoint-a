@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   sub: { fontSize: 12, color: '#A1A1AA', marginTop: 2 },
   errCard: { margin: 14, padding: 12, backgroundColor: 'rgba(248,113,113,0.12)', borderColor: 'rgba(248,113,113,0.4)', borderWidth: 1, borderRadius: 10 },
   errText: { color: '#F87171', fontSize: 12, fontWeight: '600' },
-  list: { padding: 14, gap: 10 },
+  list: { padding: 14, gap: 10, maxWidth: 540, width: '100%', alignSelf: 'center' },
   empty: { textAlign: 'center', color: '#A1A1AA', marginTop: 32, fontSize: 13 },
   card: { backgroundColor: '#101114', borderRadius: 13, padding: 13.5, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 5 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },

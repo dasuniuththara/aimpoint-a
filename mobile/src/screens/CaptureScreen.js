@@ -184,7 +184,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
           </View>
         )}
 
-        {showGuide && (
+        {showGuide && permission && permission.granted && (
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             <Svg width="100%" height="100%" viewBox="0 0 320 260">
               {/* Pro Broadcast Framing Box */}
@@ -268,7 +268,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#060608' },
-  content: { padding: 14, gap: 12 },
+  content: { padding: 14, gap: 12, maxWidth: 540, width: '100%', alignSelf: 'center' },
   playerStrip: { gap: 8, paddingVertical: 2 },
   playerPill: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#101114', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingRight: 12, paddingLeft: 5, paddingVertical: 5, borderRadius: 20 },
   playerPillActive: { borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.12)' },

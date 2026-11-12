@@ -68,7 +68,7 @@ export default function DrillsSettingsScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#060608' },
-  content: { padding: 14, gap: 12 },
+  content: { padding: 14, gap: 12, maxWidth: 540, width: '100%', alignSelf: 'center' },
   card: { backgroundColor: '#101114', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 8 },
   title: { fontSize: 15, fontWeight: '700', color: '#F4F4F5' },
   desc: { fontSize: 12, color: '#A1A1AA', lineHeight: 17 },
