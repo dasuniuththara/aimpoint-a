@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Animated
+  View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Animated, Platform
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -27,35 +27,46 @@ const FAULT_CHIPS = [
 export default function CaptureScreen({ onAnalysisComplete }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [showGuide, setShowGuide] = useState(true);
+  const [camReady, setCamReady] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorBanner, setErrorBanner] = useState(null);
   const [athleteId, setAthleteId] = useState('ATH-001');
   const [facing, setFacing] = useState('back');
   const cameraRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
+  const notify = (title, msg) => {
+    setErrorBanner(`${title}: ${msg}`);
+    if (Platform.OS !== 'web') {
+      Alert.alert(title, msg);
+    }
+  };
+
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.04, duration: 900, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1.0, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.03, duration: 900, useNativeDriver: Platform.OS !== 'web' }),
+        Animated.timing(pulseAnim, { toValue: 1.0, duration: 900, useNativeDriver: Platform.OS !== 'web' }),
       ])
     ).start();
   }, [pulseAnim]);
 
   const handleAnalyzeResponse = (res) => {
+    setErrorBanner(null);
     if (res && res.status === 'success') {
       onAnalysisComplete(res);
     } else {
-      Alert.alert('Analysis Notice', 'Could not parse server response.');
+      notify('Analysis Notice', 'Could not parse server response.');
     }
   };
 
   const handlePickVideo = async () => {
+    setErrorBanner(null);
     try {
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert('Permission Needed', 'Please allow photo/video library access to select a shot clip.');
+        notify('Permission Needed', 'Please allow photo/video library access to select a shot clip.');
         return;
       }
       const picked = await ImagePicker.launchImageLibraryAsync({
@@ -69,37 +80,40 @@ export default function CaptureScreen({ onAnalysisComplete }) {
       const res = await uploadAndAnalyzeVideo(asset.uri, asset.fileName || 'shot_upload.mp4', athleteId);
       handleAnalyzeResponse(res);
     } catch (err) {
-      Alert.alert('Upload Failed', `${err.message}\n\nOpen Drills & API tab to set your FastAPI backend IP.`);
+      notify('Upload Failed', `${err.message} — Ensure FastAPI backend is running on port 8080.`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCameraShotCapture = async () => {
+    setErrorBanner(null);
     if (!permission || !permission.granted) {
-      const p = await requestPermission();
-      if (!p.granted) {
-        Alert.alert('Camera Permission', 'Enable camera access to capture live sagittal shooting motion.');
-        return;
-      }
+      try {
+        const p = await requestPermission();
+        if (!p.granted && Platform.OS !== 'web') {
+          notify('Camera Permission', 'Enable camera access to capture live sagittal shooting motion.');
+          return;
+        }
+      } catch (e) {}
     }
 
     let c = 3;
     setCountdown(c);
-    Speech.speak('3', { rate: 1.05 });
+    try { Speech.speak('3', { rate: 1.05 }); } catch (e) {}
 
     const timer = setInterval(async () => {
       c -= 1;
       if (c > 0) {
         setCountdown(c);
-        Speech.speak(String(c), { rate: 1.05 });
+        try { Speech.speak(String(c), { rate: 1.05 }); } catch (e) {}
       } else {
         clearInterval(timer);
         setCountdown('SHOOT!');
-        Speech.speak('Shoot!', { rate: 1.1 });
+        try { Speech.speak('Shoot!', { rate: 1.1 }); } catch (e) {}
 
         try {
-          if (cameraRef.current && typeof cameraRef.current.recordAsync === 'function') {
+          if (camReady && cameraRef.current && typeof cameraRef.current.recordAsync === 'function') {
             const recordPromise = cameraRef.current.recordAsync({ maxDuration: 3 });
             setTimeout(() => {
               if (cameraRef.current && typeof cameraRef.current.stopRecording === 'function') {
@@ -116,31 +130,31 @@ export default function CaptureScreen({ onAnalysisComplete }) {
             }
           }
         } catch (err) {
-        } finally {
-          setCountdown(null);
-          setLoading(false);
         }
 
+        // Virtual sagittal capture fallback when no webcam hardware is connected
+        setCountdown(null);
         setLoading(true);
         try {
           const res = await runBenchmarkShot(0, athleteId);
           handleAnalyzeResponse(res);
         } catch (e) {
-          Alert.alert('Server Error', e.message);
+          notify('Backend Unreachable', `${e.message} — Start FastAPI on port 8080 (python start_server.py).`);
         } finally {
           setLoading(false);
         }
       }
-    }, 1000);
+    }, 850);
   };
 
   const handleBenchmarkTest = async (faultType) => {
+    setErrorBanner(null);
     setLoading(true);
     try {
       const res = await runBenchmarkShot(faultType, athleteId);
       handleAnalyzeResponse(res);
     } catch (err) {
-      Alert.alert('Backend Connection Needed', `${err.message}\n\nOpen Drills & API tab to verify FastAPI URL.`);
+      notify('Backend Unreachable', `${err.message} — Verify FastAPI is running on port 8080.`);
     } finally {
       setLoading(false);
     }
@@ -170,7 +184,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
       {/* Camera Viewfinder with Broadcast Viewfinder Corner Brackets */}
       <View style={styles.cameraContainer}>
         {permission && permission.granted ? (
-          <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing={facing} mode="video" />
+          <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing={facing} mode="video" onCameraReady={() => setCamReady(true)} />
         ) : (
           <View style={styles.cameraPlaceholder}>
             <View style={styles.camIconGlow}>
@@ -184,7 +198,7 @@ export default function CaptureScreen({ onAnalysisComplete }) {
           </View>
         )}
 
-        {showGuide && permission && permission.granted && (
+        {showGuide && camReady && (
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             <Svg width="100%" height="100%" viewBox="0 0 320 260">
               {/* Pro Broadcast Framing Box */}
@@ -247,6 +261,13 @@ export default function CaptureScreen({ onAnalysisComplete }) {
         </View>
       )}
 
+      {errorBanner && (
+        <View style={styles.errBanner}>
+          <Ionicons name="warning-outline" size={16} color="#F87171" />
+          <Text style={styles.errBannerTxt}>{errorBanner}</Text>
+        </View>
+      )}
+
       {/* Instant Court Condition Simulator */}
       <View style={styles.sampleCard}>
         <View style={styles.sampleHeadRow}>
@@ -301,6 +322,8 @@ const styles = StyleSheet.create({
   secondaryBtnText: { color: '#FBBF24', fontWeight: '700', fontSize: 13.5 },
   loadingCard: { flexDirection: 'row', gap: 10, alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.12)', borderRadius: 11, padding: 12, borderWidth: 1, borderColor: 'rgba(245,158,11,0.35)' },
   loadingText: { fontSize: 12, color: '#FDE68A', flex: 1, fontWeight: '600' },
+  errBanner: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: 'rgba(248,113,113,0.14)', borderRadius: 11, padding: 12, borderWidth: 1, borderColor: 'rgba(248,113,113,0.45)' },
+  errBannerTxt: { fontSize: 12, color: '#FCA5A5', flex: 1, fontWeight: '600' },
   sampleCard: { backgroundColor: '#101114', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 7 },
   sampleHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sampleHeading: { fontSize: 14, fontWeight: '700', color: '#F4F4F5' },

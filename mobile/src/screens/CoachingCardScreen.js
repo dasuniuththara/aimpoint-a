@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Platform } from 'react-native';
 import * as Speech from 'expo-speech';
 import Svg, { Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,8 +24,8 @@ export default function CoachingCardScreen({ analysis, onOpenHistory }) {
     fadeAnim.setValue(0);
     slideAnim.setValue(14);
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 360, useNativeDriver: true }),
-      Animated.spring(slideAnim, { toValue: 0, speed: 14, bounciness: 6, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 360, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.spring(slideAnim, { toValue: 0, speed: 14, bounciness: 6, useNativeDriver: Platform.OS !== 'web' }),
     ]).start();
   }, [analysis]);
 
