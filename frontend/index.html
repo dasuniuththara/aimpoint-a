@@ -151,6 +151,34 @@
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #111827 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      header,
+      #reportNavToolbar,
+      #btnReplayReportShot,
+      #view-analyzer,
+      #view-dashboard,
+      #view-drills {
+        display: none !important;
+      }
+      #view-report {
+        display: block !important;
+      }
+      #printableReportCard {
+        background: #0F1216 !important;
+        color: #F4F4F5 !important;
+        border: 1px solid #3F3F46 !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+    }
   </style>
 </head>
 
@@ -784,6 +812,10 @@
             <span class="text-[10px] font-mono uppercase text-zinc-400 block">Ideal Rate</span>
             <span id="selAthIdealRate" class="text-sm font-bold font-mono text-white">0%</span>
           </div>
+          <button type="button" onclick="openAthletePdfReport(currentDashboardAthleteId)" class="px-3 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center space-x-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>Account PDF</span>
+          </button>
           <button type="button" onclick="uploadForSelectedAthlete()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center space-x-1.5 transition-colors">
             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
             <span>Upload Video Under Player</span>
@@ -964,15 +996,18 @@
     <!-- TAB 4: OFFICIAL BIOMECHANICAL REPORT (EXPORTABLE)              -->
     <!-- ============================================================== -->
     <div id="view-report" class="space-y-6 hidden">
-      <!-- 1. SHOT-BY-SHOT NAVIGATION TOOLBAR -->
-      <div class="glass-panel rounded-2xl border border-white/10 p-4 max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-navy-950/90 shadow-xl">
+      <!-- 1. ACCOUNT ISOLATION & SHOT NAVIGATION TOOLBAR -->
+      <div id="reportNavToolbar" class="glass-panel rounded-2xl border border-white/10 p-4 max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-navy-950/90 shadow-xl">
         <div class="flex items-center space-x-2">
-          <span class="text-xs font-mono font-bold text-kinetic-teal uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>Browse Shot Reports One-by-One:</span>
+          <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="user-check" class="w-4 h-4"></i>
+            <span>Account:</span>
           </span>
+          <select id="reportAthleteFilter" onchange="filterReportsByAthlete(this.value)" class="bg-[#16171C] border border-amber-500/40 rounded-xl px-2.5 py-1.5 text-xs text-amber-300 font-semibold outline-none cursor-pointer">
+            <option value="ALL">All Sportsmen</option>
+          </select>
           <span id="reportCounterBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-kinetic-teal/20 text-kinetic-teal border border-kinetic-teal/30">
-            Shot 1 of 50
+            Shot 0 of 0
           </span>
         </div>
 
@@ -982,7 +1017,7 @@
             <span>Previous</span>
           </button>
 
-          <select id="reportSessionSelect" onchange="loadSpecificReport(this.value)" class="bg-navy-900 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-2 focus:ring-kinetic-teal max-w-[280px] truncate">
+          <select id="reportSessionSelect" onchange="loadSpecificReport(this.value)" class="bg-navy-900 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-2 focus:ring-kinetic-teal max-w-[260px] truncate">
             <option value="">Loading shot sessions...</option>
           </select>
 
@@ -993,17 +1028,9 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <select id="reportAthleteFilter" onchange="filterReportsByAthlete(this.value)" class="bg-navy-900 border border-white/10 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-300 font-medium">
-            <option value="ALL">All Athletes</option>
-            <option value="K. Perera">K. Perera</option>
-            <option value="D. Silva">D. Silva</option>
-            <option value="M. Fernando">M. Fernando</option>
-            <option value="T. Kirindegama">T. Kirindegama</option>
-          </select>
-
-          <button onclick="window.print()" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-kinetic-teal to-kinetic-cyan text-navy-950 hover:scale-105 shadow-glow-teal transition-all flex items-center space-x-1.5">
+          <button onclick="exportSportsmanPdf()" class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-400 text-black transition-all flex items-center space-x-1.5">
             <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            <span>Export PDF</span>
+            <span>Export Account PDF</span>
           </button>
         </div>
       </div>
@@ -1024,6 +1051,66 @@
           <div class="text-right">
             <div id="reportFormScore" class="text-3xl font-extrabold font-display text-kinetic-teal">94/100</div>
             <div id="reportSeverity" class="text-[11px] font-semibold text-kinetic-teal uppercase tracking-wider">Optimal Execution</div>
+          </div>
+        </div>
+
+        <!-- Dedicated Per-Sportsman Full Account Dossier (Shown cleanly whenever one sportsman account is selected) -->
+        <div id="reportAccountDossierSection" class="hidden rounded-2xl border border-amber-500/40 bg-[#14151A] p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div class="flex items-center space-x-3">
+              <div id="repDossierJersey" class="w-11 h-11 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-sm flex items-center justify-center shrink-0">#01</div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h2 id="repDossierName" class="text-lg font-bold text-white">Sportsman Account</h2>
+                  <span id="repDossierId" class="px-2 py-0.5 rounded bg-[#0A0B0E] text-amber-300 font-mono text-[10px] border border-white/10">ATH-001</span>
+                </div>
+                <p id="repDossierProfile" class="text-xs text-zinc-400">Point Guard • KDU Varsity • Right-Handed • 185 cm • Age 21</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              Isolated Sportsman Dossier
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-[#0B0C10] border border-white/10">
+              <span class="text-[10px] font-mono uppercase text-zinc-400 block">Videos Logged</span>
+              <span id="repDossierTotalShots" class="text-lg font-extrabold font-mono text-white">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0B0C10] border border-white/10">
+              <span class="text-[10px] font-mono uppercase text-zinc-400 block">Account Form Score</span>
+              <span id="repDossierFormScore" class="text-lg font-extrabold font-mono text-emerald-400">100%</span>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0B0C10] border border-white/10">
+              <span class="text-[10px] font-mono uppercase text-zinc-400 block">Avg Release Angle</span>
+              <span id="repDossierAvgRelease" class="text-lg font-extrabold font-mono text-amber-400">0°</span>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0B0C10] border border-white/10">
+              <span class="text-[10px] font-mono uppercase text-zinc-400 block">Dominant Fault</span>
+              <span id="repDossierTopFault" class="text-xs font-bold text-rose-400 block mt-1 truncate">Ideal Form</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="text-[11px] font-mono uppercase tracking-wider text-zinc-300 font-bold">
+              Recorded Video History Under This Account
+            </h4>
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+              <table class="w-full text-left text-[11px] text-zinc-300">
+                <thead class="bg-[#0B0C10] text-zinc-400 font-mono text-[10px] uppercase">
+                  <tr>
+                    <th class="px-3 py-2">#</th>
+                    <th class="px-3 py-2">Video Clip</th>
+                    <th class="px-3 py-2">Date / Time</th>
+                    <th class="px-3 py-2">Diagnosis</th>
+                    <th class="px-3 py-2">Release°</th>
+                    <th class="px-3 py-2">Drill</th>
+                    <th class="px-3 py-2">Conf</th>
+                  </tr>
+                </thead>
+                <tbody id="repDossierSessionsBody" class="divide-y divide-white/5"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -1138,7 +1225,7 @@
         </div>
 
         <!-- Quick Canvas Replay Button -->
-        <div class="flex justify-between items-center pt-2">
+        <div id="btnReplayReportShot" class="flex justify-between items-center pt-2">
           <button onclick="replayCurrentReportShot()" class="px-4 py-2 text-xs font-bold rounded-xl bg-navy-900 hover:bg-kinetic-teal hover:text-navy-950 text-slate-200 border border-white/10 hover:border-kinetic-teal transition-all flex items-center space-x-2">
             <i data-lucide="play" class="w-4 h-4 text-kinetic-teal"></i>
             <span>Replay Shot Biomechanics on 3D Canvas</span>
@@ -2186,7 +2273,9 @@
       });
       lucide.createIcons();
       if (tabId === 'dashboard') loadCoachAnalytics();
-      if (tabId === 'report' && cachedReportsList.length === 0) loadReportsList();
+      if (tabId === 'report') {
+        loadAthletesList().then(() => loadReportsList(selectedReportAthleteId));
+      }
     }
 
     async function runBenchmark(faultType) {
@@ -3023,12 +3112,11 @@
       document.getElementById('metricTrunk').innerText = `${kin.max_trunk_tilt}°`;
       document.getElementById('metricLatency').innerText = `${data.latency_ms} ms`;
 
-      document.getElementById('reportElbow').innerText = `${kin.min_elbow_angle}° (Ideal: 88.5°)`;
-      document.getElementById('reportRelease').innerText = `${kin.release_angle_deg}° (Target: 52.0°)`;
-      document.getElementById('reportTrunk').innerText = `${kin.max_trunk_tilt}° (Max: 48.7°)`;
-      document.getElementById('reportFault').innerText = card.primary_fault;
-      document.getElementById('reportDrill').innerText = `${card.prescribed_drill} (${card.drill_sets_reps})`;
-      document.getElementById('reportWhy').innerText = card.why_it_matters;
+      // Keep PDF Report account state synced without partially mixing report fields
+      if (data.athlete_id) {
+        selectedReportAthleteId = data.athlete_id;
+        lastAnalyzedSessionId = data.session_id || null;
+      }
 
       currentWireframes = data.wireframes;
       sagittalNormMeta = computeSagittalNormalizer(currentWireframes);
@@ -3747,48 +3835,167 @@
 
     
     // =========================================================================
-    // SHOT-BY-SHOT CLINICAL COACHING REPORT CONTROLS ("ONE-BY-ONE" BROWSING)
+    // SHOT-BY-SHOT CLINICAL COACHING REPORT CONTROLS (ISOLATED PER ACCOUNT)
     // =========================================================================
     let cachedReportsList = [];
+    let filteredReportsList = [];
     let currentReportIdx = 0;
+    let selectedReportAthleteId = 'ALL';
+    let lastAnalyzedSessionId = null;
 
-    async function loadReportsList() {
+    async function loadReportsList(athleteId = null, targetSessionId = null) {
       try {
-        const res = await fetch('/api/reports/list');
-        const data = await res.json();
-        if (data.status === 'success' && data.reports && data.reports.length > 0) {
-          cachedReportsList = data.reports;
-          populateReportSelect(cachedReportsList);
-          loadSpecificReport(cachedReportsList[0].session_id);
+        const targetAth = athleteId !== null ? athleteId : (selectedReportAthleteId || 'ALL');
+        selectedReportAthleteId = targetAth;
+
+        const repFilter = document.getElementById('reportAthleteFilter');
+        if (repFilter && Array.from(repFilter.options).some(o => o.value === targetAth)) {
+          repFilter.value = targetAth;
+        }
+
+        const query = (targetAth && targetAth !== 'ALL') ? `?athlete_id=${encodeURIComponent(targetAth)}` : '';
+        const [repRes, athAnRes] = await Promise.all([
+          fetch(`/api/reports/list${query}`),
+          (targetAth && targetAth !== 'ALL') ? fetch(`/api/athletes/${encodeURIComponent(targetAth)}/analytics`) : Promise.resolve(null),
+        ]);
+
+        const data = await repRes.json();
+        const reports = (data.status === 'success' && Array.isArray(data.reports)) ? data.reports : [];
+        if (targetAth === 'ALL') cachedReportsList = reports;
+        filteredReportsList = reports;
+
+        // Render or hide isolated sportsman account dossier & recorded videos table
+        const dossier = document.getElementById('reportAccountDossierSection');
+        if (targetAth && targetAth !== 'ALL' && athAnRes && athAnRes.ok) {
+          const athData = await athAnRes.json();
+          renderAccountDossier(athData);
+          if (dossier) dossier.classList.remove('hidden');
+        } else if (dossier) {
+          dossier.classList.add('hidden');
+        }
+
+        populateReportSelect(filteredReportsList);
+
+        if (filteredReportsList.length > 0) {
+          const preferred = targetSessionId && filteredReportsList.some(r => r.session_id === targetSessionId)
+            ? targetSessionId
+            : (lastAnalyzedSessionId && filteredReportsList.some(r => r.session_id === lastAnalyzedSessionId)
+                ? lastAnalyzedSessionId
+                : filteredReportsList[0].session_id);
+          await loadSpecificReport(preferred);
+        } else {
+          renderEmptyReportForAccount(targetAth);
         }
       } catch (err) {
         console.warn("Could not load reports list:", err);
       }
     }
 
+    function renderAccountDossier(athData) {
+      const a = athData.athlete || {};
+      const m = athData.metrics || {};
+      const sessions = athData.sessions || [];
+
+      document.getElementById('repDossierJersey').innerText = `#${a.jersey_number || '00'}`;
+      document.getElementById('repDossierName').innerText = a.name || a.athlete_id;
+      document.getElementById('repDossierId').innerText = a.athlete_id || '';
+      document.getElementById('repDossierProfile').innerText =
+        `${a.position || 'Guard'} • ${a.team || 'KDU Varsity'} • ${a.shooting_hand || 'Right'}-Handed • ${a.height_cm || 185} cm • Age ${a.age || 21}`;
+
+      document.getElementById('repDossierTotalShots').innerText = m.totalSessions ?? sessions.length;
+      document.getElementById('repDossierFormScore').innerText = `${m.averageFormScore ?? a.consistency_score ?? 100}%`;
+      document.getElementById('repDossierAvgRelease').innerText = `${m.averageReleaseAngle ?? 0}°`;
+      document.getElementById('repDossierTopFault').innerText = m.topFault || a.primary_fault || 'None';
+
+      const sbody = document.getElementById('repDossierSessionsBody');
+      if (!sbody) return;
+      sbody.innerHTML = '';
+      if (sessions.length === 0) {
+        sbody.innerHTML = '<tr><td colspan="7" class="px-3 py-4 text-center text-zinc-400">No shot videos uploaded under this sportsman account yet.</td></tr>';
+        return;
+      }
+
+      sessions.forEach((s, idx) => {
+        const confVal = s.confidence_score > 1 ? s.confidence_score : (s.confidence_score || 0) * 100;
+        const isIdeal = (s.fault_classification || '').includes('Ideal');
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-white/5 cursor-pointer transition-colors';
+        tr.onclick = () => loadSpecificReport(s.session_id);
+        tr.innerHTML = `
+          <td class="px-3 py-2 font-mono text-zinc-400">${idx + 1}</td>
+          <td class="px-3 py-2 font-mono text-zinc-200 max-w-[140px] truncate">${s.video_name || 'shot_capture.mp4'}</td>
+          <td class="px-3 py-2 font-mono text-zinc-400">${s.timestamp || ''}</td>
+          <td class="px-3 py-2 font-semibold ${isIdeal ? 'text-emerald-400' : 'text-amber-300'}">${s.fault_classification}</td>
+          <td class="px-3 py-2 font-mono text-white">${s.release_angle_deg}°</td>
+          <td class="px-3 py-2 text-zinc-300">${s.prescribed_drill}</td>
+          <td class="px-3 py-2 font-mono text-sky-400">${confVal.toFixed(1)}%</td>
+        `;
+        sbody.appendChild(tr);
+      });
+    }
+
+    function renderEmptyReportForAccount(athleteId) {
+      const ath = cachedAthletesList.find(a => a.athlete_id === athleteId);
+      currentReportIdx = 0;
+      updateReportCounterBadge();
+
+      document.getElementById('reportAthlete').innerText = ath ? `#${ath.jersey_number || '00'} ${ath.name}` : athleteId;
+      document.getElementById('reportAthleteMeta').innerText = ath ? `${ath.position || 'Guard'} | ${ath.team || 'KDU Varsity'}` : 'Sportsman Account';
+      document.getElementById('reportTimestamp').innerText = 'No videos recorded yet';
+      document.getElementById('reportSessionBadge').innerText = 'NO-SESSIONS';
+      document.getElementById('reportFormScore').innerText = '--/100';
+      document.getElementById('reportFormScore').className = 'text-3xl font-extrabold font-display text-zinc-400';
+      document.getElementById('reportSeverity').innerText = 'Awaiting First Video';
+      document.getElementById('reportSeverity').className = 'text-[11px] font-semibold text-zinc-400 uppercase tracking-wider';
+      document.getElementById('reportFault').innerText = 'No Shot Uploaded';
+      document.getElementById('reportConfidence').innerText = '--% Confidence';
+      document.getElementById('reportLatency').innerText = '-- ms Latency';
+      document.getElementById('reportElbow').innerText = 'Upload a shooting clip under this player to measure elbow angle';
+      document.getElementById('reportRelease').innerText = '--° (Optimal Target: 50°-55°)';
+      document.getElementById('reportTrunk').innerText = '--° (Threshold: < 48.7°)';
+      document.getElementById('reportKnee').innerText = '--°';
+      document.getElementById('reportDrill').innerHTML = '<i data-lucide="target" class="w-4 h-4 text-kinetic-teal mr-2 inline"></i><span>Upload a video under this account to generate drill prescription</span>';
+      document.getElementById('reportWhy').innerText = 'This sportsman account currently has 0 analyzed shot videos. Go to Moving-Sticks Studio, select their name, and upload a clip.';
+      document.getElementById('reportCue').innerText = '"No shot cues logged yet for this sportsman."';
+      const sig = document.getElementById('reportSignature');
+      if (sig) sig.innerText = `ACCOUNT:${athleteId}`;
+      lucide.createIcons();
+    }
+
     function populateReportSelect(reports) {
       const select = document.getElementById('reportSessionSelect');
       if (!select) return;
       select.innerHTML = '';
-      reports.forEach((r, idx) => {
+      if (!reports || reports.length === 0) {
         const opt = document.createElement('option');
-        opt.value = r.session_id;
-        opt.textContent = `Shot #${idx + 1}: ${r.athlete_name} - ${r.fault_classification} (${r.release_angle_deg}°)`;
+        opt.value = '';
+        opt.textContent = 'No shot sessions for this account';
         select.appendChild(opt);
-      });
+      } else {
+        reports.forEach((r, idx) => {
+          const opt = document.createElement('option');
+          opt.value = r.session_id;
+          const clipTag = r.video_name ? `[${r.video_name}] ` : '';
+          opt.textContent = `Shot #${idx + 1}: ${clipTag}${r.athlete_name} - ${r.fault_classification} (${r.release_angle_deg}°)`;
+          select.appendChild(opt);
+        });
+      }
       updateReportCounterBadge();
     }
 
     function updateReportCounterBadge() {
       const badge = document.getElementById('reportCounterBadge');
-      if (badge && cachedReportsList.length > 0) {
-        badge.innerText = `Shot ${currentReportIdx + 1} of ${cachedReportsList.length}`;
+      if (!badge) return;
+      if (filteredReportsList.length > 0) {
+        badge.innerText = `Shot ${currentReportIdx + 1} of ${filteredReportsList.length}`;
+      } else {
+        badge.innerText = 'Shot 0 of 0';
       }
     }
 
     async function loadSpecificReport(sessionId) {
       if (!sessionId) return;
-      const idx = cachedReportsList.findIndex(r => r.session_id === sessionId);
+      const idx = filteredReportsList.findIndex(r => r.session_id === sessionId);
       if (idx !== -1) {
         currentReportIdx = idx;
         const select = document.getElementById('reportSessionSelect');
@@ -3811,8 +4018,8 @@
     function renderReportData(rep) {
       // Identity & Meta
       document.getElementById('reportAthlete').innerText = rep.athlete_name || rep.athlete_id;
-      document.getElementById('reportAthleteMeta').innerText = `${rep.athlete_position || 'Shooting Guard'} | ${rep.athlete_team || 'KDU Varsity'}`;
-      document.getElementById('reportTimestamp').innerText = rep.timestamp;
+      document.getElementById('reportAthleteMeta').innerText = `${rep.athlete_position || 'Guard'} | ${rep.athlete_team || 'KDU Varsity'}`;
+      document.getElementById('reportTimestamp').innerText = `${rep.timestamp}${rep.video_name ? ' • ' + rep.video_name : ''}`;
       document.getElementById('reportSessionBadge').innerText = rep.session_id;
 
       // Classification & Severity
@@ -3832,39 +4039,42 @@
       document.getElementById('reportConfidence').innerText = `${((rep.confidence_score > 1 ? rep.confidence_score : rep.confidence_score * 100)).toFixed(1)}% Confidence`;
       document.getElementById('reportLatency').innerText = `${rep.inference_latency_ms || 12} ms Latency`;
 
-      // Kinematic Checkpoints
+      // Kinematic Checkpoints (faithfully show persisted session measurements)
       const isLowElbow = rep.fault_classification.includes('Low Elbow');
-      document.getElementById('reportElbow').innerText = isLowElbow ? "37.1° (Deviation: -51.4° from 88.5° ideal)" : "88.5° (Optimal Biomechanical Set-Point)";
+      const measuredStr = rep.measured_metric ? `Measured: ${rep.measured_metric}` : (isLowElbow ? '37.1°' : '88.5°');
+      const idealStr = rep.ideal_benchmark ? `Ideal: ${rep.ideal_benchmark}` : '88.5° ideal';
+      document.getElementById('reportElbow').innerText = `${measuredStr} (${idealStr})`;
       document.getElementById('reportElbow').className = `font-mono font-bold text-sm ${isLowElbow ? 'text-kinetic-crimson' : 'text-kinetic-teal'}`;
 
       document.getElementById('reportRelease').innerText = `${rep.release_angle_deg || 52.0}° (Optimal Target: 50°-55°)`;
 
       const isImbalanced = rep.fault_classification.includes('Imbalanced');
-      document.getElementById('reportTrunk').innerText = isImbalanced ? "54.0° (Severe Trunk Breakdown > 48.7°)" : "24.0° (Stable Vertical Kinetic Alignment)";
+      document.getElementById('reportTrunk').innerText = isImbalanced ? "Deviation > 48.7° (Trunk Breakdown)" : "Vertical Kinetic Alignment (< 48.7°)";
       document.getElementById('reportTrunk').className = `font-mono font-bold text-sm ${isImbalanced ? 'text-kinetic-crimson' : 'text-kinetic-emerald'}`;
 
-      document.getElementById('reportKnee').innerText = "110.0° (Explosive Triple-Extension Drive)";
+      document.getElementById('reportKnee').innerText = "Triple-Extension Drive Logged";
 
       // Pedagogical Remediation
       document.getElementById('reportDrill').innerHTML = `<i data-lucide="target" class="w-4 h-4 text-kinetic-teal mr-2 inline"></i><span>${rep.prescribed_drill}</span>`;
       document.getElementById('reportWhy').innerText = rep.why_it_matters;
       document.getElementById('reportCue').innerText = `"${rep.actionable_cue}"`;
 
-      document.getElementById('reportSignature').innerText = `SHA256: ${rep.card_id}-${rep.session_id}`;
+      const sig = document.getElementById('reportSignature');
+      if (sig) sig.innerText = `SHA256: ${rep.card_id}-${rep.session_id}`;
       lucide.createIcons();
     }
 
     function prevReport() {
-      if (currentReportIdx > 0) {
+      if (currentReportIdx > 0 && filteredReportsList.length > 0) {
         currentReportIdx--;
-        loadSpecificReport(cachedReportsList[currentReportIdx].session_id);
+        loadSpecificReport(filteredReportsList[currentReportIdx].session_id);
       }
     }
 
     function nextReport() {
-      if (currentReportIdx < cachedReportsList.length - 1) {
+      if (currentReportIdx < filteredReportsList.length - 1) {
         currentReportIdx++;
-        loadSpecificReport(cachedReportsList[currentReportIdx].session_id);
+        loadSpecificReport(filteredReportsList[currentReportIdx].session_id);
       }
     }
 
@@ -4019,29 +4229,39 @@
       switchTab('analyzer');
     }
 
-    function filterReportsByAthlete(athleteIdOrName) {
-      if (athleteIdOrName === 'ALL') {
-        populateReportSelect(cachedReportsList);
-        if (cachedReportsList.length > 0) loadSpecificReport(cachedReportsList[0].session_id);
-      } else {
-        const filtered = cachedReportsList.filter(
-          r => r.athlete_id === athleteIdOrName || (r.athlete_name || '').includes(athleteIdOrName)
-        );
-        populateReportSelect(filtered);
-        if (filtered.length > 0) {
-          loadSpecificReport(filtered[0].session_id);
-        }
-      }
+    async function filterReportsByAthlete(athleteId) {
+      lastAnalyzedSessionId = null;
+      await loadReportsList(athleteId || 'ALL');
     }
 
-    function viewShotReport(sessionId) {
+    function openAthletePdfReport(athleteId) {
+      selectedReportAthleteId = athleteId || 'ALL';
+      lastAnalyzedSessionId = null;
       switchTab('report');
-      loadSpecificReport(sessionId);
+    }
+
+    function exportSportsmanPdf() {
+      const prevTitle = document.title;
+      const ath = cachedAthletesList.find(a => a.athlete_id === selectedReportAthleteId);
+      if (ath) {
+        const safeName = (ath.name || ath.athlete_id).replace(/[^a-zA-Z0-9_-]+/g, '_');
+        document.title = `AimPointAI_Report_${safeName}_${ath.athlete_id}`;
+      } else {
+        document.title = 'AimPointAI_Squad_Biomechanics_Report';
+      }
+      window.print();
+      setTimeout(() => { document.title = prevTitle; }, 500);
+    }
+
+    async function viewShotReport(sessionId, athleteId = null) {
+      if (athleteId) selectedReportAthleteId = athleteId;
+      lastAnalyzedSessionId = sessionId;
+      switchTab('report');
     }
 
     function replayCurrentReportShot() {
       switchTab('analyzer');
-      const cur = cachedReportsList[currentReportIdx];
+      const cur = filteredReportsList[currentReportIdx];
       if (cur) {
         if (cur.fault_classification.includes('Low Elbow')) runBenchmark(1);
         else if (cur.fault_classification.includes('Follow-Through')) runBenchmark(2);
@@ -4158,7 +4378,7 @@
                 <td class="px-4 py-3 font-mono text-white font-bold">${s.release_angle_deg}°</td>
                 <td class="px-4 py-3 font-mono text-kinetic-teal font-bold">${(s.confidence_score > 1 ? s.confidence_score : s.confidence_score * 100).toFixed(1)}%</td>
                 <td class="px-4 py-3">
-                  <button onclick="viewShotReport('${s.session_id}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-kinetic-teal/20 text-kinetic-teal hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-kinetic-teal/30 flex items-center space-x-1">
+                  <button onclick="viewShotReport('${s.session_id}', '${s.athlete_id || ''}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-kinetic-teal/20 text-kinetic-teal hover:bg-kinetic-teal hover:text-navy-950 transition-all border border-kinetic-teal/30 flex items-center space-x-1">
                     <span>View Report</span>
                   </button>
                 </td>
