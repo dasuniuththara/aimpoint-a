@@ -1,6 +1,6 @@
 import { Platform, NativeModules } from 'react-native';
 
-const FALLBACK_PC_IP = '192.168.2.89';
+export const CANDIDATE_IPS = ['192.168.2.76', '192.168.2.89', '10.0.2.2', 'localhost'];
 
 function detectDefaultApiUrl() {
   if (Platform.OS === 'web') {
@@ -17,7 +17,7 @@ function detectDefaultApiUrl() {
       }
     }
   } catch (e) {}
-  return `http://${FALLBACK_PC_IP}:8080`;
+  return `http://${CANDIDATE_IPS[0]}:8080`;
 }
 
 let apiBaseUrl = detectDefaultApiUrl();
@@ -33,7 +33,43 @@ export function setApiBaseUrl(url) {
   return apiBaseUrl;
 }
 
+export async function autoDiscoverBackend() {
+  const hosts = [];
+  try {
+    const scriptURL = NativeModules?.SourceCode?.scriptURL || '';
+    const match = scriptURL.match(/^https?:\/\/([^:/]+)/i);
+    if (match && match[1]) hosts.push(match[1]);
+  } catch (e) {}
+  hosts.push(...CANDIDATE_IPS);
+  const uniqueHosts = Array.from(new Set(hosts.filter(Boolean)));
+
+  for (const host of uniqueHosts) {
+    const testUrl = `http://${host}:8080`;
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 1200);
+      const res = await fetch(`${testUrl}/api/health`, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (res.ok) {
+        apiBaseUrl = testUrl;
+        return testUrl;
+      }
+    } catch (e) {}
+  }
+  return apiBaseUrl;
+}
+
 export async function checkHealth() {
+  try {
+    const res = await fetch(`${apiBaseUrl}/api/health`);
+    if (res.ok) return res.json();
+  } catch (e) {
+    // Attempt auto-discovery across candidate IPs if current IP is unreachable
+    const discovered = await autoDiscoverBackend();
+    const res2 = await fetch(`${discovered}/api/health`);
+    if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+    return res2.json();
+  }
   const res = await fetch(`${apiBaseUrl}/api/health`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { getApiBaseUrl, setApiBaseUrl, checkHealth, fetchDrills } from '../services/api';
+import { getApiBaseUrl, setApiBaseUrl, checkHealth, fetchDrills, autoDiscoverBackend } from '../services/api';
 
 export default function DrillsSettingsScreen() {
   const [urlInput, setUrlInput] = useState(getApiBaseUrl());
@@ -16,8 +16,10 @@ export default function DrillsSettingsScreen() {
 
   useEffect(() => { loadDrills(); }, []);
 
-  const handleSaveAndTest = async () => {
-    const clean = setApiBaseUrl(urlInput);
+  const handleSaveAndTest = async (overrideUrl) => {
+    const targetUrl = typeof overrideUrl === 'string' ? overrideUrl : urlInput;
+    if (overrideUrl) setUrlInput(overrideUrl);
+    const clean = setApiBaseUrl(targetUrl);
     try {
       const health = await checkHealth();
       setStatusTxt(`Connected (${health.status || 'online'})`);
@@ -25,7 +27,22 @@ export default function DrillsSettingsScreen() {
       Alert.alert('Connected', `Successfully connected to AimPoint FastAPI backend at ${clean}`);
     } catch (err) {
       setStatusTxt(`Unreachable: ${err.message}`);
-      Alert.alert('Connection Failed', `Could not reach ${clean}. Make sure your phone and PC share the same Wi-Fi and port 8080 is open.`);
+      Alert.alert('Connection Failed', `Could not reach ${clean}. Make sure your phone and PC share the same network and port 8080 is running.`);
+    }
+  };
+
+  const handleAutoDetect = async () => {
+    setStatusTxt('Auto-detecting backend across local adapters...');
+    try {
+      const discovered = await autoDiscoverBackend();
+      setUrlInput(discovered);
+      const health = await checkHealth();
+      setStatusTxt(`Connected (${health.status || 'online'})`);
+      await loadDrills();
+      Alert.alert('Auto-Detected', `Found live backend at ${discovered}!`);
+    } catch (err) {
+      setStatusTxt(`Discovery failed: ${err.message}`);
+      Alert.alert('Discovery Failed', 'Could not auto-detect backend. Check IP manually.');
     }
   };
 
@@ -34,17 +51,34 @@ export default function DrillsSettingsScreen() {
       <View style={styles.card}>
         <Text style={styles.title}>FastAPI Backend Connection</Text>
         <Text style={styles.desc}>
-          Android Emulator uses http://10.0.2.2:8080. For physical phone over Expo Go, enter your computer&apos;s LAN IP (e.g. http://192.168.1.15:8080).
+          Select your computer&apos;s active network IP address or tap Auto-Detect:
         </Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+          <TouchableOpacity
+            style={[styles.presetBtn, urlInput.includes('192.168.2.76') && styles.presetBtnActive]}
+            onPress={() => handleSaveAndTest('http://192.168.2.76:8080')}>
+            <Text style={styles.presetText}>Ethernet (.76)</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.presetBtn, urlInput.includes('192.168.2.89') && styles.presetBtnActive]}
+            onPress={() => handleSaveAndTest('http://192.168.2.89:8080')}>
+            <Text style={styles.presetText}>Wi-Fi (.89)</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.presetBtn}
+            onPress={handleAutoDetect}>
+            <Text style={[styles.presetText, { color: '#00E5FF' }]}>Auto-Detect IP</Text>
+          </TouchableOpacity>
+        </View>
         <TextInput
           style={styles.input}
           value={urlInput}
           onChangeText={setUrlInput}
           autoCapitalize="none"
           autoCorrect={false}
-          placeholder="http://192.168.1.15:8080"
+          placeholder="http://192.168.2.76:8080"
         />
-        <TouchableOpacity style={styles.btn} onPress={handleSaveAndTest}>
+        <TouchableOpacity style={styles.btn} onPress={() => handleSaveAndTest()}>
           <Text style={styles.btnText}>Save &amp; Test Connection</Text>
         </TouchableOpacity>
         <Text style={styles.status}>Status: {statusTxt}</Text>
@@ -76,6 +110,9 @@ const styles = StyleSheet.create({
   btn: { backgroundColor: '#F59E0B', borderRadius: 9, paddingVertical: 11, alignItems: 'center' },
   btnText: { color: '#060608', fontWeight: '800', fontSize: 13 },
   status: { fontSize: 12, color: '#D4D4D8', fontWeight: '600' },
+  presetBtn: { backgroundColor: '#181920', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
+  presetBtnActive: { borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.18)' },
+  presetText: { fontSize: 11, fontWeight: '700', color: '#E4E4E7' },
   sectionTitle: { fontSize: 14, fontWeight: '700', color: '#F4F4F5', marginTop: 4 },
   drillCard: { backgroundColor: '#101114', borderRadius: 13, padding: 13, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 5 },
   drillTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
