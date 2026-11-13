@@ -179,9 +179,11 @@ def analyze_shot(
                 status_code=400,
                 detail="Error Video: File is too small or corrupted to be a valid basketball video."
             )
-        head = video_bytes[:32]
+        head = video_bytes[:1024]
         is_valid_container = (
             b"ftyp" in head
+            or b"moov" in head
+            or b"mdat" in head
             or head.startswith(b"\x1a\x45\xdf\xa3")
             or head.startswith(b"RIFF")
             or head.startswith(b"OggS")

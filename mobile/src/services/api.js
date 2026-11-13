@@ -1,5 +1,7 @@
 import { Platform, NativeModules } from 'react-native';
 
+const FALLBACK_PC_IP = '192.168.2.89';
+
 function detectDefaultApiUrl() {
   if (Platform.OS === 'web') {
     const webHost = typeof window !== 'undefined' && window.location ? window.location.hostname : 'localhost';
@@ -10,12 +12,12 @@ function detectDefaultApiUrl() {
     const match = scriptURL.match(/^https?:\/\/([^:/]+)/i);
     if (match && match[1]) {
       const host = match[1];
-      if (host !== 'localhost' && host !== '127.0.0.1') {
+      if (host !== 'localhost' && host !== '127.0.0.1' && host !== '10.0.2.2') {
         return `http://${host}:8080`;
       }
     }
   } catch (e) {}
-  return Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+  return `http://${FALLBACK_PC_IP}:8080`;
 }
 
 let apiBaseUrl = detectDefaultApiUrl();
@@ -136,10 +138,10 @@ async function extractWebLandmarksOrReject(videoUri, fileName = '') {
   }
 
   const isModelSample = /^\d{2,3}_(2d|3d)_/i.test(fileName || '');
-  if (!isModelSample && mpOkCount >= 3 && validCount < 3) {
-    throw new Error(`Error Video: "${fileName || 'Uploaded file'}" is unrelated to basketball (${validCount}/${nSamples} player poses found). Please upload a basketball shooting video.`);
+  if (!isModelSample && mpOkCount >= 4 && validCount === 0) {
+    throw new Error(`Error Video: "${fileName || 'Uploaded file'}" has no human player detected. Please upload a clear basketball shooting video.`);
   }
-  return frames3D.length >= 3 ? frames3D : null;
+  return frames3D.length >= 1 ? frames3D : null;
 }
 
 function inferSampleFault(fileName = '') {
@@ -152,11 +154,11 @@ function inferSampleFault(fileName = '') {
 }
 
 export async function uploadAndAnalyzeVideo(videoUri, fileName = 'mobile_shot.mp4', athleteId = 'ATH-001') {
-  const fd = new FormData();
-  fd.append('athlete_id', athleteId);
   const isModelSample = /^\d{2,3}_(2d|3d)_/i.test(fileName || '');
 
   if (Platform.OS === 'web') {
+    const fd = new FormData();
+    fd.append('athlete_id', athleteId);
     const webLandmarks = await extractWebLandmarksOrReject(videoUri, fileName);
     const resp = await fetch(videoUri);
     const blob = await resp.blob();
@@ -166,23 +168,65 @@ export async function uploadAndAnalyzeVideo(videoUri, fileName = 'mobile_shot.mp
     } else if (isModelSample) {
       fd.append('benchmark_fault', String(inferSampleFault(fileName)));
     }
-  } else {
-    fd.append('video', {
-      uri: videoUri,
-      name: fileName,
-      type: fileName.endsWith('.webm') ? 'video/webm' : 'video/mp4',
+
+    const res = await fetch(`${apiBaseUrl}/api/analyze-shot`, {
+      method: 'POST',
+      body: fd,
     });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.detail || `Error Video: Upload rejected (${res.status})`);
+    }
+    return data;
   }
 
-  const res = await fetch(`${apiBaseUrl}/api/analyze-shot`, {
-    method: 'POST',
-    body: fd,
+  // Native Android & iOS: Use native XMLHttpRequest to avoid WinterCG expo/fetch FormDataPart rejection
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${apiBaseUrl}/api/analyze-shot`);
+    xhr.timeout = 60000;
+
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText || '{}');
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(data);
+        } else {
+          reject(new Error(data.detail || `Server error (${xhr.status})`));
+        }
+      } catch (e) {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve({});
+        } else {
+          reject(new Error(`Server returned status ${xhr.status}`));
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error(`Network error connecting to ${apiBaseUrl} — Ensure FastAPI backend is running on port 8080.`));
+    };
+
+    xhr.ontimeout = () => {
+      reject(new Error('Upload timed out. Check Wi-Fi connection to your PC.'));
+    };
+
+    const fd = new FormData();
+    fd.append('athlete_id', athleteId);
+
+    let cleanUri = String(videoUri || '');
+    if (Platform.OS === 'android' && !cleanUri.startsWith('file://') && !cleanUri.startsWith('content://')) {
+      cleanUri = 'file://' + cleanUri;
+    }
+
+    fd.append('video', {
+      uri: cleanUri,
+      name: fileName || 'mobile_shot.mp4',
+      type: (fileName && fileName.endsWith('.webm')) ? 'video/webm' : 'video/mp4',
+    });
+
+    xhr.send(fd);
   });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.detail || `Error Video: Upload rejected (${res.status})`);
-  }
-  return data;
 }
 
 export async function fetchSamples() {

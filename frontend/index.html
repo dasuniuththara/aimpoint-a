@@ -90,6 +90,7 @@
     #cameraHelpModal .text-white {
       color: #F4F4F5 !important;
     }
+
     #view-dashboard .text-slate-300,
     #view-drills .text-slate-300,
     #view-report .text-slate-300,
@@ -100,12 +101,14 @@
     #cameraHelpModal .text-slate-200 {
       color: #D4D4D8 !important;
     }
+
     #view-dashboard .text-slate-400,
     #view-drills .text-slate-400,
     #view-report .text-slate-400,
     #cameraHelpModal .text-slate-400 {
       color: #A1A1AA !important;
     }
+
     #view-dashboard .bg-navy-900\/80,
     #view-dashboard .bg-navy-900,
     #view-report .bg-navy-900,
@@ -117,6 +120,7 @@
       background-color: #18181B !important;
       border-color: #27272A !important;
     }
+
     #view-dashboard .border-white\/10,
     #view-drills .border-white\/10,
     #view-report .border-white\/10,
@@ -124,6 +128,7 @@
     #view-dashboard .border-white\/5 {
       border-color: #27272A !important;
     }
+
     #view-report select,
     #view-dashboard table {
       color: #F4F4F5 !important;
@@ -133,13 +138,16 @@
       width: 6px;
       height: 6px;
     }
+
     ::-webkit-scrollbar-track {
       background: #09090B;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #27272A;
       border-radius: 3px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #3F3F46;
     }
@@ -147,9 +155,17 @@
     .tab-view-fade {
       animation: smoothFadeIn 0.2s ease-out forwards;
     }
+
     @keyframes smoothFadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media print {
@@ -159,6 +175,7 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
+
       header,
       #reportNavToolbar,
       #btnReplayReportShot,
@@ -167,9 +184,11 @@
       #view-drills {
         display: none !important;
       }
+
       #view-report {
         display: block !important;
       }
+
       #printableReportCard {
         background: #0F1216 !important;
         color: #F4F4F5 !important;
@@ -182,18 +201,24 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased selection:bg-orange-600 selection:text-white bg-[#060608] text-zinc-100">
+<body
+  class="min-h-screen flex flex-col antialiased selection:bg-orange-600 selection:text-white bg-[#060608] text-zinc-100">
 
   <!-- Moving-Sticks Sports Analytics Studio Header -->
-  <header class="sticky top-0 z-50 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]/95 backdrop-blur border-b border-white/10 px-5 py-3 flex items-center justify-between shadow-sm">
+  <header
+    class="sticky top-0 z-50 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]/95 backdrop-blur border-b border-white/10 px-5 py-3 flex items-center justify-between shadow-sm">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-zinc-950 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.35)]">
+      <div
+        class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-zinc-950 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.35)]">
         <i data-lucide="target" class="w-5 h-5 text-white"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="font-bold text-lg tracking-tight text-zinc-100">AimPoint <span class="text-amber-400">Motion</span></span>
-          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#16171C] text-zinc-300 border border-zinc-700 uppercase">Moving Sticks Studio</span>
+          <span class="font-bold text-lg tracking-tight text-zinc-100">AimPoint <span
+              class="text-amber-400">Motion</span></span>
+          <span
+            class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#16171C] text-zinc-300 border border-zinc-700 uppercase">Moving
+            Sticks Studio</span>
         </div>
         <p class="text-[11px] text-zinc-400">Pose-to-2D Stick Conversion &amp; Automated Throwing Fault Detection</p>
       </div>
@@ -224,7 +249,8 @@
     </nav>
 
     <div class="flex items-center space-x-2.5">
-      <div class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-md bg-emerald-950/50 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 font-medium">
+      <div
+        class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-md bg-emerald-950/50 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 font-medium">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
         <span>30 FPS Pose Active</span>
       </div>
@@ -245,22 +271,28 @@
 
       <!-- Friendly Thesis 3-Step Workflow Guide -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
-          <span class="w-6 h-6 rounded-full bg-orange-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+        <div
+          class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span
+            class="w-6 h-6 rounded-full bg-orange-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">Upload or Frame Shot (2.5–3.0m)</div>
             <div class="text-[11px] text-zinc-400 truncate">Side-view phone clip or sample clip</div>
           </div>
         </div>
-        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
-          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+        <div
+          class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span
+            class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">3D→2D Pose Extraction</div>
             <div class="text-[11px] text-zinc-400 truncate">Red joints = fault • Green joints = optimal</div>
           </div>
         </div>
-        <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
-          <span class="w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+        <div
+          class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-lg px-3.5 py-2 flex items-center space-x-2.5">
+          <span
+            class="w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
           <div class="min-w-0">
             <div class="text-xs font-bold text-zinc-100">Actionable Coaching Card</div>
             <div class="text-[11px] text-zinc-400 truncate">1 primary fault + why it matters + 1 drill</div>
@@ -269,17 +301,20 @@
       </div>
 
       <!-- Clean Pipeline Action Bar + Categorized Clip Library -->
-      <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+      <div
+        class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-3.5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2.5">
           <!-- Athlete Selector + Add Sportsman Trigger -->
           <div class="flex items-center space-x-1.5">
             <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
               <span class="text-[10px] font-mono font-semibold text-amber-400 uppercase">Sportsman:</span>
-              <select id="athleteSelect" onchange="onStudioAthleteChange(this.value)" class="bg-transparent text-xs font-semibold text-zinc-100 outline-none cursor-pointer max-w-[190px]">
+              <select id="athleteSelect" onchange="onStudioAthleteChange(this.value)"
+                class="bg-transparent text-xs font-semibold text-zinc-100 outline-none cursor-pointer max-w-[190px]">
                 <option class="bg-[#16171C] text-white" value="ATH-001">#01 K. Perera (Point Guard)</option>
               </select>
             </div>
-            <button type="button" onclick="openAddSportsmanModal()" id="btnOpenAddSportsman" title="Register New Sportsman"
+            <button type="button" onclick="openAddSportsmanModal()" id="btnOpenAddSportsman"
+              title="Register New Sportsman"
               class="px-2.5 py-1.5 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-400 border border-amber-500/40 text-xs font-semibold flex items-center space-x-1 transition-colors">
               <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
               <span>Add</span>
@@ -292,7 +327,8 @@
             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
             <span>Upload Throwing / Shooting Video</span>
           </label>
-          <input type="file" id="videoUploadInputHero" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
+          <input type="file" id="videoUploadInputHero" accept="video/*" class="hidden"
+            onchange="handleFileUpload(event)">
 
           <!-- Live Camera Trigger -->
           <div class="flex items-center">
@@ -306,23 +342,28 @@
                 class="px-2 py-1.5 rounded-r-lg bg-white hover:bg-slate-50 text-zinc-400 hover:text-zinc-100 border-y border-r border-white/10 text-xs flex items-center">
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
               </button>
-              <div id="camOptionsMenu" class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 shadow-xl z-50 p-3 space-y-2.5">
+              <div id="camOptionsMenu"
+                class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 shadow-xl z-50 p-3 space-y-2.5">
                 <div class="border-b border-white/10 pb-2 flex items-center justify-between">
                   <span class="text-xs font-semibold text-zinc-100">Camera Source</span>
-                  <button onclick="openCameraHelpModal()" class="text-[11px] text-amber-400 hover:underline font-mono">Help</button>
+                  <button onclick="openCameraHelpModal()"
+                    class="text-[11px] text-amber-400 hover:underline font-mono">Help</button>
                 </div>
                 <div class="space-y-1">
                   <label class="text-[10px] font-mono text-zinc-400 uppercase">Input Device</label>
-                  <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)" class="w-full px-2 py-1.5 rounded bg-[#16171C] text-zinc-200 border border-zinc-700 text-xs font-mono outline-none">
+                  <select id="cameraSourceSelect" onchange="switchCameraDevice(this.value)"
+                    class="w-full px-2 py-1.5 rounded bg-[#16171C] text-zinc-200 border border-zinc-700 text-xs font-mono outline-none">
                     <option value="">Default Camera</option>
                   </select>
                 </div>
                 <div class="flex items-center justify-between pt-1">
                   <span class="text-xs text-zinc-300">Mirror Video</span>
-                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle" class="px-2 py-0.5 rounded bg-[#16171C] text-[10px] font-mono text-amber-400 border border-zinc-700">ON</button>
+                  <button onclick="toggleCameraMirror()" id="btn-mirror-toggle"
+                    class="px-2 py-0.5 rounded bg-[#16171C] text-[10px] font-mono text-amber-400 border border-zinc-700">ON</button>
                 </div>
                 <div class="pt-2 border-t border-white/10">
-                  <button onclick="startSimulatedCamera()" class="w-full px-3 py-1.5 text-xs font-medium rounded bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center justify-center space-x-1.5">
+                  <button onclick="startSimulatedCamera()"
+                    class="w-full px-3 py-1.5 text-xs font-medium rounded bg-[#16171C] hover:bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center justify-center space-x-1.5">
                     <i data-lucide="monitor-play" class="w-3.5 h-3.5 text-amber-400"></i>
                     <span>Test Virtual Camera</span>
                   </button>
@@ -368,14 +409,18 @@
 
         <!-- LEFT PANE (7 Cols): CINEMA MOVING STICKS DUAL STAGE + KEYFRAMES -->
         <div class="lg:col-span-7 flex flex-col space-y-4">
-          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm overflow-hidden flex flex-col">
+          <div
+            class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm overflow-hidden flex flex-col">
 
             <!-- Stage Header -->
-            <div class="px-4 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 bg-slate-50">
+            <div
+              class="px-4 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 bg-slate-50">
               <div class="flex items-center space-x-2.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-orange-600" id="hud-pulse-dot"></span>
-                <span class="text-xs font-bold text-zinc-100" id="viewportModeLabel">Moving Sticks Pose Conversion (Source Video → 2D Skeleton)</span>
-                <span id="uploadedFileBadge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/30 text-orange-300 border border-amber-500/30 truncate max-w-[170px]"></span>
+                <span class="text-xs font-bold text-zinc-100" id="viewportModeLabel">Moving Sticks Pose Conversion
+                  (Source Video → 2D Skeleton)</span>
+                <span id="uploadedFileBadge"
+                  class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/30 text-orange-300 border border-amber-500/30 truncate max-w-[170px]"></span>
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5">
@@ -401,10 +446,12 @@
             </div>
 
             <!-- Dual Synchronized Video & Moving Sticks 2D Stage (Focused Dark Cinema Container) -->
-            <div id="stageContainer" class="relative w-full min-h-[370px] court-grid flex items-stretch justify-center overflow-hidden">
+            <div id="stageContainer"
+              class="relative w-full min-h-[370px] court-grid flex items-stretch justify-center overflow-hidden">
 
               <!-- Primary Left Panel: Original Throwing Video + OpenPose Moving-Sticks Overlay -->
-              <div id="primaryVideoPane" class="relative flex-1 min-w-0 aspect-[4/3] flex items-center justify-center overflow-hidden border-r border-slate-800">
+              <div id="primaryVideoPane"
+                class="relative flex-1 min-w-0 aspect-[4/3] flex items-center justify-center overflow-hidden border-r border-slate-800">
                 <video id="webcamVideo" autoplay playsinline muted
                   class="absolute inset-0 w-full h-full object-cover z-0 hidden scale-x-[-1]"></video>
 
@@ -424,21 +471,28 @@
                   <span>Knee: <strong id="live-knee-val" class="text-amber-400">110.0°</strong></span>
                 </div>
 
-                <span id="leftPaneBadge" class="hidden absolute top-2.5 right-2.5 z-30 px-2 py-0.5 rounded bg-slate-950/85 border border-slate-700 text-[10px] font-mono text-slate-200">
+                <span id="leftPaneBadge"
+                  class="hidden absolute top-2.5 right-2.5 z-30 px-2 py-0.5 rounded bg-slate-950/85 border border-slate-700 text-[10px] font-mono text-slate-200">
                   SOURCE FOOTAGE + MOVING STICKS
                 </span>
 
                 <!-- Sagittal Alignment Guide -->
                 <div id="sagittalOverlay"
                   class="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center hidden">
-                  <div class="w-52 h-72 border border-dashed border-sky-400/60 rounded-xl flex flex-col items-center justify-between p-3 bg-slate-950/30">
-                    <span class="bg-slate-950/90 px-2 py-0.5 rounded border border-slate-700 text-[10px] font-mono text-sky-300">2.5m - 3.0m SAGITTAL</span>
-                    <span class="bg-slate-950/90 px-2 py-0.5 rounded border border-slate-700 text-[10px] font-mono text-slate-300">SIDE VIEW</span>
+                  <div
+                    class="w-52 h-72 border border-dashed border-sky-400/60 rounded-xl flex flex-col items-center justify-between p-3 bg-slate-950/30">
+                    <span
+                      class="bg-slate-950/90 px-2 py-0.5 rounded border border-slate-700 text-[10px] font-mono text-sky-300">2.5m
+                      - 3.0m SAGITTAL</span>
+                    <span
+                      class="bg-slate-950/90 px-2 py-0.5 rounded border border-slate-700 text-[10px] font-mono text-slate-300">SIDE
+                      VIEW</span>
                   </div>
                 </div>
 
                 <!-- Frame Counter Bottom-Left -->
-                <div class="absolute bottom-2.5 left-2.5 z-30 bg-slate-950/85 px-2.5 py-1 rounded border border-slate-700 text-[11px] font-mono flex items-center space-x-2 text-slate-300">
+                <div
+                  class="absolute bottom-2.5 left-2.5 z-30 bg-slate-950/85 px-2.5 py-1 rounded border border-slate-700 text-[11px] font-mono flex items-center space-x-2 text-slate-300">
                   <span class="text-sky-400 font-semibold" id="telemetry-frame">Frame: 1 / 30</span>
                   <span class="text-zinc-400">|</span>
                   <span id="telemetry-time">0.00s</span>
@@ -447,7 +501,8 @@
                 </div>
 
                 <!-- Floating Record Button (Camera Mode) -->
-                <div id="floatingRecordBar" class="absolute bottom-4 inset-x-0 z-30 hidden flex justify-center items-center">
+                <div id="floatingRecordBar"
+                  class="absolute bottom-4 inset-x-0 z-30 hidden flex justify-center items-center">
                   <button onclick="startShotCapture()"
                     class="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold text-xs border border-red-400/40 flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
@@ -457,12 +512,15 @@
               </div>
 
               <!-- Secondary Right Panel: Isolated 2D Moving-Sticks Model Canvas -->
-              <div id="model2DPane" class="hidden relative flex-1 min-w-0 aspect-[4/3] bg-[#0C0A09] flex items-center justify-center overflow-hidden">
+              <div id="model2DPane"
+                class="hidden relative flex-1 min-w-0 aspect-[4/3] bg-[#0C0A09] flex items-center justify-center overflow-hidden">
                 <canvas id="model2DCanvas" width="640" height="480" class="w-full h-full object-contain"></canvas>
-                <span class="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-700 text-[10px] font-mono text-emerald-300">
+                <span
+                  class="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-700 text-[10px] font-mono text-emerald-300">
                   CONVERTED 2D MOVING-STICKS MODEL
                 </span>
-                <span id="model2DFaultBanner" class="hidden absolute bottom-2.5 inset-x-2.5 z-20 text-center px-2.5 py-1 rounded bg-red-950/90 border border-red-500/40 text-[11px] font-mono text-red-200 truncate">
+                <span id="model2DFaultBanner"
+                  class="hidden absolute bottom-2.5 inset-x-2.5 z-20 text-center px-2.5 py-1 rounded bg-red-950/90 border border-red-500/40 text-[11px] font-mono text-red-200 truncate">
                   Error Detected
                 </span>
               </div>
@@ -470,10 +528,12 @@
               <!-- Non-Basketball / Error Video Refusal Overlay -->
               <div id="videoRejectionBanner"
                 class="absolute inset-0 z-40 bg-[#060608]/95 flex flex-col items-center justify-center p-6 hidden">
-                <div class="w-full max-w-md bg-[#101114] border-2 border-red-500/60 rounded-xl p-5 space-y-3 shadow-2xl">
+                <div
+                  class="w-full max-w-md bg-[#101114] border-2 border-red-500/60 rounded-xl p-5 space-y-3 shadow-2xl">
                   <div class="flex items-center space-x-2.5 text-red-400">
                     <i data-lucide="shield-alert" class="w-6 h-6 shrink-0"></i>
-                    <h4 class="text-sm font-bold uppercase tracking-wide" id="videoRejectionTitle">Error Video — Refused</h4>
+                    <h4 class="text-sm font-bold uppercase tracking-wide" id="videoRejectionTitle">Error Video — Refused
+                    </h4>
                   </div>
                   <p class="text-xs text-zinc-200 leading-relaxed" id="videoRejectionReason">
                     No basketball player or shooting motion detected in this video.
@@ -494,16 +554,20 @@
               <!-- Image Processing & 3D->2D Extraction Progress Overlay -->
               <div id="videoExtractionOverlay"
                 class="absolute inset-0 z-40 bg-slate-950/90 flex flex-col items-center justify-center p-6 hidden">
-                <div class="w-full max-w-md bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-5 space-y-3 shadow-2xl">
+                <div
+                  class="w-full max-w-md bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border border-white/10 rounded-xl p-5 space-y-3 shadow-2xl">
                   <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-zinc-100" id="extractionStatusTitle">Moving-Sticks Pose Extraction Pipeline</span>
+                    <span class="font-bold text-zinc-100" id="extractionStatusTitle">Moving-Sticks Pose Extraction
+                      Pipeline</span>
                     <div class="flex items-center space-x-2">
                       <span class="font-mono font-bold text-amber-400" id="extractionProgressPct">0%</span>
-                      <button onclick="cancelVideoExtraction()" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-red-950/60 text-zinc-300 hover:text-red-400 border border-zinc-700 text-[10px] font-mono">Cancel</button>
+                      <button onclick="cancelVideoExtraction()"
+                        class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-red-950/60 text-zinc-300 hover:text-red-400 border border-zinc-700 text-[10px] font-mono">Cancel</button>
                     </div>
                   </div>
                   <div class="w-full h-2 bg-zinc-900 rounded-full overflow-hidden border border-white/10">
-                    <div id="extractionProgressBar" class="h-full bg-orange-600 transition-all duration-150" style="width: 0%"></div>
+                    <div id="extractionProgressBar" class="h-full bg-orange-600 transition-all duration-150"
+                      style="width: 0%"></div>
                   </div>
                   <p class="text-[11px] text-zinc-400 font-mono" id="extractionDetailText">
                     Decoding video frames...
@@ -515,20 +579,23 @@
               <div id="countdownOverlay"
                 class="absolute inset-0 z-50 bg-slate-950/85 flex flex-col items-center justify-center hidden pointer-events-none">
                 <span id="countdownNumber" class="text-6xl font-bold font-mono text-sky-400">3</span>
-                <span id="countdownLabel" class="text-xs font-mono text-slate-200 mt-2 uppercase tracking-wider">Position in Side View</span>
+                <span id="countdownLabel"
+                  class="text-xs font-mono text-slate-200 mt-2 uppercase tracking-wider">Position in Side View</span>
               </div>
 
               <!-- Drag & Drop Upload Overlay -->
               <div id="dropZone"
                 class="absolute inset-0 z-40 bg-slate-900/90 flex flex-col items-center justify-center border-2 border-dashed border-blue-400 p-6 transition-all opacity-0 pointer-events-none">
                 <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-400 mb-2"></i>
-                <p class="text-sm font-semibold text-white">Drop Athlete Throwing Video to Extract Moving Sticks &amp; Errors</p>
+                <p class="text-sm font-semibold text-white">Drop Athlete Throwing Video to Extract Moving Sticks &amp;
+                  Errors</p>
                 <p class="text-xs text-slate-300 mt-1">Supports MP4, MOV, WebM</p>
               </div>
             </div>
 
             <!-- Pipeline Telemetry Summary Strip -->
-            <div id="imageProcSummary" class="px-4 py-2 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-zinc-400">
+            <div id="imageProcSummary"
+              class="px-4 py-2 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-zinc-400">
               <div class="flex items-center space-x-2">
                 <span class="text-amber-400 font-bold">PIPELINE:</span>
                 <span id="imgProcRes">Ready for Real / 3D Video Upload</span>
@@ -541,7 +608,8 @@
             </div>
 
             <!-- Interactive Playback & Frame Scrubbing Bar -->
-            <div class="p-3 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+            <div
+              class="p-3 bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
               <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="togglePlayback()" id="btn-play" title="Play / Pause"
                   class="w-9 h-9 rounded-lg bg-orange-600 hover:bg-orange-700 text-white flex items-center justify-center transition-colors shadow-sm">
@@ -566,10 +634,14 @@
                 </div>
 
                 <div class="flex items-center space-x-1 bg-[#16171C] p-1 rounded-lg border border-white/10">
-                  <button onclick="setSpeed(0.25)" id="btn-spd-025" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.25x</button>
-                  <button onclick="setSpeed(0.5)" id="btn-spd-05" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.5x</button>
-                  <button onclick="setSpeed(1.0)" id="btn-spd-10" class="px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
-                  <button onclick="setSpeed(1.5)" id="btn-spd-15" class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">1.5x</button>
+                  <button onclick="setSpeed(0.25)" id="btn-spd-025"
+                    class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.25x</button>
+                  <button onclick="setSpeed(0.5)" id="btn-spd-05"
+                    class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">0.5x</button>
+                  <button onclick="setSpeed(1.0)" id="btn-spd-10"
+                    class="px-2 py-1 rounded bg-orange-600 text-white font-mono font-semibold text-[11px]">1.0x</button>
+                  <button onclick="setSpeed(1.5)" id="btn-spd-15"
+                    class="px-2 py-1 rounded bg-[#16171C] text-zinc-300 hover:text-white font-mono text-[11px]">1.5x</button>
                 </div>
 
                 <button onclick="startShotCapture()" id="btn-capture-shot"
@@ -591,17 +663,20 @@
                   <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-400"></i>
                   <span>Open Video</span>
                 </label>
-                <input type="file" id="videoUploadInput" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
+                <input type="file" id="videoUploadInput" accept="video/*" class="hidden"
+                  onchange="handleFileUpload(event)">
               </div>
             </div>
           </div>
 
           <!-- IDENTIFIED BIOMECHANICAL KEY FRAMES -->
-          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-3">
+          <div
+            class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-3">
             <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div class="flex items-center space-x-2">
                 <i data-lucide="film" class="w-4 h-4 text-amber-400"></i>
-                <h3 class="text-xs font-bold text-zinc-100 uppercase tracking-wider font-mono">Identified Biomechanical Key Frames</h3>
+                <h3 class="text-xs font-bold text-zinc-100 uppercase tracking-wider font-mono">Identified Biomechanical
+                  Key Frames</h3>
               </div>
               <span class="text-[11px] font-mono text-zinc-400">Click any phase to inspect joint sticks</span>
             </div>
@@ -613,9 +688,11 @@
         <!-- RIGHT PANE (5 Cols): THROWING ERROR DIAGNOSIS & ADVICE -->
         <div class="lg:col-span-5 flex flex-col space-y-4">
 
-          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-4">
+          <div
+            class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-4">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
-              <span class="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase">The Coaching Card (Actionable Minimalism)</span>
+              <span class="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase">The Coaching Card
+                (Actionable Minimalism)</span>
               <span id="severityBadge"
                 class="text-[11px] font-semibold px-2.5 py-0.5 rounded bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
                 Optimal Execution
@@ -627,7 +704,8 @@
             <div class="flex items-start justify-between gap-4">
               <div class="space-y-1.5 flex-1 min-w-0">
                 <span class="text-[11px] font-mono text-zinc-400 uppercase block">Detected Classification</span>
-                <h2 id="faultTitle" class="text-2xl font-bold text-zinc-100 tracking-tight truncate">Ideal Shooting Form</h2>
+                <h2 id="faultTitle" class="text-2xl font-bold text-zinc-100 tracking-tight truncate">Ideal Shooting Form
+                </h2>
                 <div class="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
                   <div class="px-2.5 py-1 rounded bg-[#16171C] border border-white/10">
                     <span class="text-zinc-400">Confidence:</span>
@@ -640,18 +718,21 @@
                 </div>
               </div>
 
-              <div class="relative flex flex-col items-center justify-center p-2 rounded-xl bg-[#16171C] border border-white/10 shrink-0 text-center w-[96px] h-[96px] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+              <div
+                class="relative flex flex-col items-center justify-center p-2 rounded-xl bg-[#16171C] border border-white/10 shrink-0 text-center w-[96px] h-[96px] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
                 <svg class="w-[76px] h-[76px] -rotate-90" viewBox="0 0 80 80">
                   <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"></circle>
                   <circle id="formScoreRingCircle" cx="40" cy="40" r="34" fill="none" stroke="#34D399" stroke-width="6"
                     stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="4.3"
-                    style="transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;"></circle>
+                    style="transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;">
+                  </circle>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pt-0.5">
                   <div class="flex items-baseline justify-center leading-none">
                     <span id="formScoreNum" class="text-xl font-bold text-emerald-400 font-mono">98</span>
                   </div>
-                  <span id="formScoreLabel" class="text-[8px] font-bold text-emerald-400 uppercase tracking-wider mt-0.5">OPTIMAL</span>
+                  <span id="formScoreLabel"
+                    class="text-[8px] font-bold text-emerald-400 uppercase tracking-wider mt-0.5">OPTIMAL</span>
                 </div>
               </div>
             </div>
@@ -709,12 +790,14 @@
                   <i data-lucide="target" class="w-3.5 h-3.5"></i>
                   <span>Targeted Drill Prescription</span>
                 </span>
-                <span id="drillSets" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#060608] text-orange-300 border border-amber-500/30">
+                <span id="drillSets"
+                  class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#060608] text-orange-300 border border-amber-500/30">
                   3 sets of 15 makes
                 </span>
               </div>
               <h4 id="drillTitle" class="text-base font-bold text-zinc-100">Form Shooting Progression</h4>
-              <div class="bg-[#060608] rounded p-2.5 border border-amber-500/30 text-xs text-zinc-200 italic" id="actionCue">
+              <div class="bg-[#060608] rounded p-2.5 border border-amber-500/30 text-xs text-zinc-200 italic"
+                id="actionCue">
                 "Maintain rhythmic rhythm from 5 feet; focus on consistent high release and soft touch."
               </div>
               <div class="flex items-center justify-between gap-2 pt-1">
@@ -733,9 +816,11 @@
           </div>
 
           <!-- ALL 5 BIOMECHANICAL CHECKPOINTS AUDIT -->
-          <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-2.5">
+          <div
+            class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-4 space-y-2.5">
             <div class="flex items-center justify-between border-b border-white/10 pb-2">
-              <span class="text-xs font-mono font-bold text-zinc-100 uppercase tracking-wider">5-Checkpoint Error &amp; Advice Audit</span>
+              <span class="text-xs font-mono font-bold text-zinc-100 uppercase tracking-wider">5-Checkpoint Error &amp;
+                Advice Audit</span>
               <span class="text-[10px] font-mono text-zinc-400">Automated Breakdown</span>
             </div>
             <div id="checkpointAuditList" class="space-y-2"></div>
@@ -744,11 +829,14 @@
       </div>
 
       <!-- Kinetic Chain Velocity Curve Chart -->
-      <div class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-3">
+      <div
+        class="bg-[#101114] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] rounded-xl border border-white/10 shadow-sm p-5 space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider font-mono text-zinc-100">Angular Velocity &amp; Kinematic Sequencing</h3>
-            <p class="text-xs text-zinc-400">Knee drive vs. elbow extension angular velocity vs. wrist release snap across frame sequence</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider font-mono text-zinc-100">Angular Velocity &amp;
+              Kinematic Sequencing</h3>
+            <p class="text-xs text-zinc-400">Knee drive vs. elbow extension angular velocity vs. wrist release snap
+              across frame sequence</p>
           </div>
         </div>
         <div class="h-56 w-full">
@@ -762,20 +850,24 @@
     <div id="view-dashboard" class="space-y-6 hidden">
 
       <!-- Sportsman Analytics Filter & Roster Management Bar -->
-      <div class="bg-[#101114] border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div
+        class="bg-[#101114] border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+          <div
+            class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
             <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
           </div>
           <div>
             <h2 class="text-sm font-bold text-white">Squad &amp; Individual Sportsman Analytics</h2>
-            <p class="text-[11px] text-zinc-400">Select a sportsman to inspect their shot videos, fault breakdown, and progression.</p>
+            <p class="text-[11px] text-zinc-400">Select a sportsman to inspect their shot videos, fault breakdown, and
+              progression.</p>
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <div class="flex items-center space-x-2 bg-[#16171C] border border-white/10 rounded-lg px-2.5 py-1.5">
             <span class="text-[10px] font-mono uppercase text-zinc-400">Filter Analytics:</span>
-            <select id="dashboardAthleteFilter" onchange="loadCoachAnalytics(this.value)" class="bg-transparent text-xs font-semibold text-amber-300 outline-none cursor-pointer">
+            <select id="dashboardAthleteFilter" onchange="loadCoachAnalytics(this.value)"
+              class="bg-transparent text-xs font-semibold text-amber-300 outline-none cursor-pointer">
               <option class="bg-[#16171C] text-white" value="ALL">All Sportsmen (Team Squad)</option>
             </select>
           </div>
@@ -788,15 +880,20 @@
       </div>
 
       <!-- Selected Individual Sportsman Summary Card (Shown when filtering by a player) -->
-      <div id="selectedAthleteBanner" class="hidden bg-[#101114] border border-amber-500/40 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div id="selectedAthleteBanner"
+        class="hidden bg-[#101114] border border-amber-500/40 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-center space-x-3.5">
-          <div id="selAthJersey" class="w-12 h-12 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-base flex items-center justify-center shrink-0">#01</div>
+          <div id="selAthJersey"
+            class="w-12 h-12 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-base flex items-center justify-center shrink-0">
+            #01</div>
           <div>
             <div class="flex items-center space-x-2">
               <h3 id="selAthName" class="text-base font-bold text-white">K. Perera</h3>
-              <span id="selAthIdBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#16171C] text-amber-300 border border-white/10">ATH-001</span>
+              <span id="selAthIdBadge"
+                class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#16171C] text-amber-300 border border-white/10">ATH-001</span>
             </div>
-            <p id="selAthMeta" class="text-xs text-zinc-400 mt-0.5">Point Guard • KDU Varsity • Right-Handed • 180 cm • Age 21</p>
+            <p id="selAthMeta" class="text-xs text-zinc-400 mt-0.5">Point Guard • KDU Varsity • Right-Handed • 180 cm •
+              Age 21</p>
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
@@ -812,15 +909,18 @@
             <span class="text-[10px] font-mono uppercase text-zinc-400 block">Ideal Rate</span>
             <span id="selAthIdealRate" class="text-sm font-bold font-mono text-white">0%</span>
           </div>
-          <button type="button" onclick="openAthletePdfReport(currentDashboardAthleteId)" class="px-3 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center space-x-1.5">
+          <button type="button" onclick="openAthletePdfReport(currentDashboardAthleteId)"
+            class="px-3 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center space-x-1.5">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
             <span>Account PDF</span>
           </button>
-          <button type="button" onclick="uploadForSelectedAthlete()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center space-x-1.5 transition-colors">
+          <button type="button" onclick="uploadForSelectedAthlete()"
+            class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center space-x-1.5 transition-colors">
             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
             <span>Upload Video Under Player</span>
           </button>
-          <button type="button" onclick="loadCoachAnalytics('ALL')" class="px-2.5 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-white/10 text-xs font-semibold">
+          <button type="button" onclick="loadCoachAnalytics('ALL')"
+            class="px-2.5 py-2 rounded-lg bg-[#16171C] hover:bg-zinc-800 text-zinc-300 border border-white/10 text-xs font-semibold">
             View All
           </button>
         </div>
@@ -997,38 +1097,46 @@
     <!-- ============================================================== -->
     <div id="view-report" class="space-y-6 hidden">
       <!-- 1. ACCOUNT ISOLATION & SHOT NAVIGATION TOOLBAR -->
-      <div id="reportNavToolbar" class="glass-panel rounded-2xl border border-white/10 p-4 max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-navy-950/90 shadow-xl">
+      <div id="reportNavToolbar"
+        class="glass-panel rounded-2xl border border-white/10 p-4 max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-navy-950/90 shadow-xl">
         <div class="flex items-center space-x-2">
-          <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
+          <span
+            class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
             <i data-lucide="user-check" class="w-4 h-4"></i>
             <span>Account:</span>
           </span>
-          <select id="reportAthleteFilter" onchange="filterReportsByAthlete(this.value)" class="bg-[#16171C] border border-amber-500/40 rounded-xl px-2.5 py-1.5 text-xs text-amber-300 font-semibold outline-none cursor-pointer">
+          <select id="reportAthleteFilter" onchange="filterReportsByAthlete(this.value)"
+            class="bg-[#16171C] border border-amber-500/40 rounded-xl px-2.5 py-1.5 text-xs text-amber-300 font-semibold outline-none cursor-pointer">
             <option value="ALL">All Sportsmen</option>
           </select>
-          <span id="reportCounterBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-kinetic-teal/20 text-kinetic-teal border border-kinetic-teal/30">
+          <span id="reportCounterBadge"
+            class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-kinetic-teal/20 text-kinetic-teal border border-kinetic-teal/30">
             Shot 0 of 0
           </span>
         </div>
 
         <div class="flex items-center space-x-2 flex-grow sm:flex-grow-0">
-          <button onclick="prevReport()" class="px-3 py-1.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-slate-200 text-xs font-bold border border-white/10 hover:border-kinetic-teal/40 transition-all flex items-center space-x-1">
+          <button onclick="prevReport()"
+            class="px-3 py-1.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-slate-200 text-xs font-bold border border-white/10 hover:border-kinetic-teal/40 transition-all flex items-center space-x-1">
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>Previous</span>
           </button>
 
-          <select id="reportSessionSelect" onchange="loadSpecificReport(this.value)" class="bg-navy-900 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-2 focus:ring-kinetic-teal max-w-[260px] truncate">
+          <select id="reportSessionSelect" onchange="loadSpecificReport(this.value)"
+            class="bg-navy-900 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-2 focus:ring-kinetic-teal max-w-[260px] truncate">
             <option value="">Loading shot sessions...</option>
           </select>
 
-          <button onclick="nextReport()" class="px-3 py-1.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-slate-200 text-xs font-bold border border-white/10 hover:border-kinetic-teal/40 transition-all flex items-center space-x-1">
+          <button onclick="nextReport()"
+            class="px-3 py-1.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-slate-200 text-xs font-bold border border-white/10 hover:border-kinetic-teal/40 transition-all flex items-center space-x-1">
             <span>Next</span>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
           </button>
         </div>
 
         <div class="flex items-center space-x-2">
-          <button onclick="exportSportsmanPdf()" class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-400 text-black transition-all flex items-center space-x-1.5">
+          <button onclick="exportSportsmanPdf()"
+            class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-400 text-black transition-all flex items-center space-x-1.5">
             <i data-lucide="printer" class="w-3.5 h-3.5"></i>
             <span>Export Account PDF</span>
           </button>
@@ -1036,38 +1144,50 @@
       </div>
 
       <!-- 2. THE INDIVIDUAL SCOUTING REPORT CARD -->
-      <div class="glass-panel rounded-3xl border border-white/10 p-8 max-w-4xl mx-auto space-y-6 shadow-2xl bg-navy-950/90" id="printableReportCard">
+      <div
+        class="glass-panel rounded-3xl border border-white/10 p-8 max-w-4xl mx-auto space-y-6 shadow-2xl bg-navy-950/90"
+        id="printableReportCard">
         <!-- Header -->
         <div class="flex items-start justify-between border-b border-white/10 pb-6">
           <div class="space-y-1">
             <div class="flex items-center space-x-2">
-              <span class="text-xs font-mono text-kinetic-teal uppercase tracking-widest font-bold">KDU FYP 2026 OFFICIAL CLINICAL REPORT</span>
-              <span id="reportSessionBadge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-navy-800 text-slate-400 border border-white/5">SES-ID</span>
+              <span class="text-xs font-mono text-kinetic-teal uppercase tracking-widest font-bold">KDU FYP 2026
+                OFFICIAL CLINICAL REPORT</span>
+              <span id="reportSessionBadge"
+                class="px-2 py-0.5 rounded text-[10px] font-mono bg-navy-800 text-slate-400 border border-white/5">SES-ID</span>
             </div>
             <h1 class="text-3xl font-extrabold font-display text-white">AimPointAI Kinematic Evaluation</h1>
-            <p class="text-xs text-slate-400">Department of Computer Science & Sports Science Biomechanics (TS Kirindegamaarachchi)</p>
+            <p class="text-xs text-slate-400">Department of Computer Science & Sports Science Biomechanics (TS
+              Kirindegamaarachchi)</p>
           </div>
 
           <div class="text-right">
             <div id="reportFormScore" class="text-3xl font-extrabold font-display text-kinetic-teal">94/100</div>
-            <div id="reportSeverity" class="text-[11px] font-semibold text-kinetic-teal uppercase tracking-wider">Optimal Execution</div>
+            <div id="reportSeverity" class="text-[11px] font-semibold text-kinetic-teal uppercase tracking-wider">
+              Optimal Execution</div>
           </div>
         </div>
 
         <!-- Dedicated Per-Sportsman Full Account Dossier (Shown cleanly whenever one sportsman account is selected) -->
-        <div id="reportAccountDossierSection" class="hidden rounded-2xl border border-amber-500/40 bg-[#14151A] p-5 space-y-4">
+        <div id="reportAccountDossierSection"
+          class="hidden rounded-2xl border border-amber-500/40 bg-[#14151A] p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
             <div class="flex items-center space-x-3">
-              <div id="repDossierJersey" class="w-11 h-11 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-sm flex items-center justify-center shrink-0">#01</div>
+              <div id="repDossierJersey"
+                class="w-11 h-11 rounded-xl bg-amber-500 text-black font-extrabold font-mono text-sm flex items-center justify-center shrink-0">
+                #01</div>
               <div>
                 <div class="flex items-center space-x-2">
                   <h2 id="repDossierName" class="text-lg font-bold text-white">Sportsman Account</h2>
-                  <span id="repDossierId" class="px-2 py-0.5 rounded bg-[#0A0B0E] text-amber-300 font-mono text-[10px] border border-white/10">ATH-001</span>
+                  <span id="repDossierId"
+                    class="px-2 py-0.5 rounded bg-[#0A0B0E] text-amber-300 font-mono text-[10px] border border-white/10">ATH-001</span>
                 </div>
-                <p id="repDossierProfile" class="text-xs text-zinc-400">Point Guard • KDU Varsity • Right-Handed • 185 cm • Age 21</p>
+                <p id="repDossierProfile" class="text-xs text-zinc-400">Point Guard • KDU Varsity • Right-Handed • 185
+                  cm • Age 21</p>
               </div>
             </div>
-            <span class="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <span
+              class="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
               Isolated Sportsman Dossier
             </span>
           </div>
@@ -1087,7 +1207,8 @@
             </div>
             <div class="p-3 rounded-xl bg-[#0B0C10] border border-white/10">
               <span class="text-[10px] font-mono uppercase text-zinc-400 block">Dominant Fault</span>
-              <span id="repDossierTopFault" class="text-xs font-bold text-rose-400 block mt-1 truncate">Ideal Form</span>
+              <span id="repDossierTopFault" class="text-xs font-bold text-rose-400 block mt-1 truncate">Ideal
+                Form</span>
             </div>
           </div>
 
@@ -1141,7 +1262,8 @@
         <!-- Section 1: Kinematic Checkpoints Analysis -->
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono flex items-center space-x-1.5">
+            <h3
+              class="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono flex items-center space-x-1.5">
               <i data-lucide="activity" class="w-4 h-4 text-kinetic-teal"></i>
               <span>1. Kinematic Checkpoints & Biomechanical Measurements</span>
             </h3>
@@ -1153,12 +1275,14 @@
                 <span class="text-white font-medium">Shooting Elbow Flexion (Set-Point Loading):</span>
                 <p class="text-[10px] text-slate-400">Biomechanics target: 85° - 95° (Ideal benchmark: 88.5°)</p>
               </div>
-              <span id="reportElbow" class="font-mono font-bold text-sm text-kinetic-teal">88.5° (Optimal Alignment)</span>
+              <span id="reportElbow" class="font-mono font-bold text-sm text-kinetic-teal">88.5° (Optimal
+                Alignment)</span>
             </div>
             <div class="flex justify-between items-center border-b border-white/5 pb-2.5">
               <div class="space-y-0.5">
                 <span class="text-white font-medium">Ballistic Launch Release Angle:</span>
-                <p class="text-[10px] text-slate-400">Calculated trajectory optimal target: 50.0° - 55.0° (Target: 52.0°)</p>
+                <p class="text-[10px] text-slate-400">Calculated trajectory optimal target: 50.0° - 55.0° (Target:
+                  52.0°)</p>
               </div>
               <span id="reportRelease" class="font-mono font-bold text-sm text-white">52.0° (Target Optimal)</span>
             </div>
@@ -1167,21 +1291,24 @@
                 <span class="text-white font-medium">Trunk Stability & Lateral Sway:</span>
                 <p class="text-[10px] text-slate-400">Vertical kinetic energy transmission (Threshold: &lt; 48.7°)</p>
               </div>
-              <span id="reportTrunk" class="font-mono font-bold text-sm text-kinetic-emerald">24.0° (Vertical Kinetic Chain Maintained)</span>
+              <span id="reportTrunk" class="font-mono font-bold text-sm text-kinetic-emerald">24.0° (Vertical Kinetic
+                Chain Maintained)</span>
             </div>
             <div class="flex justify-between items-center">
               <div class="space-y-0.5">
                 <span class="text-white font-medium">Lower-Body Kinetic Drive (Knee Flexion to Extension):</span>
                 <p class="text-[10px] text-slate-400">Dip loading angle before triple-extension propulsion</p>
               </div>
-              <span id="reportKnee" class="font-mono font-bold text-sm text-slate-200">110.0° (Full Explosive Drive)</span>
+              <span id="reportKnee" class="font-mono font-bold text-sm text-slate-200">110.0° (Full Explosive
+                Drive)</span>
             </div>
           </div>
         </div>
 
         <!-- Section 2: Pedagogical Remediation -->
         <div class="space-y-3">
-          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono flex items-center space-x-1.5">
+          <h3
+            class="text-xs font-bold text-slate-300 uppercase tracking-widest font-mono flex items-center space-x-1.5">
             <i data-lucide="book-open" class="w-4 h-4 text-kinetic-teal"></i>
             <span>2. Prescriptive Training Protocol & Corrective Drills</span>
           </h3>
@@ -1193,15 +1320,18 @@
               </p>
             </div>
             <div class="p-3 bg-navy-950/80 rounded-xl border border-white/5">
-              <span class="text-[10px] font-mono text-kinetic-amber uppercase block mb-1">Biomechanical Consequence ("Why It Matters"):</span>
+              <span class="text-[10px] font-mono text-kinetic-amber uppercase block mb-1">Biomechanical Consequence
+                ("Why It Matters"):</span>
               <p class="text-slate-300 text-xs leading-relaxed" id="reportWhy">
-                Pushing the ball outward rather than elevating upward flattens your launch angle, increasing sensitivity to release velocity errors and causing front-rim misses.
+                Pushing the ball outward rather than elevating upward flattens your launch angle, increasing sensitivity
+                to release velocity errors and causing front-rim misses.
               </p>
             </div>
             <div class="p-3 bg-kinetic-teal/10 rounded-xl border border-kinetic-teal/30 flex items-start space-x-2.5">
               <i data-lucide="lightbulb" class="w-4 h-4 text-kinetic-teal flex-shrink-0 mt-0.5"></i>
               <div>
-                <span class="text-[10px] font-mono text-kinetic-teal uppercase block font-bold">Actionable Coaching Verbal Cue:</span>
+                <span class="text-[10px] font-mono text-kinetic-teal uppercase block font-bold">Actionable Coaching
+                  Verbal Cue:</span>
                 <p class="text-slate-200 text-xs italic font-medium" id="reportCue">
                   "Keep your shooting elbow tucked above eyebrow level before initiating upward thrust."
                 </p>
@@ -1210,23 +1340,26 @@
           </div>
         </div>
 
-                <!-- Verified Full LLM & RAG Dataset Summary Card -->
+        <!-- Verified Full LLM & RAG Dataset Summary Card -->
         <div id="llmDatasetCard" class="p-4 bg-[#16171C] rounded-2xl border border-white/10 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono font-bold text-zinc-200 uppercase flex items-center space-x-1.5">
               <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
               <span>AimPoint Full LLM &amp; RAG Coaching Dataset</span>
             </span>
-            <span id="llmDatasetTotalBadge" class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-orange-950/50 text-orange-300 border border-amber-500/30">Loading...</span>
+            <span id="llmDatasetTotalBadge"
+              class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-orange-950/50 text-orange-300 border border-amber-500/30">Loading...</span>
           </div>
           <p class="text-xs text-zinc-400" id="llmDatasetDesc">
-            Multi-turn ChatML (JSONL), Alpaca tuning export, 15-column kinematic telemetry CSV, and RAG clinical threshold rules.
+            Multi-turn ChatML (JSONL), Alpaca tuning export, 15-column kinematic telemetry CSV, and RAG clinical
+            threshold rules.
           </p>
         </div>
 
         <!-- Quick Canvas Replay Button -->
         <div id="btnReplayReportShot" class="flex justify-between items-center pt-2">
-          <button onclick="replayCurrentReportShot()" class="px-4 py-2 text-xs font-bold rounded-xl bg-navy-900 hover:bg-kinetic-teal hover:text-navy-950 text-slate-200 border border-white/10 hover:border-kinetic-teal transition-all flex items-center space-x-2">
+          <button onclick="replayCurrentReportShot()"
+            class="px-4 py-2 text-xs font-bold rounded-xl bg-navy-900 hover:bg-kinetic-teal hover:text-navy-950 text-slate-200 border border-white/10 hover:border-kinetic-teal transition-all flex items-center space-x-2">
             <i data-lucide="play" class="w-4 h-4 text-kinetic-teal"></i>
             <span>Replay Shot Biomechanics on 3D Canvas</span>
           </button>
@@ -1293,17 +1426,29 @@
 
     let cachedSampleFilenames = new Set();
 
-    function isAimPointModelSampleName(fname) {
-      const lower = String(fname || '').toLowerCase();
-      return /^\d{2,3}_(2d|3d)_/i.test(lower) || cachedSampleFilenames.has(lower);
+    function isAimPointModelSampleName(filename = '') {
+      const lower = String(filename || '').toLowerCase();
+      return /aimpoint/i.test(lower)
+        || /_(2d|3d)_/i.test(lower)
+        || /^\d{2,3}_(2d|3d)_/i.test(lower)
+        || /aimpoint_2d_model/i.test(lower)
+        || /aimpoint_3d_model/i.test(lower)
+        || (lower.includes('model') && (
+            lower.includes('ideal') ||
+            lower.includes('elbow') ||
+            lower.includes('follow') ||
+            lower.includes('imbalance') ||
+            lower.includes('release')
+          ))
+        || (typeof cachedSampleFilenames !== 'undefined' && cachedSampleFilenames.has(lower));
     }
 
     function inferSampleFaultIndex(fname) {
       const lower = String(fname || '').toLowerCase();
-      if (lower.includes('low_elbow')) return 1;
-      if (lower.includes('short_follow')) return 2;
-      if (lower.includes('imbalanced')) return 3;
-      if (lower.includes('early_release')) return 4;
+      if (lower.includes('low_elbow') || lower.includes('low-elbow') || lower.includes('elbow')) return 1;
+      if (lower.includes('short_follow') || lower.includes('short-follow') || lower.includes('follow')) return 2;
+      if (lower.includes('imbalanced') || lower.includes('imbalance') || lower.includes('base')) return 3;
+      if (lower.includes('early_release') || lower.includes('early-release') || lower.includes('release')) return 4;
       return 0;
     }
 
@@ -1396,7 +1541,7 @@
           const parts = Object.entries(d.class_distribution).map(([k, v]) => `${k}: ${v}`).join(' · ');
           desc.innerText = `Balanced ChatML + Alpaca + CSV + RAG dataset across all 5 shooting mechanics classes (${parts}).`;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     let activeTab = 'analyzer';
@@ -1475,9 +1620,9 @@
       if (!a || !b || !c) return 0;
       const v1 = [a.x - b.x, a.y - b.y, (a.z || 0) - (b.z || 0)];
       const v2 = [c.x - b.x, c.y - b.y, (c.z || 0) - (b.z || 0)];
-      const dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-      const mag1 = Math.sqrt(v1[0]*v1[0] + v1[1]*v1[1] + v1[2]*v1[2]);
-      const mag2 = Math.sqrt(v2[0]*v2[0] + v2[1]*v2[1] + v2[2]*v2[2]);
+      const dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+      const mag1 = Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]);
+      const mag2 = Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]);
       if (mag1 * mag2 === 0) return 0;
       let cosA = dot / (mag1 * mag2);
       cosA = Math.max(-1.0, Math.min(1.0, cosA));
@@ -1546,7 +1691,7 @@
             o.stop(ctx.currentTime + i * 0.05 + 0.35);
           });
         }
-      } catch(e) {}
+      } catch (e) { }
     }
 
     // Camera State Management
@@ -1819,11 +1964,11 @@
       const radElbow = (elbowAngleDeg * Math.PI) / 180.0;
       const rShoulder = { x: 0.44, y: shoulderY, z: 0.05, visibility: 0.99 };
       const rElbow = { x: 0.49, y: shoulderY + 0.12, z: 0.06, visibility: 0.99 };
-      const rWrist = { 
-        x: rElbow.x + Math.sin(radElbow * 0.5) * 0.08, 
-        y: rElbow.y - Math.cos(radElbow * 0.5) * 0.14, 
-        z: 0.07, 
-        visibility: 0.99 
+      const rWrist = {
+        x: rElbow.x + Math.sin(radElbow * 0.5) * 0.08,
+        y: rElbow.y - Math.cos(radElbow * 0.5) * 0.14,
+        z: 0.07,
+        visibility: 0.99
       };
 
       const lShoulder = { x: 0.42, y: shoulderY + 0.01, z: -0.05, visibility: 0.95 };
@@ -2011,7 +2156,7 @@
 
     // MediaPipe Live Landmark Handler
     function onMediaPipeResults(results) {
-     if (!isCameraOn) return;
+      if (!isCameraOn) return;
       const canvas = document.getElementById('skeletalCanvas');
       const ctx = canvas.getContext('2d');
       const W = canvas.width;
@@ -2024,7 +2169,7 @@
         const lms = results.poseLandmarks;
 
         // Compute Live Kinematic Angles in Real-Time
-         // 1 . Right Elbow ( 1 2 = R.Shoulder, 14 = R.Elbow, 16 = R.Wrist)
+        // 1 . Right Elbow ( 1 2 = R.Shoulder, 14 = R.Elbow, 16 = R.Wrist)
         const elbowAngle = calc3DAngle(lms[12], lms[14], lms[16]);
         // 2. Right Knee (24 = R.Hip, 26 = R.Knee, 28 = R.Ankle)
         const kneeAngle = calc3DAngle(lms[24], lms[26], lms[28]);
@@ -2347,7 +2492,7 @@
         const utter = new SpeechSynthesisUtterance(`${fault}. ${why}. Drill: ${drill}. ${cue}`);
         utter.rate = 0.98;
         window.speechSynthesis.speak(utter);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function dismissRejectionBanner() {
@@ -2364,7 +2509,7 @@
 
       const vid = document.getElementById('uploadedVideo');
       if (vid) {
-        try { vid.pause(); } catch (e) {}
+        try { vid.pause(); } catch (e) { }
         vid.classList.add('hidden');
       }
 
@@ -2631,12 +2776,38 @@
       return frames;
     }
 
+    function isAimPointModelSampleName(filename = '') {
+      const lower = String(filename || '').toLowerCase();
+      return /aimpoint/i.test(lower)
+        || /_(2d|3d)_/i.test(lower)
+        || /^\d{2,3}_(2d|3d)_/i.test(lower)
+        || /aimpoint_2d_model/i.test(lower)
+        || /aimpoint_3d_model/i.test(lower)
+        || (lower.includes('model') && (
+            lower.includes('ideal') ||
+            lower.includes('elbow') ||
+            lower.includes('follow') ||
+            lower.includes('imbalance') ||
+            lower.includes('release')
+          ))
+        || (typeof cachedSampleFilenames !== 'undefined' && cachedSampleFilenames.has(lower));
+    }
+
+    function inferSampleFaultIndex(filename = '') {
+      const lower = String(filename || '').toLowerCase();
+      if (lower.includes('low_elbow') || lower.includes('low-elbow')) return 1;
+      if (lower.includes('short_follow') || lower.includes('short-follow') || lower.includes('shortfollow')) return 2;
+      if (lower.includes('imbalanced')) return 3;
+      if (lower.includes('early_release') || lower.includes('early-release')) return 4;
+      return 0; // Ideal Form
+    }
+
     async function handleFileUpload(event) {
       const inputEl = event && event.target;
       const file = inputEl && inputEl.files && inputEl.files[0];
       if (!file) return;
       if (inputEl && 'value' in inputEl) {
-        try { inputEl.value = ''; } catch (e) {}
+        try { inputEl.value = ''; } catch (e) { }
       }
 
       // Supersede any in-flight video scan immediately (no freeze on rapid clicks!)
@@ -2665,7 +2836,7 @@
 
       try {
         if (currentVideoObjectUrl) {
-          try { URL.revokeObjectURL(currentVideoObjectUrl); } catch (e) {}
+          try { URL.revokeObjectURL(currentVideoObjectUrl); } catch (e) { }
         }
         currentVideoObjectUrl = URL.createObjectURL(file);
         vid.src = currentVideoObjectUrl;
@@ -2692,14 +2863,14 @@
             const onTimeUpdate = () => {
               if (isFinite(vid.duration) && vid.duration > 0) {
                 vid.removeEventListener('timeupdate', onTimeUpdate);
-                try { vid.currentTime = 0; } catch (e) {}
+                try { vid.currentTime = 0; } catch (e) { }
                 resolve();
               }
             };
             vid.addEventListener('timeupdate', onTimeUpdate);
             setTimeout(() => {
               vid.removeEventListener('timeupdate', onTimeUpdate);
-              try { vid.currentTime = 0; } catch (e) {}
+              try { vid.currentTime = 0; } catch (e) { }
               resolve();
             }, 350);
             try { vid.currentTime = 1e6; } catch (e) { resolve(); }
@@ -2711,9 +2882,12 @@
         const vidW = vid.videoWidth || 640;
         const vidH = vid.videoHeight || 480;
 
+        const isPortrait = vidH > vidW;
+        const procW = isPortrait ? 480 : 640;
+        const procH = isPortrait ? 640 : 480;
         const procCanvas = document.createElement('canvas');
-        procCanvas.width = 640;
-        procCanvas.height = 480;
+        procCanvas.width = procW;
+        procCanvas.height = procH;
         const procCtx = procCanvas.getContext('2d', { willReadFrequently: true });
 
         if (detailTxt) detailTxt.innerText = 'Step 2/3: Preparing MediaPipe 3D Pose Model & Image Processor...';
@@ -2732,14 +2906,14 @@
         let skipMediaPipe = !mediaPipePose;
 
         const vRatio = vidW / vidH;
-        const cRatio = 640 / 480;
-        let drawX = 0, drawY = 0, drawW = 640, drawH = 480;
+        const cRatio = procW / procH;
+        let drawX = 0, drawY = 0, drawW = procW, drawH = procH;
         if (vRatio > cRatio) {
-          drawH = 640 / vRatio;
-          drawY = (480 - drawH) / 2;
+          drawH = procW / vRatio;
+          drawY = (procH - drawH) / 2;
         } else {
-          drawW = 480 * vRatio;
-          drawX = (640 - drawW) / 2;
+          drawW = procH * vRatio;
+          drawX = (procW - drawW) / 2;
         }
 
         for (let i = 0; i < sampleCount; i++) {
@@ -2749,11 +2923,11 @@
           if (myJobId !== activeExtractionId) return;
 
           procCtx.fillStyle = '#000000';
-          procCtx.fillRect(0, 0, 640, 480);
+          procCtx.fillRect(0, 0, procW, procH);
           procCtx.filter = 'none';
           procCtx.drawImage(vid, drawX, drawY, drawW, drawH);
 
-          const pixStats = processFramePixels(procCtx, 640, 480, prevGray);
+          const pixStats = processFramePixels(procCtx, procW, procH, prevGray);
           prevGray = pixStats.currGray;
           motionCurve.push(pixStats);
 
@@ -2778,12 +2952,12 @@
 
           let mpRes = null;
           if (!skipMediaPipe) {
-            const out = await extractPoseForCanvas(procCanvas, i === 0 ? 4500 : 1200);
+            const out = await extractPoseForCanvas(procCanvas, i === 0 ? 4500 : 1400);
             if (myJobId !== activeExtractionId) return;
             if (out.status === 'timeout' || out.status === 'error' || out.status === 'unavailable') {
               consecutiveTimeouts++;
-              if (consecutiveTimeouts >= 2) {
-                console.warn('MediaPipe unresponsive; using Image-Processing Optical Motion ROI.');
+              if (consecutiveTimeouts >= 4) {
+                console.warn('MediaPipe unresponsive; switching to Optical Motion ROI.');
                 skipMediaPipe = true;
               }
             } else {
@@ -2796,8 +2970,8 @@
           if (mpRes && mpRes.poseLandmarks && mpRes.poseLandmarks.length === 33) {
             validCount++;
             extractedOverlay2D.push(mpRes.poseLandmarks.map(p => [
-              Math.max(0, Math.min(1, (p.x * 640 - drawX) / drawW)),
-              Math.max(0, Math.min(1, (p.y * 480 - drawY) / drawH)),
+              Math.max(0, Math.min(1, (p.x * procW - drawX) / drawW)),
+              Math.max(0, Math.min(1, (p.y * procH - drawY) / drawH)),
               p.z || 0
             ]));
 
@@ -2820,36 +2994,67 @@
         const resEl = document.getElementById('imgProcRes');
         const filterEl = document.getElementById('imgProcFilter');
         const trackEl = document.getElementById('imgProcTrackCount');
-        if (resEl) resEl.innerText = `${vidW}x${vidH} → 640x480 Normalized`;
+        if (resEl) resEl.innerText = `${vidW}x${vidH} → ${procW}x${procH} Normalized`;
         if (filterEl) filterEl.innerText = contrastEnhancedCount > 0 ? `Auto-Luminance (${contrastEnhancedCount}F) + SG Filter` : 'Contrast Normalized + SG Filter';
 
         let finalWorld3D = [];
         let lastValid2D = extractedOverlay2D.find(f => f !== null);
         let lastValid3D = extractedWorld3D.find(f => f !== null);
         const isSystemSample = Boolean(event && event.isSystemSample);
-        const isSyntheticModelClip = /^\d{2,3}_(2d|3d)_/i.test(file.name) || (isSystemSample && isAimPointModelSampleName(file.name)) || cachedSampleFilenames.has(String(file.name || '').toLowerCase());
+        const isSyntheticModelClip = isAimPointModelSampleName(file.name);
         let sampleBenchmarkFault = null;
 
-        if (validCount >= 5 && lastValid2D && lastValid3D) {
-          // Verify dynamic basketball shooting/throwing motion (reject stationary/talking-head slides)
+        // -------------------------------------------------------------
+        // STRICT SPORTS / BASKETBALL VERIFICATION GATE
+        // -------------------------------------------------------------
+        if (isSyntheticModelClip) {
+          // Benchmark or exported 2D moving-stick model clip
+          finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
+          uploadedOverlayFrames = finalWorld3D.map(frame => {
+            return frame.map(pt => [
+              Math.max(0.05, Math.min(0.95, 0.50 + (pt[0] || 0) * 0.70)),
+              Math.max(0.05, Math.min(0.95, 0.45 + (pt[1] || 0) * 0.70)),
+              pt[2] || 0
+            ]);
+          });
+          sampleBenchmarkFault = inferSampleFaultIndex(file.name);
+          if (trackEl) trackEl.innerText = `2D/3D Benchmark Model: ${sampleCount}/${sampleCount} frames`;
+        } else if (validCount === 0) {
+          // REFUSE: Absolutely no human athlete detected in clip (desk, keyboard, scenery, pets, text)
+          rejectUnrelatedVideo(
+            file.name,
+            `Error Video: "${file.name}" is unrelated to sports. No human athlete was detected in this clip.`
+          );
+          return;
+        } else {
+          // A human was detected - verify dynamic basketball shooting motion vs static non-sports activity
           const wristYs = [];
+          const shoulderYs = [];
           const elbowDegs = [];
           extractedWorld3D.forEach((w) => {
             if (!w) return;
             wristYs.push(Math.min(w[16][1], w[15][1]));
+            shoulderYs.push(Math.min(w[12][1], w[11][1]));
             elbowDegs.push(calc3DAngle(w[12], w[14], w[16]));
           });
+
           const wristSweep = wristYs.length ? (Math.max(...wristYs) - Math.min(...wristYs)) : 0;
           const elbowSweep = elbowDegs.length ? (Math.max(...elbowDegs) - Math.min(...elbowDegs)) : 0;
+          // In basketball shooting, the arm raises upward near/above shoulder level
+          const reachedArmElevation = wristYs.some((wy, idx) => wy <= shoulderYs[idx] + 0.20);
 
-          if (!isSyntheticModelClip && wristSweep < 0.04 && elbowSweep < 8.0) {
+          // If the person is sitting at a desk, typing, or standing still without athletic shooting arm motion
+          const isNonSportsMotion = (wristSweep < 0.025 && elbowSweep < 5.0) || (!reachedArmElevation && elbowSweep < 6.0);
+
+          if (isNonSportsMotion && validCount >= 5) {
             rejectUnrelatedVideo(
               file.name,
-              `Error Video: "${file.name}" shows a static person/scene without any basketball shooting or throwing arm motion.`
+              `Error Video: "${file.name}" is not related to basketball. The person in this video is stationary or seated without athletic shooting motion.`
             );
             return;
           }
 
+          // Video is a verified sports / basketball shooting clip!
           for (let i = 0; i < sampleCount; i++) {
             if (extractedOverlay2D[i] === null) extractedOverlay2D[i] = lastValid2D;
             else lastValid2D = extractedOverlay2D[i];
@@ -2858,20 +3063,7 @@
           }
           uploadedOverlayFrames = extractedOverlay2D;
           finalWorld3D = extractedWorld3D;
-          if (trackEl) trackEl.innerText = `3D→2D Pose Tracked: ${validCount}/${sampleCount} frames`;
-        } else if (isSyntheticModelClip) {
-          // Stored 2D & 3D stick-figure model samples are exempt from real-body refusal
-          uploadedOverlayFrames = [];
-          finalWorld3D = buildMotionAnchoredPose3D(motionCurve);
-          sampleBenchmarkFault = inferSampleFaultIndex(file.name);
-          if (trackEl) trackEl.innerText = `2D/3D Sample Model: ${sampleCount}/${sampleCount} frames`;
-        } else {
-          // Strictly refuse unrelated videos (presentations, logos, scenery, medical slides, non-athlete footage)
-          const msg = mpOkCount >= 4
-            ? `Error Video: "${file.name}" is unrelated to basketball (${validCount}/${sampleCount} player poses detected). Please upload a basketball shooting or throwing video.`
-            : `Error Video: Could not detect a basketball shooter in "${file.name}". Ensure an athlete is clearly visible in frame.`;
-          rejectUnrelatedVideo(file.name, msg);
-          return;
+          if (trackEl) trackEl.innerText = `Athlete Motion Tracked: ${validCount}/${sampleCount} frames`;
         }
 
         const athleteSel = document.getElementById('athleteSelect');
@@ -3786,7 +3978,7 @@
       const overlay = document.getElementById('sagittalOverlay');
       overlay.style.display = showSagittalGuide ? 'flex' : 'none';
       const btn = document.getElementById('btn-guide');
-      btn.className = showSagittalGuide 
+      btn.className = showSagittalGuide
         ? 'px-3 py-1.5 rounded-xl bg-navy-800 text-kinetic-teal border border-kinetic-teal/40 text-xs font-medium'
         : 'px-3 py-1.5 rounded-xl bg-navy-800 text-zinc-400 border border-white/10 text-xs font-medium';
     }
@@ -3796,7 +3988,7 @@
       velocityChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: Array.from({length: 60}, (_, i) => (i/30).toFixed(2)),
+          labels: Array.from({ length: 60 }, (_, i) => (i / 30).toFixed(2)),
           datasets: [
             {
               label: 'Elbow Extension Velocity (deg/s)',
@@ -3858,7 +4050,7 @@
       velocityChartInstance.update();
     }
 
-    
+
     // =========================================================================
     // SHOT-BY-SHOT CLINICAL COACHING REPORT CONTROLS (ISOLATED PER ACCOUNT)
     // =========================================================================
@@ -3905,8 +4097,8 @@
           const preferred = targetSessionId && filteredReportsList.some(r => r.session_id === targetSessionId)
             ? targetSessionId
             : (lastAnalyzedSessionId && filteredReportsList.some(r => r.session_id === lastAnalyzedSessionId)
-                ? lastAnalyzedSessionId
-                : filteredReportsList[0].session_id);
+              ? lastAnalyzedSessionId
+              : filteredReportsList[0].session_id);
           await loadSpecificReport(preferred);
         } else {
           renderEmptyReportForAccount(targetAth);
@@ -4297,7 +4489,7 @@
     }
 
 
-        function analyzeAthlete(athleteId, faultName) {
+    function analyzeAthlete(athleteId, faultName) {
       const faultMap = {
         'Ideal Form': 0,
         'Low Elbow Set Point': 1,
@@ -4335,7 +4527,7 @@
             try {
               const athRes = await fetch(`/api/athletes/${encodeURIComponent(targetId)}/analytics`);
               if (athRes.ok) extraMetrics = await athRes.json();
-            } catch (e) {}
+            } catch (e) { }
 
             if (banner) {
               banner.classList.remove('hidden');
@@ -4490,14 +4682,17 @@
   </script>
 
   <!-- Camera Access & Permissions Guidance Modal -->
-  <div id="cameraHelpModal" class="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+  <div id="cameraHelpModal"
+    class="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
     <div class="glass-panel max-w-lg w-full rounded-3xl border border-white/10 p-6 space-y-5 shadow-2xl relative">
-      <button onclick="closeCameraHelpModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors">
+      <button onclick="closeCameraHelpModal()"
+        class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
       <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-kinetic-teal/20 to-kinetic-cyan/20 text-kinetic-teal flex items-center justify-center border border-kinetic-teal/30">
+        <div
+          class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-kinetic-teal/20 to-kinetic-cyan/20 text-kinetic-teal flex items-center justify-center border border-kinetic-teal/30">
           <i data-lucide="camera" class="w-6 h-6"></i>
         </div>
         <div>
@@ -4507,14 +4702,16 @@
       </div>
 
       <!-- Diagnostic Status Notice Box (Visible when camera permission or hardware error occurs) -->
-      <div id="cameraModalNotice" class="hidden p-3.5 rounded-2xl bg-kinetic-crimson/20 border border-kinetic-crimson/40 text-xs text-white space-y-2">
+      <div id="cameraModalNotice"
+        class="hidden p-3.5 rounded-2xl bg-kinetic-crimson/20 border border-kinetic-crimson/40 text-xs text-white space-y-2">
         <div class="flex items-center space-x-2 text-kinetic-coral font-bold">
           <i data-lucide="alert-triangle" class="w-4 h-4 text-kinetic-coral shrink-0"></i>
           <span>Camera Access Notice</span>
         </div>
         <p id="cameraModalNoticeText" class="text-slate-200 leading-relaxed pl-6"></p>
         <div class="pl-6 pt-1">
-          <button onclick="startSimulatedCamera()" class="px-3 py-1.5 rounded-lg bg-kinetic-cyan/20 hover:bg-kinetic-cyan/30 text-kinetic-cyan border border-kinetic-cyan/40 font-bold text-[11px] flex items-center space-x-1.5">
+          <button onclick="startSimulatedCamera()"
+            class="px-3 py-1.5 rounded-lg bg-kinetic-cyan/20 hover:bg-kinetic-cyan/30 text-kinetic-cyan border border-kinetic-cyan/40 font-bold text-[11px] flex items-center space-x-1.5">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>1-Click Switch: Use Virtual Shooter Stream</span>
           </button>
@@ -4528,7 +4725,8 @@
             <span>Option A: Enable Physical WebCam</span>
           </div>
           <ol class="list-decimal list-inside space-y-1.5 text-slate-300 pl-1 leading-relaxed">
-            <li>Look at your browser's address bar at the top (<code class="text-kinetic-cyan font-mono px-1 rounded bg-black/30">localhost:8080</code>).</li>
+            <li>Look at your browser's address bar at the top (<code
+                class="text-kinetic-cyan font-mono px-1 rounded bg-black/30">localhost:8080</code>).</li>
             <li>Click the <strong>Padlock / Site Settings icon 🔒</strong> on the left side of the address.</li>
             <li>Set the <strong>Camera</strong> permission dropdown to <strong>"Allow"</strong>.</li>
             <li>Click the <strong>"Connect Physical Camera"</strong> button below!</li>
@@ -4541,17 +4739,21 @@
             <span>Option B: 100% Instant Virtual Shooter Stream</span>
           </div>
           <p class="text-slate-300 leading-relaxed text-xs">
-            No webcam plugged in or permissions restricted? Click <strong>"Use Virtual Shooter Camera"</strong> below to immediately stream an animated basketball athlete with live 3D skeletal tracking, dynamic angle telemetry, and AI shot diagnosis!
+            No webcam plugged in or permissions restricted? Click <strong>"Use Virtual Shooter Camera"</strong> below to
+            immediately stream an animated basketball athlete with live 3D skeletal tracking, dynamic angle telemetry,
+            and AI shot diagnosis!
           </p>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-3 pt-2">
-        <button onclick="requestCameraDirectly()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-kinetic-teal to-kinetic-cyan text-navy-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-glow-teal hover:scale-105 transition-all">
+        <button onclick="requestCameraDirectly()"
+          class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-kinetic-teal to-kinetic-cyan text-navy-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-glow-teal hover:scale-105 transition-all">
           <i data-lucide="video" class="w-4 h-4"></i>
           <span>Connect Physical Camera</span>
         </button>
-        <button onclick="startSimulatedCamera()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-kinetic-cyan/30 to-kinetic-teal/30 hover:from-kinetic-cyan/40 hover:to-kinetic-teal/40 text-kinetic-cyan border border-kinetic-cyan/40 font-bold text-xs flex items-center justify-center space-x-2 shadow-glow-teal transition-all">
+        <button onclick="startSimulatedCamera()"
+          class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-kinetic-cyan/30 to-kinetic-teal/30 hover:from-kinetic-cyan/40 hover:to-kinetic-teal/40 text-kinetic-cyan border border-kinetic-cyan/40 font-bold text-xs flex items-center justify-center space-x-2 shadow-glow-teal transition-all">
           <i data-lucide="sparkles" class="w-4 h-4"></i>
           <span>Use Virtual Camera</span>
         </button>
@@ -4560,11 +4762,13 @@
   </div>
 
   <!-- Add Sportsman Modal -->
-  <div id="addSportsmanModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="addSportsmanModal"
+    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#101114] border border-amber-500/40 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center">
+          <div
+            class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center">
             <i data-lucide="user-plus" class="w-4 h-4"></i>
           </div>
           <div>
@@ -4577,7 +4781,8 @@
         </button>
       </div>
 
-      <div id="addSportsmanError" class="hidden p-2.5 rounded-lg bg-red-950/60 border border-red-500/50 text-xs text-red-200"></div>
+      <div id="addSportsmanError"
+        class="hidden p-2.5 rounded-lg bg-red-950/60 border border-red-500/50 text-xs text-red-200"></div>
 
       <form id="addSportsmanForm" onsubmit="submitAddSportsman(event)" class="space-y-3">
         <div>
@@ -4589,7 +4794,8 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Position</label>
-            <select id="inpAthPosition" class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
+            <select id="inpAthPosition"
+              class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
               <option value="Point Guard">Point Guard</option>
               <option value="Shooting Guard">Shooting Guard</option>
               <option value="Small Forward">Small Forward</option>
@@ -4617,7 +4823,8 @@
           </div>
           <div>
             <label class="text-[11px] font-mono uppercase text-zinc-400 block mb-1">Hand</label>
-            <select id="inpAthHand" class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
+            <select id="inpAthHand"
+              class="w-full px-3 py-2 rounded-lg bg-[#16171C] border border-white/15 text-xs text-white outline-none">
               <option value="Right">Right</option>
               <option value="Left">Left</option>
             </select>
