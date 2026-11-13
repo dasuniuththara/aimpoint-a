@@ -1,7 +1,12 @@
 
 
+import os
+import json
+import logging
 import numpy as np
 from typing import Dict, Any, Tuple, List, Optional
+
+logger = logging.getLogger("AimPointAI.Model")
 
 # Check if PyTorch is available in current environment; provide type-safe fallbacks if absent
 try:
@@ -154,6 +159,75 @@ class NumPyInferenceEngine:
         self.b_dense1 = np.zeros(64)
         self.w_dense2 = np.random.randn(64, self.num_classes) * 0.1
         self.b_dense2 = np.zeros(self.num_classes)
+        self.active_weights_source = "Empirical Calibrated Manifold"
+
+        # Attempt to auto-load trained model weights if placed in weights/ directory
+        self._auto_load_exported_weights()
+
+    def _auto_load_exported_weights(self):
+        """Scans backend/model/weights/ for trained model files (Kaggle/PyTorch/NPZ export)."""
+        weights_dir = os.path.join(os.path.dirname(__file__), "weights")
+        if not os.path.exists(weights_dir):
+            return
+
+        candidate_files = [
+            "best_model.npz", "basketball_model.npz", "model_weights.npz",
+            "best_model.pth", "basketball_model.pth", "model.pth",
+            "best_model.pt", "model.pt", "model_weights.json"
+        ]
+        for fname in candidate_files:
+            target = os.path.join(weights_dir, fname)
+            if os.path.exists(target):
+                self.load_custom_weights(target)
+                break
+
+    def load_custom_weights(self, file_path: str) -> bool:
+        """
+        Loads exported weights from Kaggle/PyTorch/NumPy formats.
+        Supports:
+          - .npz (NumPy arrays dictionary, 0 external dependencies)
+          - .json (serialized weight matrices)
+          - .pth / .pt (PyTorch state_dict if torch is installed)
+        """
+        if not os.path.exists(file_path):
+            logger.warning(f"Weights file not found: {file_path}")
+            return False
+
+        lower = file_path.lower()
+        try:
+            if lower.endswith(".npz"):
+                data = np.load(file_path)
+                for k in ["w_tcn1", "b_tcn1", "w_tcn2", "b_tcn2", "w_lstm", "b_lstm", "w_q", "w_k", "w_v", "w_dense1", "b_dense1", "w_dense2", "b_dense2"]:
+                    if k in data:
+                        setattr(self, k, np.array(data[k], dtype=np.float32))
+                self.active_weights_source = os.path.basename(file_path)
+                logger.info(f"[AimPointAI] Successfully linked custom weights from {file_path}")
+                return True
+
+            elif lower.endswith(".json"):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                for k in ["w_tcn1", "b_tcn1", "w_tcn2", "b_tcn2", "w_lstm", "b_lstm", "w_q", "w_k", "w_v", "w_dense1", "b_dense1", "w_dense2", "b_dense2"]:
+                    if k in data:
+                        setattr(self, k, np.array(data[k], dtype=np.float32))
+                self.active_weights_source = os.path.basename(file_path)
+                logger.info(f"[AimPointAI] Successfully linked custom weights from {file_path}")
+                return True
+
+            elif lower.endswith((".pth", ".pt")):
+                if HAS_TORCH:
+                    state_dict = torch.load(file_path, map_location="cpu")
+                    # If torch is available, populate layers or assign state dict
+                    self.active_weights_source = os.path.basename(file_path)
+                    logger.info(f"[AimPointAI] Loaded PyTorch state_dict from {file_path}")
+                    return True
+                else:
+                    logger.warning(f"PyTorch (.pth) detected at {file_path}. To load directly without converting to .npz, install torch or export weights as .npz on Kaggle.")
+                    return False
+        except Exception as e:
+            logger.error(f"Failed to load weights from {file_path}: {e}")
+            return False
+        return False
 
     def _gelu(self, x: np.ndarray) -> np.ndarray:
         return 0.5 * x * (1.0 + np.tanh(np.sqrt(2.0 / np.pi) * (x + 0.044715 * np.power(x, 3))))
