@@ -3019,15 +3019,39 @@
           });
           sampleBenchmarkFault = inferSampleFaultIndex(file.name);
           if (trackEl) trackEl.innerText = `2D/3D Benchmark Model: ${sampleCount}/${sampleCount} frames`;
-        } else if (validCount === 0) {
-          // REFUSE: Absolutely no human athlete detected in clip (desk, keyboard, scenery, pets, text)
+        } else if (validCount < 10) {
+          // REFUSE: No consistent human athlete detected (desk, keyboard, scenery, pets, abstract animations, molecules)
+          // Real athletic basketball shooting clips have a detected athlete across at least 10–30 frames.
           rejectUnrelatedVideo(
             file.name,
-            `Error Video: "${file.name}" is unrelated to sports. No human athlete was detected in this clip.`
+            `Error Video: "${file.name}" is unrelated to sports. No human athlete was consistently detected (only ${validCount}/${sampleCount} frames detected).`
           );
           return;
         } else {
-          // A human was detected - verify dynamic basketball shooting motion vs static non-sports activity
+          // An athlete was detected across >= 10 frames.
+          // 1. Anatomical Upright Human Check (filters out distorted artifacts, horizontal lines, abstract objects)
+          let uprightCount = 0;
+          extractedOverlay2D.forEach((lms) => {
+            if (!lms) return;
+            const midShY = (lms[11][1] + lms[12][1]) / 2;
+            const midHipY = (lms[23][1] + lms[24][1]) / 2;
+            const noseY = lms[0][1];
+            // In normalized 2D coords (y: 0 top to 1 bottom):
+            // An upright human athlete has head above shoulders, and shoulders above hips
+            if (midHipY > midShY + 0.06 && midShY > noseY - 0.08) {
+              uprightCount++;
+            }
+          });
+
+          if (uprightCount < Math.max(5, Math.floor(validCount * 0.40))) {
+            rejectUnrelatedVideo(
+              file.name,
+              `Error Video: "${file.name}" does not contain a recognizable upright human athletic pose.`
+            );
+            return;
+          }
+
+          // 2. Dynamic Basketball Shooting Motion (arm elevation + elbow sweep)
           const wristYs = [];
           const shoulderYs = [];
           const elbowDegs = [];
@@ -3044,12 +3068,12 @@
           const reachedArmElevation = wristYs.some((wy, idx) => wy <= shoulderYs[idx] + 0.20);
 
           // If the person is sitting at a desk, typing, or standing still without athletic shooting arm motion
-          const isNonSportsMotion = (wristSweep < 0.025 && elbowSweep < 5.0) || (!reachedArmElevation && elbowSweep < 6.0);
+          const isNonSportsMotion = (wristSweep < 0.035 && elbowSweep < 8.0) || (!reachedArmElevation && elbowSweep < 10.0);
 
-          if (isNonSportsMotion && validCount >= 5) {
+          if (isNonSportsMotion) {
             rejectUnrelatedVideo(
               file.name,
-              `Error Video: "${file.name}" is not related to basketball. The person in this video is stationary or seated without athletic shooting motion.`
+              `Error Video: "${file.name}" is not related to basketball shooting. The person in this video is stationary, seated, or not performing an athletic shooting release.`
             );
             return;
           }

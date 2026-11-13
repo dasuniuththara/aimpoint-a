@@ -140,10 +140,14 @@ def analyze_shot(
                     wr_l_y = arr[:, 15, 1]
                     wr_span = max(float(np.ptp(wr_r_y)), float(np.ptp(wr_l_y)))
                     joint_spread = float(np.max(np.ptp(arr[:, :, :2], axis=0)))
-                    if wr_span < 0.015 and joint_spread < 0.02:
+                    sh_y = np.mean(arr[:, 11:13, 1], axis=1)
+                    hip_y = np.mean(arr[:, 23:25, 1], axis=1)
+                    torso_h = float(np.median(hip_y - sh_y))
+
+                    if torso_h < 0.04 or (wr_span < 0.02 and joint_spread < 0.04):
                         raise HTTPException(
                             status_code=400,
-                            detail="Error Video: Static or non-basketball clip detected with no shooting motion."
+                            detail="Error Video: Non-basketball or invalid clip detected without athletic shooting motion."
                         )
                 if T_in == 1:
                     raw_landmarks = np.repeat(arr, 60, axis=0)
